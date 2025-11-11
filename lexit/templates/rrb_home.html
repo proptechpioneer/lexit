@@ -1,0 +1,358 @@
+{% extends "layout.html" %} 
+{% load static %}
+
+{% block title %}LEXIT | Renters' Rights Act{% endblock %}
+
+{% block content %}
+<!-- RRB Overview Section -->
+<section class="relative w-full max-w-[1440px] mx-auto py-8 lg:py-12">
+    <div class="mx-5 lg:mx-[21px]">
+        <div class="bg-white shadow-lg rounded-lg mb-8 border-0">
+            <div class="p-6">
+                <div class="text-center mb-6">
+                    <h3 class="text-h3-custom font-archivo text-primary-blue mb-4 font-bold" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">Renters' Rights Act</h3>
+                    <p class="text-primary-blue text-lg leading-relaxed max-w-4xl mx-auto">The <strong>Renters' Rights Act</strong> passed through English parliament on 27 October 2025 and is anticipated to be introduced in early 2026. <strong>The Renters' Rights Act is the most significant reform the private rented sector (PRS) has seen since the Housing Act 1988.</strong>
+                </div>
+        
+        <!-- Key Objectives Section -->
+        <div class="mb-8">
+            <div class="w-full">
+                <div class="bg-white border-0 shadow-sm rounded-lg overflow-hidden">
+                    <div class="bg-primary-blue px-6 py-4">
+                        <h5 class="text-2xl font-archivo font-bold flex items-center justify-center text-center" style="color: white;">
+                            <i class="fas fa-list-ul mr-3"></i>Key Objectives of the Renters' Rights Act
+                        </h5>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="flex-1 space-y-4">
+                                <div class="flex items-start">
+                                    <i class="fas fa-times-circle text-red-500 mr-3 mt-1 text-lg"></i>
+                                    <div>
+                                        <strong class="text-primary-blue font-anek-latin">End of Section 21:</strong>
+                                        <p class="text-primary-blue font-anek-latin mb-0">No more no-fault evictions—must have a reason to evict.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-balance-scale text-yellow mr-3 mt-1 text-lg"></i>
+                                    <div>
+                                        <strong class="text-primary-blue font-anek-latin">New eviction process:</strong>
+                                        <p class="text-primary-blue font-anek-latin mb-0">Fairer, more transparent dispute resolution.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-shield-alt text-light-blue mr-3 mt-1 text-lg"></i>
+                                    <div>
+                                        <strong class="text-primary-blue font-anek-latin">Long-term tenancy rights:</strong>
+                                        <p class="text-primary-blue font-anek-latin mb-0">Greater security for tenants, less flexibility for landlords.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1 space-y-4">
+                                <div class="flex items-start">
+                                    <i class="fas fa-piggy-bank text-green-500 mr-3 mt-1 text-lg"></i>
+                                    <div>
+                                        <strong class="text-primary-blue font-anek-latin">Standardized deposit scheme:</strong>
+                                        <p class="text-primary-blue font-anek-latin mb-0">One lifetime deposit instead of multiple security deposits.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-home text-primary-blue mr-3 mt-1 text-lg"></i>
+                                    <div>
+                                        <strong class="text-primary-blue font-anek-latin">Stricter property standards:</strong>
+                                        <p class="text-primary-blue font-anek-latin mb-0">Enhanced regulation to improve rental quality.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-clock text-gray-500 mr-3 mt-1 text-lg"></i>
+                                    <div>
+                                        <strong class="text-primary-blue font-anek-latin">Revised notice periods:</strong>
+                                        <p class="text-primary-blue font-anek-latin mb-0">Longer mandatory notice periods for ending tenancies.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rounded-lg p-4 mt-6" style="background-color: #D94590; border: 2px solid #D94590;">
+                            <i class="fas fa-info-circle mr-2 text-white"></i>
+                            <strong class="text-white font-anek-latin">Impact Summary:</strong> <span class="text-white font-anek-latin">These changes aim to balance tenant protections with fair processes—landlords will need to adapt to a new regulatory environment.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="mb-8">
+            <div class="w-full">
+                <div class="text-center mb-6">
+                    <h4 class="text-h4-custom font-archivo text-primary-blue font-bold flex items-center justify-center">
+                        <i class="fas fa-question-circle mr-3"></i>Frequently Asked Questions
+                    </h4>
+                </div>
+                
+                <div class="space-y-3 shadow-sm">
+                    <!-- FAQ Item 1 -->
+                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="w-full text-left px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-blue focus:ring-opacity-50" onclick="toggleFAQ('faq1')">
+                            <div class="flex items-center text-primary-blue font-anek-latin font-medium">
+                                <i class="fas fa-calendar-alt mr-3"></i>
+                                <span>When will the Renters' Rights Act come into effect?</span>
+                                <i class="fas fa-chevron-down ml-auto transform transition-transform" id="faq1-icon"></i>
+                            </div>
+                        </button>
+                        <div id="faq1" class="hidden px-6 py-4 text-primary-blue font-anek-latin">
+                            <strong>The bill passed through parliament on 27 October 2025.</strong> The law is likely to be introduced in <strong>early 2026.</strong>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 2 -->
+                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="w-full text-left px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-blue focus:ring-opacity-50" onclick="toggleFAQ('faq2')">
+                            <div class="flex items-center text-primary-blue font-anek-latin font-medium">
+                                <i class="fas fa-exclamation-triangle mr-3" style="color: #D94590;"></i>
+                                <span>Will I still be able to increase my rent?</span>
+                                <i class="fas fa-chevron-down ml-auto transform transition-transform" id="faq2-icon"></i>
+                            </div>
+                        </button>
+                        <div id="faq2" class="hidden px-6 py-4 text-primary-blue font-anek-latin">
+                            <p><strong>It will now be substantially more challenging for landlords to increase the rent.</strong> 
+                            The landlord will only have the right to attempt a rent increase once a year, 
+                            and must issue a Section 13 Notice with a full two months’ notice to the tenant.
+                            </p>
+                            <br>
+                            <p>
+                            Tenants will also have the right to dispute the rent increase at no cost, forcing the landlord 
+                            to justify the rent review as fair — adding significant additional hurdles. Furthermore, any rent 
+                            increase could be delayed for several months or even years before it can take effect. 
+                            </p>
+                            <br>
+                            <p>
+                            The entire process will demand more extensive documentation and may lead to prolonged delays, 
+                            severely impacting cash flow, rental income, and the landlord’s ability to manage property effectively.
+                          </p> 
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 3 -->
+                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="w-full text-left px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-blue focus:ring-opacity-50" onclick="toggleFAQ('faq3')">
+                            <div class="flex items-center text-primary-blue font-anek-latin font-medium">
+                                <i class="fas fa-exclamation-triangle mr-3" style="color: #D94590;"></i>
+                                <span>Will I still be able to evict a tenant?</span>
+                                <i class="fas fa-chevron-down ml-auto transform transition-transform" id="faq3-icon"></i>
+                            </div>
+                        </button>
+                        <div id="faq3" class="hidden px-6 py-4 text-primary-blue font-anek-latin">
+                            <strong>Landlords will no longer be able to evict tenants without a specific reason.</strong> This means you'll need valid grounds such as rent arrears, property damage, or wanting to sell the property. The process will require more documentation and potentially longer timeframes, affecting cash flow and property management strategies.
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 4 -->
+                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="w-full text-left px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-blue focus:ring-opacity-50" onclick="toggleFAQ('faq4')">
+                            <div class="flex items-center text-primary-blue font-anek-latin font-medium">
+                                <i class="fas fa-exclamation-triangle mr-3" style="color: #D94590;"></i>
+                                <span>Can tenants leave my property before the end of the tenancy?</span>
+                                <i class="fas fa-chevron-down ml-auto transform transition-transform" id="faq4-icon"></i>
+                            </div>
+                        </button>
+                        <div id="faq4" class="hidden px-6 py-4 text-primary-blue font-anek-latin">
+                            <p><strong>Under the RRB all tenancies will now be periodic by default.</strong></p>
+                            <br>
+                            <p>There will no longer be a minimum tenancy period, meaning there is no
+                               set minimum duration for tenancy agreements. Tenants will be able to give notice at any time,
+                               effectively removing the previous minimum tenancy requirements. 
+                            </p> 
+                            <br>
+                            <p>Tenants will be able to end their tenancy by giving two months' notice at any time.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 5 -->
+                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="w-full text-left px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-blue focus:ring-opacity-50" onclick="toggleFAQ('faq5')">
+                            <div class="flex items-center text-primary-blue font-anek-latin font-medium">
+                                <i class="fas fa-lightbulb mr-3"></i>
+                                <span>What should I do to prepare my Buy-to-Let business?</span>
+                                <i class="fas fa-chevron-down ml-auto transform transition-transform" id="faq5-icon"></i>
+                            </div>
+                        </button>
+                        <div id="faq5" class="hidden px-6 py-4 text-primary-blue font-anek-latin">
+                          <p>Under the Renters' Rights Act, landlords will be required to adopt a far more professional 
+                            approach to property management, making Buy-to-Let investment no longer suitable for 
+                            amateur landlords.</p>
+                            <br>
+                            <p>Rents will increase less frequently, costs will rise due to increased compliance 
+                              requirements, and substantial fines will be imposed on landlords who fail to adhere 
+                              to the new regulations. This shift aims to raise standards but will pose increased 
+                              challenges and financial risks for all landlords.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA Container Section -->
+                <section class="relative w-full max-w-[1440px] mx-auto py-16 lg:py-20">
+                    <!-- Add responsive CSS for centering -->
+                    <style>
+                        @media (max-width: 1023px) {
+                            .rrb-cta-container {
+                                height: auto !important;
+                                min-height: 500px !important;
+                            }
+                            
+                            .rrb-cta-left-content {
+                                padding: 2rem !important;
+                                text-align: center !important;
+                                display: flex !important;
+                                flex-direction: column !important;
+                                align-items: center !important;
+                                justify-content: center !important;
+                            }
+                            
+                            .rrb-cta-right-content {
+                                display: none !important;
+                            }
+                        }
+                    </style>
+                    
+                    <div class="mx-5 lg:mx-[21px]">
+                        <div class="rrb-cta-container relative w-full max-w-[1398px] mx-auto h-[633px] bg-[#d94590] rounded-[30px] overflow-hidden">
+                            <!-- Background Gradient -->
+                            <div class="absolute top-0 left-0 w-full h-full">
+                                <div class="absolute -top-[118px] right-0 w-[1354px] h-[1131px] rounded-[677px/565.5px] opacity-50"
+                                     style="background: radial-gradient(50% 50% at 50% 50%, rgba(90,24,154,0.5) 0%, rgba(255,255,255,0) 90%);">
+                                </div>
+                            </div>
+
+                            <!-- Left Content -->
+                            <div class="rrb-cta-left-content relative z-10 flex flex-col justify-center h-full px-8 lg:px-[118px]">
+                                <!-- Main Headline -->
+                                <h2 class="font-archivo font-medium text-2xl lg:text-5xl tracking-[0] leading-tight lg:leading-[60px] mb-8 max-w-[745px]" style="color: white !important;">
+                                    Renters' Rights Act
+                                </h2>
+
+                                <!-- Description -->
+                                <p class="font-normal text-[#ffffffd6] text-lg lg:text-2xl tracking-[0] leading-7 lg:leading-8 mb-12 max-w-[510px] max-md:text-base">
+                                    Time is runninning out! Stay of the Renters' Right Act - non compliant landlords face significant costs and hefty fines. 
+                                </p>
+                                <p class="font-normal text-[#ffffffd6] text-lg lg:text-2xl tracking-[0] leading-7 lg:leading-8 mb-12 max-w-[510px] max-md:text-base">
+                                    Act now to avoid the consequences.
+                                </p>
+
+                                <!-- CTA Button -->
+                                <a href="{% url 'rra_guide:home' %}" 
+                                   class="w-[270px] h-16 bg-primary-blue flex items-center justify-center rounded-[60px] overflow-hidden cursor-pointer hover:bg-[#0a1a52] transition-colors">
+                                    <span class="font-archivo font-bold text-white text-base text-center tracking-[0] leading-[normal] whitespace-nowrap">
+                                        ACCESS OUR RRA GUIDE
+                                    </span>
+                                </a>
+                            </div>
+
+                            <!-- Right Visual Content -->
+                            <div class="rrb-cta-right-content absolute top-[31px] right-[31px] w-[707px] h-[602px] hidden lg:block">
+                                <!-- Speech Bubble -->
+                                <div class="absolute top-[46px] left-[83px] w-[338px] h-[85px]">
+                                    <img class="absolute top-0 left-9 w-[302px] h-20" 
+                                         alt="Speech bubble" 
+                                         src="https://c.animaapp.com/zCYCnLC1/img/union.svg" />
+                                    
+                                    <p class="absolute top-[9px] left-[61px] w-[263px] font-medium text-primary-blue text-base tracking-[0] leading-[22px]">
+                                        If I can't sell quickly, I'll be paying the mortgage with no rental income…
+                                    </p>
+                                    
+                                    <img class="absolute top-[49px] left-0 w-9 h-9 rounded-full bg-cover bg-center" 
+                                         alt="User avatar" 
+                                         src="https://c.animaapp.com/zCYCnLC1/img/photo@2x.png" />
+                                </div>
+
+                                <!-- Calendar Widget -->
+                                <div class="absolute top-[126px] left-[503px] w-[200px] h-[100px] rounded-xl overflow-hidden border border-[#7a7a7a21] backdrop-blur-2xl"
+                                     style="background: linear-gradient(180deg, rgba(236,244,245,0.33) 0%, rgba(236,244,245,0.5) 45%, rgba(236,244,245,0.33) 95%);">
+                                    
+                                    <div class="absolute top-[18px] left-[21px] font-bold text-primary-blue text-sm tracking-[0] leading-[22px]">
+                                        Day 6 of 7
+                                    </div>
+                                    
+                                    <!-- Week Days -->
+                                    <div class="absolute top-[42px] left-[18px] flex gap-3">
+                                        <div class="w-[13px] h-[29px] font-medium text-primary-blue text-sm text-center">S</div>
+                                        <div class="w-[13px] h-[29px] font-medium text-primary-blue text-sm text-center">M</div>
+                                        <div class="w-[13px] h-[29px] font-medium text-primary-blue text-sm text-center">T</div>
+                                        <div class="w-[13px] h-[29px] font-medium text-primary-blue text-sm text-center">W</div>
+                                        <div class="w-[13px] h-[29px] font-medium text-primary-blue text-sm text-center">T</div>
+                                        <div class="w-[13px] h-[29px] font-medium text-primary-blue text-sm text-center">F</div>
+                                        <div class="w-[13px] h-[29px] font-medium text-primary-blue text-sm text-center">S</div>
+                                    </div>
+                                    
+                                    <!-- Progress Dots -->
+                                    <div class="absolute top-16 left-4 flex gap-[7px]">
+                                        <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                                        <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                                        <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                                        <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                                        <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                                        <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                                        <div class="w-[18px] h-[18px] bg-[#ffffff66] rounded-full"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Main Image -->
+                                <img class="absolute top-0 left-[161px] w-[546px] h-[602px] object-cover" 
+                                     alt="Person looking at calendar" 
+                                     src="https://c.animaapp.com/zCYCnLC1/img/freepik--create-an-image-of-a-guy-looking-at-a-calendar-and--481.png" />
+
+                                <!-- Contact Card -->
+                                <div class="absolute bottom-[42px] left-0 w-[359px] h-[90px] rounded-xl border border-[#7a7a7a21] backdrop-blur-2xl p-4"
+                                     style="background: linear-gradient(180deg, rgba(236,244,245,0.33) 0%, rgba(236,244,245,0.5) 45%, rgba(236,244,245,0.33) 95%);">
+                                    
+                                    <div class="flex items-center gap-4">
+                                        <img class="w-[45px] h-[45px] rounded-full" 
+                                             alt="Contact photo" 
+                                             src="https://c.animaapp.com/zCYCnLC1/img/---contact-photo@2x.png" />
+                                        
+                                        <div class="flex flex-col">
+                                            <div class="font-medium text-primary-blue text-xl">Petra Herber</div>
+                                            <div class="text-gray-600 text-sm">mobile</div>
+                                        </div>
+                                        
+                                        <img class="ml-auto" 
+                                             alt="Call and message actions" 
+                                             src="https://c.animaapp.com/zCYCnLC1/img/actions.svg" />
+                                    </div>
+                                </div>
+
+                                <!-- Decorative Icons -->
+                                <img class="absolute top-[7px] left-[575px] w-12 h-12" 
+                                     alt="Decorative icon" 
+                                     src="https://c.animaapp.com/zCYCnLC1/img/frame-2.svg" />
+                                <img class="absolute top-[249px] left-[167px] w-12 h-12" 
+                                     alt="Decorative icon" 
+                                     src="https://c.animaapp.com/zCYCnLC1/img/frame-4.svg" />
+                                <img class="absolute top-[416px] left-[555px] w-12 h-12" 
+                                     alt="Decorative icon" 
+                                     src="https://c.animaapp.com/zCYCnLC1/img/frame-6.svg" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+        </div>
+    </div>
+</section>
+
+<script>
+function toggleFAQ(faqId) {
+    const content = document.getElementById(faqId);
+    const icon = document.getElementById(faqId + '-icon');
+    
+    if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        icon.classList.add('rotate-180');
+    } else {
+        content.classList.add('hidden');
+        icon.classList.remove('rotate-180');
+    }
+}
+</script>
+{% endblock %}
+

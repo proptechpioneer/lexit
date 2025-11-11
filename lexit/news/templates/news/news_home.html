@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}LEXIT | News{% endblock %}
+
+{% block content %}
+<!-- News Overview Section -->
+<section class="relative w-full max-w-[1440px] mx-auto py-8 lg:py-12">
+    <div class="mx-5 lg:mx-[21px]">
+        <div class="bg-white shadow-lg rounded-lg mb-8 border-0">
+            <div class="p-6">
+                <div class="text-center mb-6">
+                    <h3 class="text-h3-custom font-archivo text-primary-blue mb-4 font-bold" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">Latest News for Landlords</h3>
+                    <p class="text-primary-blue text-lg leading-relaxed max-w-4xl mx-auto">Stay up to date with the latest news and insights for Buy-to-Let landlords in England. Get the <strong>information you need</strong> to make informed decisions about your property investments.</p>
+                </div>
+        
+        <!-- News Articles Grid Section -->
+        <div class="mb-8">
+            <div class="w-full">
+                <!-- News Articles Grid -->
+                <div class="container mx-auto px-2">
+                    <div class="news-articles-container">
+                        <style>
+                            .news-articles-container {
+                                display: flex !important;
+                                flex-wrap: wrap !important;
+                                gap: 1rem !important;
+                                justify-content: space-between !important;
+                            }
+                            
+                            .news-card {
+                                flex: 0 0 auto !important;
+                                width: 100% !important;
+                                max-width: 384px !important;
+                            }
+                            
+                            @media (min-width: 768px) {
+                                .news-card {
+                                    width: calc(50% - 0.5rem) !important;
+                                }
+                            }
+                            
+                            @media (min-width: 1024px) {
+                                .news-card {
+                                    width: calc(33.333% - 0.67rem) !important;
+                                }
+                            }
+                        </style>
+                        {% for article in articles %}
+                        <div class="news-card max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm mx-auto" style="max-width: 384px !important; border: 1px solid #e5e7eb !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important; border-radius: 0.5rem !important;">
+                            <a href="{% url 'news:news_article' slug=article.slug %}">
+                                <img class="rounded-t-lg" src="{{ article.banner.url }}" alt="{{ article.alt_text }}" style="width: 100% !important; max-width: 384px !important; height: 256px !important; object-fit: cover !important; border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;" />
+                            </a>
+                            <div class="p-5 pt-8 flex flex-col" style="padding: 20px !important; padding-top: 32px !important; border-bottom-left-radius: 0.5rem !important; border-bottom-right-radius: 0.5rem !important; min-height: 340px !important;">
+                                <a href="{% url 'news:news_article' slug=article.slug %}">
+                                    <div style="height: 96px !important; display: flex !important; align-items: center !important; justify-content: center !important; margin-bottom: 16px !important;">
+                                        <h3 class="text-base font-bold tracking-tight text-primary-blue text-center font-archivo" style="line-height: 1.2 !important; margin: 0 !important; font-size: 28px !important;">{{ article.title }}</h3>
+                                    </div>
+                                </a>
+                                <div class="mb-4" style="margin-bottom: 16px !important; position: relative !important;">
+                                    <small class="text-gray-500 text-sm flex items-center mb-2">
+                                        <i class="fas fa-calendar mr-2 text-xs"></i>{{ article.published_date|date:"F d, Y" }}
+                                    </small>
+                                </div>
+                                <p class="mb-4 font-normal text-primary-blue font-anek-latin grow" style="margin-bottom: 16px !important;">{{ article.summary }}</p>
+                                <div class="text-left mt-auto" style="margin-top: auto !important;">
+                                    <a href="{% url 'news:news_article' slug=article.slug %}" class="inline-block text-white font-archivo font-bold px-6 py-3 rounded-lg transition-colors" style="background-color: #D94590 !important; color: white !important;">
+                                        <span class="mr-2" style="color: white !important;">Read more</span>
+                                        <i class="fas fa-arrow-right" style="color: white !important;"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-span-full">
+                            <div class="text-center py-12">
+                                <i class="fas fa-newspaper text-primary-blue text-4xl mb-4"></i>
+                                <h4 class="text-primary-blue text-xl font-semibold mb-2 font-archivo">No articles available yet</h4>
+                                <p class="text-primary-blue font-anek-latin">Check back soon for the latest landlord news and updates.</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

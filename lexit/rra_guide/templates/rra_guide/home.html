@@ -1,0 +1,175 @@
+{% extends "layout.html" %}
+{% load humanize %}
+
+{% block title %}
+    LEXIT | Renters' Rights Act - Landlord Information Centre
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Main Container -->
+    <div class="flex justify-center">
+        <div class="w-full mt-4">
+
+            <!-- Header Section -->
+            <div class="mb-8">
+                <div class="text-center">
+                    <h1 class="text-primary-blue text-4xl md:text-5xl font-bold mb-4">Renters' Rights Act</h1>
+                    <h2 class="text-primary-blue text-2xl md:text-3xl font-semibold mb-6">Landlord Information Centre</h2>
+                    <p class="text-gray-700 text-lg max-w-4xl mx-auto leading-relaxed">
+                        Navigate the new legislative landscape with confidence. This comprehensive guide breaks down the Renters' Rights Act 
+                        into clear, actionable sections to help landlords understand their obligations and prepare for implementation.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Welcome Section -->
+            <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
+                <div class="p-6 md:p-8">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-info-circle text-primary-blue text-4xl mb-4"></i>
+                        <h3 class="text-2xl font-bold text-primary-blue mb-4">Welcome to Your RRA Guide</h3>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <p class="text-gray-700 mb-4">
+                                The Renters' Rights Act represents the most significant change to private rental legislation in decades. 
+                                As a landlord, understanding these changes is crucial for compliance and business continuity.
+                            </p>
+                            <p class="text-gray-700 mb-4">
+                                This guide provides:
+                            </p>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2 mb-6">
+                                <li>Clear explanations of each key area</li>
+                                <li>Specific impacts on landlord operations</li>
+                                <li>Practical implementation guidance</li>
+                                <li>Comprehensive FAQ section</li>
+                            </ul>
+                        </div>
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <h4 class="font-bold text-primary-blue mb-3">Quick Stats</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-700">Total Sections:</span>
+                                    <span class="font-semibold text-primary-blue">{{ total_sections }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-700">Estimated Reading Time:</span>
+                                    <span class="font-semibold text-primary-blue">45-60 minutes</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-700">Implementation:</span>
+                                    <span class="font-semibold text-primary-blue">Phased approach</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                        <div class="flex">
+                            <div class="shrink-0">
+                                <i class="fas fa-exclamation-triangle text-yellow-400 text-xl"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700">
+                                    <strong>Important:</strong> This guide provides general information and should not be considered legal advice. 
+                                    Always consult with qualified legal professionals for specific situations.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Grid -->
+            <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
+                <div class="p-6 md:p-8">
+                    <h3 class="text-2xl font-bold text-primary-blue mb-6 text-center">Guide Sections</h3>
+                    
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {% for section in sections %}
+                        <a href="{% url 'rra_guide:section_detail' section.id %}" 
+                           class="block p-6 bg-gray-50 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 hover:shadow-md">
+                            <div class="text-center">
+                                <i class="{{ section.icon }} text-primary-blue text-3xl mb-3"></i>
+                                <h4 class="font-semibold text-primary-blue mb-2 leading-tight">{{ section.title }}</h4>
+                                <p class="text-sm text-gray-600">{{ section.description }}</p>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+
+                    <!-- FAQ Link -->
+                    <div class="mt-8 text-center">
+                        <a href="{% url 'rra_guide:faqs' %}" 
+                           class="inline-flex items-center px-6 py-3 bg-pink-500 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors">
+                            <i class="fas fa-question-circle mr-2"></i>
+                            Frequently Asked Questions
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Getting Started Section -->
+            <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
+                <div class="p-6 md:p-8">
+                    <h3 class="text-2xl font-bold text-primary-blue mb-6">How to Use This Guide</h3>
+                    
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span class="text-2xl font-bold text-primary-blue">1</span>
+                            </div>
+                            <h4 class="font-semibold text-primary-blue mb-2">Read Through Sections</h4>
+                            <p class="text-gray-600 text-sm">
+                                Work through each section systematically to build comprehensive understanding.
+                            </p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span class="text-2xl font-bold text-primary-blue">2</span>
+                            </div>
+                            <h4 class="font-semibold text-primary-blue mb-2">Focus on Impact</h4>
+                            <p class="text-gray-600 text-sm">
+                                Pay special attention to the "Impact on Landlords" sections for practical implications.
+                            </p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span class="text-2xl font-bold text-primary-blue">3</span>
+                            </div>
+                            <h4 class="font-semibold text-primary-blue mb-2">Check FAQs</h4>
+                            <p class="text-gray-600 text-sm">
+                                Review common questions and answers for additional clarity and practical guidance.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-center">
+                        <a href="{% url 'rra_guide:section_detail' sections.0.id %}" 
+                           class="inline-flex items-center px-8 py-3 bg-primary-blue hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+                            Start Reading Guide
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back to Dashboard -->
+            <div class="text-center mb-8">
+                <a href="{% url 'user_home:user_home' %}" 
+                   class="inline-flex items-center px-6 py-3 border border-primary-blue hover:bg-primary-blue hover:text-white text-primary-blue font-medium rounded-lg transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

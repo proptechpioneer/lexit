@@ -1,0 +1,432 @@
+{% extends "layout.html" %}
+{% load honeypot %}
+
+{% block title %}
+    LEXIT | Login to your Account
+{% endblock %}
+
+{% block content %}
+<!-- Main Container -->
+<div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-md mx-auto space-y-8" style="max-width: min(448px, 1440px);">
+        
+        <!-- Header Section -->
+        <div class="text-center">
+            <h1 class="text-base font-bold text-primary-blue mb-4" style="font-size: 40px !important;">Welcome Back</h1>
+            <p class="text-gray-600 text-lg mb-2">Login to your Account</p>
+            <p class="text-gray-500">Access your account to start analyzing your Buy-to-Let properties with LEXIT.</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <div class="px-8 py-8">
+                <div class="text-center mb-6">
+                    <h2 class="text-sm font-semibold text-primary-blue mb-2" style="font-size: 40px !important;">Sign In</h2>
+                    <p class="text-gray-600">Sign in to access your property analysis dashboard.</p>
+                </div>
+                
+                <!-- Django Login Form -->
+                <form action="/users/login/" method="post" class="space-y-6">
+                    {% csrf_token %}
+                    {% render_honeypot_field %}
+                    
+                    <!-- Username Field -->
+                    <div>
+                        <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-user mr-2 text-gray-400"></i>{{ form.username.label }}
+                        </label>
+                        <input type="text" 
+                               id="{{ form.username.id_for_label }}" 
+                               name="{{ form.username.name }}" 
+                               value="{{ form.username.value|default:'' }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors {% if form.username.errors %}border-red-500{% endif %}"
+                               placeholder="Enter your username"
+                               required>
+                        {% if form.username.errors %}
+                            <div class="mt-1">
+                                {% for error in form.username.errors %}
+                                    <p class="text-red-500 text-sm">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>{{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Password Field -->
+                    <div>
+                        <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-lock mr-2 text-gray-400"></i>{{ form.password.label }}
+                        </label>
+                        <input type="password" 
+                               id="{{ form.password.id_for_label }}" 
+                               name="{{ form.password.name }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors {% if form.password.errors %}border-red-500{% endif %}"
+                               placeholder="Enter your password"
+                               required>
+                        {% if form.password.errors %}
+                            <div class="mt-1">
+                                {% for error in form.password.errors %}
+                                    <p class="text-red-500 text-sm">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>{{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Remember Me and Forgot Password -->
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" 
+                                   id="rememberMe" 
+                                   name="remember_me"
+                                   class="w-4 h-4 text-pink-600 bg-gray-100 border-gray-300 rounded focus:ring-pink-500 focus:ring-2">
+                            <span class="ml-2 text-sm text-gray-700">Remember me</span>
+                        </label>
+                        
+                        <a href="{% url 'users:forgot_password' %}" class="text-sm text-pink-600 hover:text-pink-700 transition-colors">
+                            Forgot your password?
+                        </a>
+                    </div>
+                    
+                    <!-- GDPR and Terms Checkboxes -->
+                    <div style="display: flex; flex-direction: column; gap: 16px; padding: 20px; background-color: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;">
+                        <!-- GDPR Consent -->
+                        <label style="display: flex; align-items: flex-start; cursor: pointer;">
+                            <input type="checkbox" id="agree_gdpr_login" name="agree_gdpr" required checked
+                                   class="w-4 h-4 text-pink-600 bg-gray-100 border-gray-300 rounded focus:ring-pink-500 focus:ring-2 mt-1 mr-3">
+                            <div>
+                                <span class="text-sm font-medium text-gray-700">GDPR Consent <span class="text-red-500">*</span></span>
+                                <p class="text-xs text-gray-500 mt-1">I consent to the processing of my personal data in accordance with the General Data Protection Regulation (GDPR) and understand my rights regarding data privacy.</p>
+                            </div>
+                        </label>
+                        
+                        <!-- Terms and Conditions -->
+                        <label style="display: flex; align-items: flex-start; cursor: pointer;">
+                            <input type="checkbox" id="agree_terms_login" name="agree_terms" required checked
+                                   class="w-4 h-4 text-pink-600 bg-gray-100 border-gray-300 rounded focus:ring-pink-500 focus:ring-2 mt-1 mr-3">
+                            <div>
+                                <span class="text-sm font-medium text-gray-700">Terms & Conditions <span class="text-red-500">*</span></span>
+                                <p class="text-xs text-gray-500 mt-1">I agree to the <a href="#" onclick="openTermsModal()" class="text-pink-600 hover:text-pink-700 underline">Terms of Service</a> and <a href="#" onclick="openPrivacyModal()" class="text-pink-600 hover:text-pink-700 underline">Privacy Policy</a> of LEXIT.</p>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div style="width: 100%; max-width: 100%;">
+                        <button type="submit" 
+                                style="background-color: #ec4899 !important; color: white !important; width: 100% !important; max-width: 100% !important; padding: 12px 16px !important; border-radius: 8px !important; font-weight: 600 !important; transition: background-color 0.2s !important; border: none !important; cursor: pointer !important; font-size: 16px !important; box-sizing: border-box !important;"
+                                onmouseover="this.style.backgroundColor='#db2777'" 
+                                onmouseout="this.style.backgroundColor='#ec4899'">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                        </button>
+                    </div>
+                    
+                    <!-- General Form Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            {% for error in form.non_field_errors %}
+                                <p class="text-red-600 text-sm">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>{{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </form>
+                
+                <!-- Divider -->
+                <div class="mt-8">
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2 bg-white text-gray-500">New to LEXIT?</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Register Link -->
+                <div class="mt-6 text-center">
+                    <p class="text-gray-600">
+                        Don't have an account? 
+                        <a href="{% url 'users:register' %}" 
+                           class="text-pink-600 hover:text-pink-700 font-medium transition-colors">
+                            Sign up here
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Info -->
+        <div class="text-center">
+            <p class="text-sm text-gray-500">
+                <i class="fas fa-shield-alt mr-1"></i>
+                Your data is secure and protected
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Terms of Service Modal -->
+<div id="termsModal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center hidden z-50 p-2 sm:p-4">
+    <div class="bg-white rounded-lg shadow-2xl modal-container" style="width: 100%; max-width: 400px; max-height: 80vh; height: 80vh; display: flex; flex-direction: column;">
+        <style>
+            @media (max-width: 640px) {
+                .modal-container {
+                    max-height: 70vh !important;
+                    height: 70vh !important;
+                    max-width: 350px !important;
+                }
+            }
+            @media (min-width: 641px) and (max-width: 1024px) {
+                .modal-container {
+                    max-height: 75vh !important;
+                    height: 75vh !important;
+                    max-width: 450px !important;
+                }
+            }
+            @media (min-width: 1025px) {
+                .modal-container {
+                    max-height: 80vh !important;
+                    height: 80vh !important;
+                    max-width: 500px !important;
+                }
+            }
+        </style>
+        <div class="p-3 sm:p-4" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+            <div class="flex justify-between items-center mb-2 sm:mb-3" style="flex-shrink: 0;">
+                <h2 class="text-base sm:text-lg font-bold text-gray-800">Terms of Service</h2>
+                <button onclick="closeTermsModal()" class="text-gray-500 hover:text-gray-700 p-1">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="text-gray-700 space-y-1 sm:space-y-2 text-xs sm:text-sm leading-snug pr-2" style="overflow-y: auto; flex: 1; min-height: 0;">
+                <div class="mb-4">
+                    <p>Welcome to LEXIT. Please read the Terms of Service (Terms) carefully before using the website www.lexit.tech and www.prs-im.co.uk.</p>
+                    <br>
+                    <p>If you continue to browse and use the Site and engage with us, you are agreeing to comply with and be bound by the following disclaimer, together with our terms and conditions of use set out below.</p>
+                    <br>
+                    <p>The information contained in this website is for guidance and information only. Nothing on the Site shall be deemed to constitute professional financial, tax or legal advice and in the event that you wish to obtain such advice, you should consult a professional financial advisor, tax advisor, solicitor or conveyancing practitioner.</p>
+                </div>
+
+                <h3 class="font-semibold text-sm sm:text-base">About Us</h3>
+                <p>LEXIT is a subsidiary of PRS-IM Limited a property, property management and technology business.</p>
+                <p>PRS IM Limited, 86 - 90 Paul Street, London EC2A 4NE, England is the owner of the LEXIT application as well as www.lexit.tech domain.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Disclaimer</h3>
+                <p>The information provided below is for general information purposes only and is provided by LEXIT and PRS IM Limited. While LEXIT and PRS IM Limited endeavours to keep the information up to date and correct, we make no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability or availability with respect to the website or the information, products, services, or related graphics contained on the website or supplied to you, for any purpose. Any reliance you place on such information is therefore strictly at your own risk. You need to make your own enquiries to determine if the information or products are appropriate for your intended use.</p>
+                <br>
+                <p>In no event will we be liable for any loss or damage including without limitation, indirect or consequential loss or damage, or any loss or damage whatsoever arising from loss of data or profits arising out of, or in connection with, the use of the Sites or your interaction with us.</p>
+                <br>
+                <p>Through your engagement with us you may be directed or presented with a link to other websites or entities which are not under the control of LEXIT or PRS IM Limited. It must be noted that LEXIT nor PRS IM Limited has no control over the nature, content and availability of those websites or related entities. The inclusion of any links does not necessarily imply a recommendation or endorse the views expressed within them.</p>
+                <br>
+                <p>Every effort is made to keep the website up and running smoothly. However, LEXIT and PRS IM Limited takes no responsibility for, and will not be liable for, the website being temporarily unavailable due to technical issues beyond its control.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Privacy Policy</h3>
+                <p>When you register with us and use our Site you will provide personal information and data. Our Privacy Policy sets out how we will use this information that you provide. By using or registering with our Site, you agree to your personal information being used in accordance with our Privacy Policy.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Security</h3>
+                <p>You will need to create your own account to use our Services. Once you register with us you will be provided with login and access code. By creating an account with us, you agree that you are responsible for maintaining the confidentiality of your account and password and for restricting access to your account, and you agree to accept responsibility for all activities that occur under your account or password.</p>
+                <br>
+                <p>In order to ensure your security, we may revise our security procedure from time to time and we may request you provide additional information as part of our security procedure. You should not disclose your login codes, access codes or security details to any other person and your account may be disabled if you do so.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Membership and Subscription Services</h3>
+                <p>A member is someone who uses our Services (Member). To become a Member, you must be;</p>
+                <br>
+                <p>At least be 18 years of age;</p>
+                <p>Completes the registration process and provide true, correct and up-to-date information; including your name and email address; and,</p>
+                <p>Comply with any additional information reasonably requested by LEXIT or PRS IM Limited.</p>
+                <br>
+                <p>Our websites and their content may at some times be interrupted and we do not guarantee that the Sites will always be available and as such access is allowed on a temporary basis. All or part of the Sites may be suspended or discontinued without prior notice and we are not liable if the site is unavailable for any period of time. You will not use the Sites for any use that is unlawful or prohibited by these Terms or any other applicable laws.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Community Management</h3>
+                <p>While we welcome feedback and discussion on our Social Media Platforms, our team monitors posts and comments to ensure all conversations are adhering to community standards. However, we are not responsible for any messages or posts or opinions expressed including those that are offensive, defamatory or breach the Protection from Harassment Act 1997 or the Malicious Communications Act 1988.</p>
+                <br>
+                <p>LEXIT and PRS IM Limited reserves the right to moderate, report or delete comments that:</p>
+                <br>
+                <p>Are offensive (i.e. contain obscenity or profanity, hate speech, personal attacks, or unreasonable criticism of PRS IM Limited, its staff or others)</p>
+                <p>Are irrelevant</p>
+                <p>Contain political, commercial or sales/promotional material, or any misinformation</p>
+                <p>Share confidential or sensitive information</p>
+                <p>Are posted from an account deemed likely to be fake or anonymous</p>
+                <p>Are spam</p>
+                <p>Are deemed otherwise inappropriate</p>
+                <br>
+                <p>Any posts or comments made on our platform by individuals are their own views and are not indicative of the views of LEXIT or PRS IM Limited. Likes, comments, shares or retweets from any LEXIT or PRS IM Limited social media accounts or platforms is not an endorsement of the information. Users may decide to provide information to LEXIT and PRS IM Limited through direct message on our social media channels. This information may be viewed by account administrators, and our staff as appropriate. Any information provided to LEXIT or PRS IM Limited through direct message will be held by PRS IM Limited subject to our Privacy Policy.</p>
+                <br>
+                <p>If you are making an enquiry, complaint or request for information you may be directed to LEXIT "Contact Us" page.</p>
+                <br>
+                <p>We do not screen every Member that uses our Sites, therefore LEXIT and PRS IM Limited is not responsible for any Member misconduct on our Sites. If you have a misconduct to report please follow this link….</p>
+                <br>
+                <p>You agree to comply with all relevant laws, including but not limited to; the Consumer Protection from Unfair Trading Regulations 2008, the Consumer Rights Act 2015, the Malicious Communications Act 1988, the Copyright, Designs and Patents Act 1988, and the Trade Marks Act 1994.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Intellectual Property Rights and Copyright</h3>
+                <p>The entire contents of the Sites are the intellectual property of LEXIT and PRS IM Limited and are subject to copyright with all rights reserved. Sections of the Sites and information contained on the Sites may (in whole in or in part) be downloaded and printed for your personal use, provided that the information is not modified.</p>
+                <br>
+                <p>You must not copy, reproduce, store, distribute, publish or transmit any information from our Sites for any commercial purpose without our prior written consent and you must not misuse our trademarks.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Licence and Access</h3>
+                <p>For the duration you use our Services, we will grant you a limited non-exclusive, non-transferable and revocable licence to use our Sites and Services in accordance with our Terms.</p>
+                <br>
+                <p>You also agree to licence any information shared by you to promote, use or improve our Services. This will be a non-exclusive, transferable, sublicensable, royalty-free, and worldwide licence to us, to use, store, display, reproduce, modify, distribute, create derivative works, and save your content in any manner and on any media or platform.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Trademarks</h3>
+                <p>The Sites include logos, service marks and brand identities (Marks) that are the property of PRS IM Limited. PRS IM Limited do not grant any licence or right to use any of these Marks without our prior written permission.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Warranties and Limitation of Our Liability</h3>
+                <p>We exclude all conditions, warranties, representations or other terms which may apply to our Sites or any content on it, whether express or implied. We disclaim all responsibility for any loss, claim, liability, damage or injury, whether in tort (including negligence), breach of statutory duty or otherwise, arising from or in any way related to the use of our Sites or Services, the inability to use or Sites, any errors, omissions or inaccuracies on our Sites or reliance on any content included within our Sites. We will not be liable for any loss or damage caused by a virus, distributed denial-of-service attack, or other technologically harmful material that may infect your computer equipment, devices, computer programs, data or other proprietary material due to your use of our site or to your downloading of any content on it, or on any website linked to it. Any links to other websites on our Sites are not endorsed by us.</p>
+                <br>
+                <p>We assume no responsibility for the content of websites linked to our Sites and we will not be liable for any loss or damage that may arise from your use of them. Viewing any third-party websites is entirely at your own risk.</p>
+                <br>
+                <p>You agree to hold LEXIT and PRS IM Limited harmless and to defend and indemnify us against any claims made by yourself or third parties that is related to loss of profit, loss of business, savings, general special and consequential damages, costs or expenses including legal fees, arising from or related to your use of Sites and Services; including but not limited to; breach of these terms or your inability to fulfil a transaction. For the avoidance of doubt your indemnity covers all losses, damages or expenses (including legal costs) that we may suffer or incur.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Viruses</h3>
+                <p>Whilst care is taken, we are unable to guarantee that our Sites are secure and completely free of bugs or viruses. Viruses, Trojans, worms logic bombs or other malicious or technologically harmful materials must not be introduced by you to our Sites. Any attempt to gain unauthorized access to our Sites, servers, data or databases is prohibited.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Dispute Resolution</h3>
+                <p>Our preference is always to resolve disputes informally and amicably. If you would like to raise a dispute with us, please get in touch via our Contact us page.</p>
+                <br>
+                <p>Any disputes arising from the use of the Sites shall be governed by the laws of England.</p>
+            </div>
+            <div class="mt-2 sm:mt-3 text-center" style="flex-shrink: 0;">
+                <button onclick="closeTermsModal()" class="bg-primary-blue hover:bg-blue-700 text-white font-bold py-1.5 px-3 sm:py-2 sm:px-4 rounded text-sm">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div id="privacyModal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center hidden z-50 p-2 sm:p-4">
+    <div class="bg-white rounded-lg shadow-2xl modal-container" style="width: 100%; max-width: 400px; max-height: 80vh; height: 80vh; display: flex; flex-direction: column;">
+        <style>
+            @media (max-width: 640px) {
+                .privacy-modal-container {
+                    max-height: 70vh !important;
+                    height: 70vh !important;
+                    max-width: 350px !important;
+                }
+            }
+            @media (min-width: 641px) and (max-width: 1024px) {
+                .privacy-modal-container {
+                    max-height: 75vh !important;
+                    height: 75vh !important;
+                    max-width: 450px !important;
+                }
+            }
+            @media (min-width: 1025px) {
+                .privacy-modal-container {
+                    max-height: 80vh !important;
+                    height: 80vh !important;
+                    max-width: 500px !important;
+                }
+            }
+        </style>
+        <div class="p-3 sm:p-4 privacy-modal-container" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+            <div class="flex justify-between items-center mb-2 sm:mb-3" style="flex-shrink: 0;">
+                <h2 class="text-base sm:text-lg font-bold text-gray-800">Privacy Policy</h2>
+                <button onclick="closePrivacyModal()" class="text-gray-500 hover:text-gray-700 p-1">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="text-gray-700 space-y-1 sm:space-y-2 text-xs sm:text-sm leading-snug pr-2" style="overflow-y: auto; flex: 1; min-height: 0;">
+                <h3 class="font-semibold text-sm sm:text-base">Information We Collect</h3>
+                <p>We collect information you provide directly to us, such as when you create an account, use our property investment tools, or contact us for support. This may include your name, email address, property details, and investment preferences.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">How We Use Your Information</h3>
+                <p>We use the information we collect to provide, maintain, and improve our services, process transactions, send you technical notices and support messages, and communicate with you about products, services, and promotional offers.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Information Sharing</h3>
+                <p>We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this policy. We may share your information with trusted service providers who assist us in operating our platform.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Data Security</h3>
+                <p>We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no internet transmission is 100% secure.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Your Rights</h3>
+                <p>You have the right to access, update, or delete your personal information. You may also opt out of certain communications from us. Contact us at privacy@lexit.co.uk to exercise these rights.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Cookies and Tracking</h3>
+                <p>We use cookies and similar technologies to enhance your experience, analyze usage patterns, and deliver personalized content. You can control cookie settings through your browser preferences.</p>
+                
+                <h3 class="font-semibold text-sm sm:text-base">Contact Us</h3>
+                <p>If you have questions about this Privacy Policy, please contact us at privacy@lexit.co.uk.</p>
+            </div>
+            <div class="mt-2 sm:mt-3 text-center" style="flex-shrink: 0;">
+                <button onclick="closePrivacyModal()" class="bg-primary-blue hover:bg-blue-700 text-white font-bold py-1.5 px-3 sm:py-2 sm:px-4 rounded text-sm">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openTermsModal() {
+    const modal = document.getElementById('termsModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function closeTermsModal() {
+    const modal = document.getElementById('termsModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = 'auto'; // Restore scrolling
+}
+
+function openPrivacyModal() {
+    const modal = document.getElementById('privacyModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function closePrivacyModal() {
+    const modal = document.getElementById('privacyModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = 'auto'; // Restore scrolling
+}
+
+// Wait for DOM to be ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Close modal when clicking outside
+    const termsModal = document.getElementById('termsModal');
+    const privacyModal = document.getElementById('privacyModal');
+    
+    if (termsModal) {
+        termsModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeTermsModal();
+            }
+        });
+    }
+    
+    if (privacyModal) {
+        privacyModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePrivacyModal();
+            }
+        });
+    }
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeTermsModal();
+            closePrivacyModal();
+        }
+    });
+});
+</script>
+
+{% endblock %}

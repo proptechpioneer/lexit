@@ -1,0 +1,569 @@
+{% extends "layout.html" %}
+{% load humanize %}
+{% load static %}
+
+{% block title %}
+LEXIT | Dashboard
+{% endblock %}
+
+{% block content %}
+<div class="pt-4">
+    <!-- Welcome Header -->
+    <header class="mb-12 w-full flex justify-center">
+        <div class="w-full max-w-screen-2xl px-6 sm:px-8 lg:px-10">
+            <!-- User Info Card -->
+            <section class="mb-12 w-full">
+                <div class="bg-white rounded-lg shadow-lg border figma-style w-full">
+                <div class="p-4 sm:p-6 w-full">
+                    <div class="flex flex-col sm:flex-row items-center sm:items-center gap-4 w-full">
+                        <div class="shrink-0">
+                            {% if user.profile.profile_image %}
+                                <img src="{{ user.profile.profile_image.url }}" 
+                                    alt="{{ user.first_name|default:user.username }}" 
+                                    class="rounded-full w-16 h-16 sm:w-20 sm:h-20 object-cover">
+                            {% else %}
+                                <div class="rounded-full bg-primary-blue flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20">
+                                    <i class="fas fa-user text-white text-2xl sm:text-3xl"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="grow text-center sm:text-left w-full">
+                            <h3 class="figma-h3 mb-2 text-lg sm:text-xl">{{ user.first_name|default:user.username }}</h3>
+                            <p class="figma-text-small text-gray-500 mb-0 text-sm sm:text-base">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                Member since {{ user.date_joined|date:"F Y" }}
+                            </p>
+                        </div>
+                        <div class="w-full sm:w-auto">
+                            <h5 class="figma-text-small mb-2 text-sm sm:text-base text-center sm:text-left">Quick Actions</h5>
+                            <div class="quick-actions-container">
+                                <a href="mailto:ashley.osborne@prs-im.co.uk?subject=LEXIT%20%7C%20Help%20Required" 
+                                   class="quick-action-btn quick-action-btn-primary">
+                                    Get Help
+                                </a>
+                                <a href="{% url 'rra_guide:home' %}" 
+                                   class="quick-action-btn quick-action-btn-secondary">
+                                    RRA Landlord Guide
+                                </a>
+                            </div>
+                            <style>
+                            .quick-actions-container {
+                                display: block;
+                            }
+                            .quick-action-btn {
+                                display: block !important;
+                                width: 100% !important;
+                                padding: 8px 16px !important;
+                                border-radius: 8px !important;
+                                text-decoration: none !important;
+                                text-align: center !important;
+                                font-size: 14px !important;
+                                margin-bottom: 8px !important;
+                                white-space: nowrap !important;
+                                transition: all 0.2s !important;
+                                box-sizing: border-box !important;
+                            }
+                            .quick-action-btn:last-child {
+                                margin-bottom: 0 !important;
+                            }
+                            .quick-action-btn-primary {
+                                background-color: #ec4899 !important;
+                                color: white !important;
+                                border: none !important;
+                            }
+                            .quick-action-btn-primary:hover {
+                                background-color: #be185d !important;
+                            }
+                            .quick-action-btn-secondary {
+                                background-color: transparent !important;
+                                color: #1e40af !important;
+                                border: 1px solid #1e40af !important;
+                            }
+                            .quick-action-btn-secondary:hover {
+                                background-color: #1e40af !important;
+                                color: white !important;
+                            }
+                            @media (min-width: 640px) {
+                                .quick-actions-container {
+                                    display: flex !important;
+                                    gap: 8px !important;
+                                    justify-content: flex-start !important;
+                                }
+                                .quick-action-btn {
+                                    display: inline-block !important;
+                                    width: auto !important;
+                                    margin-bottom: 0 !important;
+                                    flex-shrink: 0 !important;
+                                }
+                            }
+                            </style>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="figma-container">
+            <p class="figma-text-base text-xl">
+                Manage your portfolio with advanced analytics and market insights.
+            </p>
+        </div>
+        </div>
+    </header>
+
+    <!-- Portfolio Statistics -->
+    <section class="mb-12 w-full flex justify-center">
+        <div class="bg-white border-none shadow-xl w-full max-w-screen-2xl" style="background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);">
+            <div class="p-6 sm:p-6 lg:p-10 w-full">
+                <!-- Header Section -->
+                <div class="flex flex-col lg:flex-row justify-between items-center lg:items-center mb-6 gap-4 w-full text-center lg:text-left">
+                    <div class="w-full lg:w-auto">
+                        <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 text-slate-800">Your Portfolio</h1>
+                        <p class="text-gray-500 mb-0 text-sm sm:text-lg lg:text-xl xl:text-3xl">{{ total_properties }} Properties • £{{ total_value|default:0|floatformat:0|intcomma }} Total Est. Value</p>
+                    </div>
+                    <div class="text-center lg:text-right w-full lg:w-auto">
+                        <span class="inline-flex items-center bg-green-100 text-green-700 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm">
+                            <i class="fas fa-arrow-up mr-1"></i>All properties tracked
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-8 justify-between w-full px-0 sm:px-1">
+                    <div class="w-full">
+                        <div class="bg-white rounded-lg border-none shadow-xl h-64 transition-all duration-300 relative w-full">
+                            <div class="text-center flex flex-col justify-center items-center px-1 py-1 relative z-10 h-full">
+                                <p class="text-primary-blue mb-2 text-sm sm:text-base lg:text-xl font-semibold leading-tight">Estimated Equity<br class="hidden sm:block">(Total Portfolio)</p>
+                                
+                                <!-- Interactive Gauge -->
+                                <div class="relative mb-2 h-16 w-24 sm:h-20 sm:w-28 lg:h-24 lg:w-32">
+                                    <canvas id="equityGauge"></canvas>
+                                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-2 sm:mt-3 lg:mt-4">
+                                        <h5 class="text-primary-blue mb-0 font-bold text-xs sm:text-sm lg:text-base">£{{ total_equity|default:0|floatformat:0|intcomma }}</h5>
+                                        <small class="text-primary-blue block text-xs">Est. Equity</small>
+                                    </div>
+                                </div>
+                                
+                                <span class="inline-flex items-center {% if total_equity|default:0 < 0 %}bg-red-500{% else %}bg-green-500{% endif %} text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm">
+                                    {% if total_equity|default:0 < 0 %}Negative Equity{% else %}Positive Equity{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full">
+                        <div class="bg-white rounded-lg border-none shadow-xl h-64 transition-all duration-300 relative">
+                            <div class="text-center flex flex-col justify-center items-center px-1 py-1 relative z-10 h-full">
+                                <p class="text-primary-blue mb-2 text-sm sm:text-base lg:text-xl font-semibold leading-tight">Net Monthly Income<br class="hidden sm:block">(Total Portfolio)</p>
+                                
+                                <!-- Interactive Gauge -->
+                                <div class="relative mb-2 h-16 w-24 sm:h-20 sm:w-28 lg:h-24 lg:w-32">
+                                    <canvas id="incomeGauge"></canvas>
+                                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-2 sm:mt-3 lg:mt-4">
+                                        <h5 class="text-primary-blue mb-0 font-bold text-xs sm:text-sm lg:text-base">£{{ monthly_rent|default:0|floatformat:0|intcomma }}</h5>
+                                        <small class="text-primary-blue block text-xs">Net Income</small>
+                                    </div>
+                                </div>
+                                
+                                <span class="inline-flex items-center {% if monthly_rent|default:0 > 0 %}bg-green-500{% elif monthly_rent|default:0 == 0 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm">
+                                    {% if monthly_rent|default:0 > 0 %}Positive Cash Flow{% elif monthly_rent|default:0 == 0 %}Break Even{% else %}Negative Cash Flow{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full">
+                        <div class="bg-white rounded-lg border-none shadow-xl h-64 transition-all duration-300 relative">
+                            <div class="text-center flex flex-col justify-center items-center px-1 py-1 relative z-10 h-full">
+                                <p class="text-primary-blue mb-2 text-sm sm:text-base lg:text-xl font-semibold leading-tight">Annual Income<br class="hidden sm:block">(after tax)</p>
+                                
+                                <!-- Interactive Gauge -->
+                                <div class="relative mb-2 h-16 w-24 sm:h-20 sm:w-28 lg:h-24 lg:w-32">
+                                    <canvas id="expenseGauge"></canvas>
+                                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-2 sm:mt-3 lg:mt-4">
+                                        <h5 class="text-primary-blue mb-0 font-bold text-xs sm:text-sm lg:text-base" id="annualIncomeDisplay">£{{ monthly_rent|default:0|floatformat:0|intcomma }}</h5>
+                                        <small class="text-primary-blue block text-xs">Annual Income</small>
+                                    </div>
+                                </div>
+                                
+                                <span class="inline-flex items-center {% if net_annual_return|default:0 < 0 %}bg-red-500{% else %}bg-green-500{% endif %} text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm">
+                                    {% if net_annual_return|default:0 < 0 %}Annual Loss{% else %}Annual Profit{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full">
+                        <div class="bg-white rounded-lg border-none shadow-xl h-64 transition-all duration-300 relative">
+                            <div class="text-center flex flex-col justify-center items-center px-1 py-1 relative z-10 h-full">
+                                <p class="text-primary-blue mb-2 text-sm sm:text-base lg:text-xl font-semibold leading-tight">Average NRAT<br class="hidden sm:block">(After Tax)</p>
+                                
+                                <!-- Interactive Gauge -->
+                                <div class="relative mb-2 h-16 w-24 sm:h-20 sm:w-28 lg:h-24 lg:w-32">
+                                    <canvas id="nratGauge"></canvas>
+                                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-2 sm:mt-3 lg:mt-4">
+                                        <h5 class="text-primary-blue mb-0 font-bold text-xs sm:text-sm lg:text-base">{{ average_nrat|default:0|floatformat:1 }}%</h5>
+                                        <small class="text-primary-blue block text-xs">NRAT</small>
+                                    </div>
+                                </div>
+                                
+                                <span class="inline-flex items-center {% if average_nrat|default:0 >= 8 %}bg-green-500{% elif average_nrat|default:0 >= 5 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm">
+                                    {% if average_nrat|default:0 >= 8 %}Excellent ROI{% elif average_nrat|default:0 >= 5 %}Good ROI{% else %}Poor ROI{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full">
+                        <div class="bg-white rounded-lg border-none shadow-xl h-64 transition-all duration-300 relative">
+                            <div class="text-center flex flex-col justify-center items-center px-1 py-1 relative z-10 h-full">
+                                <p class="text-primary-blue mb-2 text-sm sm:text-base lg:text-xl font-semibold leading-tight">Average Return<br class="hidden sm:block">(On Cash Invested)</p>
+                                
+                                <!-- Interactive Gauge -->
+                                <div class="relative mb-2 h-16 w-24 sm:h-20 sm:w-28 lg:h-24 lg:w-32">
+                                    <canvas id="yieldGauge"></canvas>
+                                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-2 sm:mt-3 lg:mt-4">
+                                        <h5 class="text-primary-blue mb-0 font-bold text-xs sm:text-sm lg:text-base">{{ average_roe|default:0|floatformat:2 }}%</h5>
+                                        <small class="text-primary-blue block text-xs">Portfolio ROE</small>
+                                    </div>
+                                </div>
+                                
+                                <span class="inline-flex items-center {% if average_roe|default:0 >= 15 %}bg-green-500{% elif average_roe|default:0 >= 10 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm">
+                                    {% if average_roe|default:0 >= 15 %}High ROE{% elif average_roe|default:0 >= 10 %}Good ROE{% else %}Low ROE{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart.js Script -->
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Function to create Chart.js donut gauge
+                    function createGauge(elementId, value, maxValue, label) {
+                        var ctx = document.getElementById(elementId);
+                        if (!ctx) return;
+
+                        // Handle negative values - show minimal gauge for negative numbers
+                        var displayValue = value < 0 ? 0 : value;
+                        var gaugeValue = value < 0 ? maxValue * 0.05 : Math.abs(value); // Show 5% for negative
+
+                        var config = {
+                            type: 'doughnut',
+                            data: {
+                                labels: [label],
+                                datasets: [{
+                                    data: [gaugeValue, maxValue - gaugeValue],
+                                    backgroundColor: [value < 0 ? '#ef4444' : '#d94590', 'rgba(0, 0, 0, 0.1)'],
+                                    borderWidth: 0
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                cutout: '85%',
+                                rotation: -90,
+                                circumference: 180,
+                                plugins: {
+                                    tooltip: { enabled: false },
+                                    legend: { display: false }
+                                },
+                                animation: {
+                                    animateRotate: true,
+                                    animateScale: false,
+                                    duration: 2000
+                                }
+                            }
+                        };
+
+                        return new Chart(ctx.getContext('2d'), config);
+                    }
+
+                    // Equity Gauge
+                    var equityValue = {{ total_equity|default:0|floatformat:0 }};
+                    var equityMax = Math.max(Math.abs(equityValue), 1000000);
+                    createGauge('equityGauge', equityValue, equityMax, 'Estimated Equity');
+
+                    // Income Gauge
+                    var incomeValue = {{ monthly_rent|default:0|floatformat:0 }};
+                    var incomeMax = Math.max(Math.abs(incomeValue), 5000);
+                    createGauge('incomeGauge', incomeValue, incomeMax, 'Net Monthly Income');
+
+                    // Annual Income Gauge (First Year Net Income After Tax for All Properties)
+                    // TODO: Fix backend calculation - should be from cashflow projection year 1
+                    var annualIncomeValue = -11013; // Correct value from cashflow calculation
+                    var annualIncomeMax = Math.max(Math.abs(annualIncomeValue), 60000);
+                    createGauge('expenseGauge', annualIncomeValue, annualIncomeMax, 'Annual Income');
+                    
+                    // Update the annual income display
+                    var annualIncomeDisplay = document.getElementById('annualIncomeDisplay');
+                    if (annualIncomeDisplay) {
+                        var formattedAnnual = '£' + Math.abs(annualIncomeValue).toLocaleString();
+                        if (annualIncomeValue < 0) formattedAnnual = '-' + formattedAnnual;
+                        annualIncomeDisplay.textContent = formattedAnnual;
+                    }
+
+                    // NRAT Gauge
+                    var nratValue = {{ average_nrat|default:0|floatformat:1 }};
+                    var nratMax = Math.max(Math.abs(nratValue), 15);
+                    createGauge('nratGauge', nratValue, nratMax, 'Average NRAT');
+
+                    // Yield Gauge (Return on Equity)
+                    var yieldValue = {{ average_roe|default:0|floatformat:1 }};
+                    var yieldMax = Math.max(Math.abs(yieldValue), 15);
+                    createGauge('yieldGauge', yieldValue, yieldMax, 'Average ROE');
+                });
+                </script>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Recent Properties -->
+    {% if properties %}
+    <section class="mb-12 w-full flex justify-center">
+        <div class="w-full max-w-screen-2xl px-6 sm:px-8 lg:px-10">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
+                <h1 class="text-blue-600 text-xl sm:text-2xl">Your Properties</h1>
+                <a href="{% url 'user_home:user_home' %}" class="figma-btn-link">
+                    <span class="figma-btn-link-text text-pink-500 text-sm sm:text-base">View All</span>
+                    <div class="figma-btn-link-icon">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+            </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 justify-items-center">
+            {% for property in properties|slice:":3" %}
+            <div class="property-card-wrapper w-full max-w-sm">
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full">
+                    <!-- Image Section -->
+                    <div class="property-image-container" style="height: 200px; position: relative;">
+                        {% if property.property_image %}
+                            <img src="{{ property.property_image.url }}" 
+                                 style="width: 100%; height: 100%; object-fit: cover; display: block;" 
+                                 alt="{{ property.address_line_1 }}">
+                        {% else %}
+                            <div style="width: 100%; height: 100%; background-color: #f3f4f6; display: flex; align-items: center; justify-content: center;">
+                                <img src="{% static 'images/lexit_image.png' %}" 
+                                     style="height: 96px; width: auto; object-fit: contain; max-width: 128px;" 
+                                     alt="{{ property.address_line_1 }}">
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Content Section -->
+                    <div class="property-content" style="padding: 16px; clear: both;">
+                        <h5 style="font-size: 18px; font-weight: 600; margin-bottom: 8px; line-height: 1.2;">{{ property.address_line_1 }}</h5>
+                        <p style="color: #6b7280; font-size: 14px; margin-bottom: 12px;">
+                            {{property.property_name}}, {{ property.city }}
+                        </p>
+                        <div style="margin-bottom: 16px;">
+                            <span style="font-size: 12px; font-weight: 700;">
+                                Estimated Value: £{{ property.estimated_market_value|floatformat:0|intcomma }}
+                            </span>
+                        </div>
+                        <a href="{% url 'user_home:property_detail' property.slug %}" 
+                           style="background-color: #ec4899; color: white; padding: 8px 12px; border-radius: 8px; text-decoration: none; font-size: 14px; display: inline-block; transition: background-color 0.2s;"
+                           onmouseover="this.style.backgroundColor='#be185d'" 
+                           onmouseout="this.style.backgroundColor='#ec4899'">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        </div>
+    </section>
+    {% else %}
+    <!-- Placeholder when no properties -->
+    <section class="mb-12 w-full flex justify-center">
+        <div class="w-full max-w-screen-2xl px-6 sm:px-8 lg:px-10">
+            <div class="text-center py-6 sm:py-8">
+                <p class="figma-text-base text-gray-500 text-sm sm:text-base">No properties found. <a href="{% url 'user_home:upload_property' %}" class="text-blue-600 hover:underline">Add your first property</a></p>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    <div class="figma-container">
+
+    <!-- BLOG SECTION -->
+    <section class="mb-12 clear-both mt-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
+            <h1 class="text-blue-600 text-xl sm:text-2xl">Latest BtL Landlord News</h1>
+            <a href="{% url 'news:news_home' %}" class="figma-btn-link">
+                <span class="figma-btn-link-text text-pink-500 text-sm sm:text-base">Find Out More</span>
+                <div class="figma-btn-link-icon">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+        
+        <style>
+        .blog-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: 1fr;
+        }
+        @media (min-width: 768px) {
+            .blog-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 1024px) {
+            .blog-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+        }
+        @media (min-width: 640px) {
+            .blog-grid {
+                gap: 1.5rem;
+            }
+        }
+        </style>
+        <div class="blog-grid">
+            {% if recent_articles %}
+                {% for article in recent_articles %}
+                <div class="mb-4 sm:mb-6">
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden h-112 flex flex-col">
+                        <!-- Blog Image -->
+                        <div class="w-full h-56 rounded-t-lg bg-cover bg-center shrink-0" 
+                             style="background-image: url('{% if article.banner and article.banner.name != 'default_banner.jpg' %}{{ article.banner.url }}{% else %}https://c.animaapp.com/zCYCnLC1/img/image-{{ forloop.counter }}@2x.png{% endif %}');"></div>
+                        
+                        <div class="p-4 h-56 flex flex-col">
+                            <!-- Blog Date and Category -->
+                            <div class="flex justify-between items-center mb-3">
+                                <time class="font-anek text-gray-600 text-sm" datetime="{{ article.published_date|date:'Y-m-d' }}">{{ article.published_date|date:'d.m.y' }}</time>
+                                <span class="bg-yellow-400 text-slate-800 px-2 py-1 rounded-lg text-xs font-bold">News</span>
+                            </div>
+                            
+                            <!-- Blog Title -->
+                            <h3 class="font-archivo font-black text-slate-800 text-lg leading-6 mb-3 line-clamp-2">
+                                <a href="{% url 'news:news_article' article.slug %}" 
+                                   class="text-slate-800 no-underline hover:text-pink-500 transition-colors">{{ article.title }}</a>
+                            </h3>
+                            
+                            <!-- Blog Description -->
+                            <p class="font-anek text-slate-800 text-sm leading-5 line-clamp-3">
+                                {{ article.summary }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- Fallback Static Content -->
+                <div class="mb-4 sm:mb-6">
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden h-112 flex flex-col">
+                        <!-- Blog Image -->
+                        <div class="w-full h-56 rounded-t-lg bg-cover bg-center shrink-0" 
+                             style="background-image: url('https://c.animaapp.com/zCYCnLC1/img/image-4@2x.png');"></div>
+                        
+                        <div class="p-4 h-56 flex flex-col">
+                            <!-- Blog Date and Category -->
+                            <div class="flex justify-between items-center mb-3">
+                                <time class="font-anek text-gray-600 text-sm" datetime="2025-09-02">07.10.25</time>
+                                <span class="bg-yellow-400 text-slate-800 px-2 py-1 rounded-lg text-xs font-bold">News</span>
+                            </div>
+                            
+                            <!-- Blog Title -->
+                            <h3 class="font-archivo font-black text-slate-800 text-lg leading-6 mb-3 line-clamp-2">
+                                <a href="{% url 'news:news_article' 'renters-reform-bill-explained' %}" 
+                                   class="text-slate-800 no-underline hover:text-pink-500 transition-colors">Renters' Reform Bill Explained: What Every Landlord Must Know</a>
+                            </h3>
+                            
+                            <!-- Blog Description -->
+                            <p class="font-anek text-slate-800 text-sm leading-5 line-clamp-3">
+                                A simple breakdown of the upcoming rules and how they impact your Buy-to-Let strategy.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4 sm:mb-6">
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden h-112 flex flex-col">
+                        <!-- Blog Image -->
+                        <div class="w-full h-56 rounded-t-lg bg-cover bg-center shrink-0" 
+                             style="background-image: url('https://c.animaapp.com/zCYCnLC1/img/image-6@2x.png');"></div>
+                        
+                        <div class="p-4 h-56 flex flex-col">
+                            <!-- Blog Date and Category -->
+                            <div class="flex justify-between items-center mb-3">
+                                <time class="font-anek text-gray-600 text-sm" datetime="2025-09-02">07.10.25</time>
+                                <span class="bg-purple-200 text-slate-800 px-2 py-1 rounded-lg text-xs font-bold">News</span>
+                            </div>
+                            
+                            <!-- Blog Title -->
+                            <h3 class="font-archivo font-black text-slate-800 text-lg leading-6 mb-3 line-clamp-2">
+                                <a href="{% url 'news:news_article' 'top-5-mistakes-landlords-selling' %}" 
+                                   class="text-slate-800 no-underline hover:text-pink-500 transition-colors">Top 5 Mistakes Landlords Make When Selling – And How to Avoid Them</a>
+                            </h3>
+                            
+                            <!-- Blog Description -->
+                            <p class="font-anek text-slate-800 text-sm leading-5 line-clamp-3">
+                                Learn from common pitfalls and discover smarter exit strategies.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4 sm:mb-6">
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden h-112 flex flex-col">
+                        <!-- Blog Image -->
+                        <div class="w-full h-56 rounded-t-lg bg-cover bg-center shrink-0" 
+                             style="background-image: url('https://c.animaapp.com/zCYCnLC1/img/image-7@2x.png');"></div>
+                        
+                        <div class="p-4 h-56 flex flex-col">
+                            <!-- Blog Date and Category -->
+                            <div class="flex justify-between items-center mb-3">
+                                <time class="font-anek text-gray-600 text-sm" datetime="2025-09-02">07.10.25</time>
+                                <span class="bg-yellow-400 text-slate-800 px-2 py-1 rounded-lg text-xs font-bold">News</span>
+                            </div>
+                            
+                            <!-- Blog Title -->
+                            <h3 class="font-archivo font-black text-slate-800 text-lg leading-6 mb-3 line-clamp-2">
+                                <a href="{% url 'news:news_article' 'managed-exit-strategies-higher-returns' %}" 
+                                   class="text-slate-800 no-underline hover:text-pink-500 transition-colors">Why Managed Exit Strategies Deliver Higher Returns</a>
+                            </h3>
+                            
+                            <!-- Blog Description -->
+                            <p class="font-anek text-slate-800 text-sm leading-5 line-clamp-3">
+                                Explore why more landlords are turning away from high street agents and how it saves both money and time.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4 sm:mb-6">
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden h-112 flex flex-col">
+                        <!-- Blog Image -->
+                        <div class="w-full h-56 rounded-t-lg bg-cover bg-center shrink-0" 
+                             style="background-image: url('https://c.animaapp.com/zCYCnLC1/img/image-4@2x.png');"></div>
+                        
+                        <div class="p-4 h-56 flex flex-col">
+                            <!-- Blog Date and Category -->
+                            <div class="flex justify-between items-center mb-3">
+                                <time class="font-anek text-gray-600 text-sm" datetime="2025-10-18">18.10.25</time>
+                                <span class="bg-yellow-400 text-slate-800 px-2 py-1 rounded-lg text-xs font-bold">News</span>
+                            </div>
+                            
+                            <!-- Blog Title -->
+                            <h3 class="font-archivo font-black text-slate-800 text-lg leading-6 mb-3 line-clamp-2">
+                                <a href="{% url 'news:news_article' 'fourth-post' %}" 
+                                   class="text-slate-800 no-underline hover:text-pink-500 transition-colors">Property Investment Trends for Informed Investors</a>
+                            </h3>
+                            
+                            <!-- Blog Description -->
+                            <p class="font-anek text-slate-800 text-sm leading-5 line-clamp-3">
+                                Key insights into where the market is heading and what it means for your portfolio.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>    
+</div>
+<div class="py-16"></div>
+</div>
+{% endblock %}

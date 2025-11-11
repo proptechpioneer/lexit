@@ -1,0 +1,156 @@
+{% extends "layout.html" %}
+{% load humanize %}
+
+{% block title %}
+    LEXIT | Frequently Asked Questions - Renters' Rights Act Guide
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Main Container -->
+    <div class="flex justify-center">
+        <div class="w-full mt-4">
+
+            <!-- Header Section -->
+            <div class="mb-8">
+                <div class="text-center">
+                    <h1 class="text-primary-blue text-3xl md:text-4xl font-bold mb-4">Frequently Asked Questions</h1>
+                    <p class="text-gray-700 text-lg max-w-3xl mx-auto leading-relaxed">
+                        Common questions and answers about the Renters' Rights Act and its impact on landlords.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="mb-6">
+                <div class="flex justify-center">
+                    <a href="{% url 'rra_guide:home' %}" 
+                       class="inline-flex items-center px-6 py-3 border border-primary-blue hover:bg-primary-blue hover:text-white text-primary-blue font-medium rounded-lg transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Guide Home
+                    </a>
+                </div>
+            </div>
+
+            <!-- FAQ Sections -->
+            <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
+                <div class="p-6 md:p-8">
+                    <div class="space-y-6">
+                        {% for faq in faqs %}
+                        <div class="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
+                            <button class="faq-question w-full text-left" onclick="toggleFAQ({{ forloop.counter0 }})">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="text-lg font-semibold text-primary-blue pr-4 leading-relaxed">
+                                        {{ faq.question }}
+                                    </h3>
+                                    <div class="shrink-0">
+                                        <i class="fas fa-chevron-down text-primary-blue transition-transform duration-200" id="icon-{{ forloop.counter0 }}"></i>
+                                    </div>
+                                </div>
+                            </button>
+                            <div class="faq-answer mt-4 hidden" id="answer-{{ forloop.counter0 }}">
+                                <div class="pl-4 border-l-4 border-blue-200">
+                                    <p class="text-gray-700 leading-relaxed">{{ faq.answer|safe }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Resources -->
+            <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
+                <div class="p-6 md:p-8">
+                    <h3 class="text-xl font-bold text-primary-blue mb-6">Need More Information?</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <h4 class="font-semibold text-primary-blue mb-3">
+                                <i class="fas fa-book mr-2"></i>
+                                Review the Guide
+                            </h4>
+                            <p class="text-gray-700 mb-4 text-sm">
+                                Go back and review specific sections of the guide for detailed explanations.
+                            </p>
+                            <a href="{% url 'rra_guide:home' %}" 
+                               class="inline-flex items-center text-sm text-primary-blue hover:text-blue-700 font-medium">
+                                Browse All Sections
+                                <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-6 rounded-lg">
+                            <h4 class="font-semibold text-primary-blue mb-3">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                Legal Advice
+                            </h4>
+                            <p class="text-gray-700 mb-4 text-sm">
+                                For specific legal questions, always consult with qualified legal professionals.
+                            </p>
+                            <p class="text-sm text-gray-600 font-medium">
+                                This guide is for informational purposes only.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
+                <div class="p-6 md:p-8">
+                    <h3 class="text-xl font-bold text-primary-blue mb-6 text-center">Stay Informed</h3>
+                    
+                    <div class="bg-gray-50 p-6 rounded-lg text-center">
+                        <i class="fas fa-bell text-primary-blue text-3xl mb-4"></i>
+                        <h4 class="font-semibold text-primary-blue mb-3">Updates and Changes</h4>
+                        <p class="text-gray-700 mb-4">
+                            The Renters' Rights Act implementation may involve updates and clarifications. 
+                            Stay connected to receive the latest information.
+                        </p>
+                        <div class="space-y-3">
+                            <p class="text-sm text-gray-600">
+                                Monitor government announcements and industry publications for the most current information.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Return Navigation -->
+            <div class="text-center mb-8">
+                <div class="space-x-4">
+                    <a href="{% url 'rra_guide:home' %}" 
+                       class="inline-flex items-center px-6 py-3 bg-primary-blue hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+                        <i class="fas fa-book mr-2"></i>
+                        Return to Guide
+                    </a>
+                    <a href="{% url 'user_home:user_home' %}" 
+                       class="inline-flex items-center px-6 py-3 border border-primary-blue hover:bg-primary-blue hover:text-white text-primary-blue font-medium rounded-lg transition-colors">
+                        <i class="fas fa-home mr-2"></i>
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleFAQ(index) {
+    const answer = document.getElementById(`answer-${index}`);
+    const icon = document.getElementById(`icon-${index}`);
+    
+    if (answer.classList.contains('hidden')) {
+        answer.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+    } else {
+        answer.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+    }
+}
+</script>
+
+{% endblock %}

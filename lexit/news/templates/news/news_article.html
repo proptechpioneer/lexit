@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+    LEXIT | {{ article.title }}
+{% endblock %}
+
+{% block content %}
+<!-- News Article Section -->
+<section class="relative w-full max-w-[1440px] mx-auto py-8 lg:py-12">
+    <div class="mx-5 lg:mx-[21px]">
+        <div class="bg-white shadow-lg rounded-lg mb-8 border-0">
+            <div class="p-6">
+                <!-- Back Navigation -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h5 class="text-h5-custom font-archivo text-primary-blue font-bold mb-2">
+                                <i class="fas fa-newspaper mr-3"></i>News Article
+                            </h5>
+                            <!--<p class="text-primary-blue font-anek-latin">Latest landlord news and insights</p>-->
+                        </div>
+                <div class="flex gap-6">
+                    <a href="{% url 'news:news_home' %}" class="inline-block text-white font-archivo font-bold px-3 py-2 md:px-6 md:py-3 text-sm md:text-base rounded-lg transition-colors" style="background-color: #D94590 !important; color: white !important;">
+                        <i class="fas fa-arrow-left mr-1 md:mr-2" style="color: white !important;"></i>
+                        <span style="color: white !important;">News</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                    <!--<a href="{% url 'landing_page' %}" class="inline-block text-white font-archivo font-bold px-6 py-3 rounded-lg transition-colors" style="background-color: #D94590 !important; color: white !important;">
+                        <i class="fas fa-home mr-2" style="color: white !important;"></i>
+                        <span style="color: white !important;">Home</span>
+                    </a>-->
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Article Header -->
+        <div class="text-center mb-6">
+            <h3 class="text-h3-custom font-archivo text-primary-blue mb-4 font-bold" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">{{ article.title }}</h3>
+            <div class="flex justify-center items-center gap-6 mb-4">
+                <small class="text-gray-500 font-anek-latin flex items-center">
+                    <i class="fas fa-calendar mr-2"></i>Published: {{ article.published_date|date:"F d, Y" }}
+                </small>
+                <small class="text-gray-500 font-anek-latin flex items-center">
+                    <i class="fas fa-clock mr-2"></i>{{ article.body|wordcount }} words
+                </small>
+            </div>
+        </div>
+
+        <!-- Article Content Section -->
+        <div class="mb-8">
+            <div class="w-full">
+                <!-- Article Image -->
+                {% if article.banner %}
+                <div class="flex justify-center mb-6">
+                    <div class="w-full lg:w-5/6">
+                        <div class="shadow-sm rounded-lg overflow-hidden">
+                            <img src="{{ article.banner.url }}" 
+                                 class="w-full h-96 object-cover rounded-lg" 
+                                 alt="{{ article.alt_text }}">
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Article Body -->
+                <div class="bg-white border-0 shadow-sm rounded-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex justify-center">
+                            <div class="w-full lg:w-4/5">
+                                <div class="article-content text-primary-blue font-anek-latin leading-relaxed text-lg">
+                                    {{ article.body|safe }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Articles or Back to News CTA -->
+        <div class="mb-8">
+            <div class="w-full">
+                <div class="rounded-lg p-4 mt-6" style="background-color: #D94590; border: 2px solid #D94590;">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <i class="fas fa-newspaper mr-2 text-white"></i>
+                            <strong class="text-white font-anek-latin">Stay Updated:</strong> 
+                            <span class="text-white font-anek-latin">Explore more landlord news and industry insights to stay ahead of market changes.</span>
+                        </div>
+                        <div class="ml-4">
+                            <a href="{% url 'news:news_home' %}" class="inline-block bg-white text-primary-blue font-archivo font-bold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors">
+                                View All News
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

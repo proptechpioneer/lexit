@@ -1,0 +1,532 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    LEXIT | {{ title }}
+{% endblock %}
+
+{% block content %}
+<!-- Main Container -->
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header Section -->
+        <div class="mb-8 bg-primary-blue p-6 rounded-lg">
+            <h1 class="text-base font-bold mb-4" style="font-size: 40px !important; font-family: 'Archivo', sans-serif !important; color: white !important;">{{ title }}</h1>
+            <p class="text-lg" style="color: white !important;">Fill in the details about your property below.</p>
+        </div>
+
+        <!-- Form Container -->
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Basic Information Section -->
+
+
+
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-check mr-2"></i>Basic Information
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.property_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-home mr-2 text-primary-blue"></i>Property Name <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.property_name }}
+                            {% if form.property_name.errors %}
+                                <div class="mt-1">
+                                    {% for error in form.property_name.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.property_image.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-image mr-2 text-gray-400"></i>Property Image
+                            </label>
+                            {{ form.property_image }}
+                            {% if form.property_image.errors %}
+                                <div class="mt-1">
+                                    {% for error in form.property_image.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if form.instance.property_image %}
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-600">Current image:</p>
+                                    <img src="{{ form.instance.property_image.url }}" alt="Property Image" class="h-20 w-20 object-cover rounded border mt-1">
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.property_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-building mr-2 text-gray-400"></i>Property Type <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.property_type }}
+                            {% if form.property_type.errors %}
+                                <div class="mt-1">
+                                    {% for error in form.property_type.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.number_bedrooms.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-bed mr-2 text-gray-400"></i>Bedrooms <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.number_bedrooms }}
+                            {% if form.number_bedrooms.errors %}
+                                <div class="mt-1">
+                                    {% for error in form.number_bedrooms.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.number_bathrooms.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-bath mr-2 text-gray-400"></i>Bathrooms <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.number_bathrooms }}
+                            {% if form.number_bathrooms.errors %}
+                                <div class="mt-1">
+                                    {% for error in form.number_bathrooms.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.car_parking_spaces.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-car mr-2 text-gray-400"></i>Parking Spaces
+                            </label>
+                            {{ form.car_parking_spaces }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.epc_rating.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-leaf mr-2 text-gray-400"></i>EPC Rating
+                            </label>
+                            {{ form.epc_rating }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.date_of_purchase.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-calendar mr-2 text-gray-400"></i>Purchase Date <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.date_of_purchase }}
+                            {% if form.date_of_purchase.errors %}
+                                <div class="mt-1">
+                                    {% for error in form.date_of_purchase.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-check mr-2"></i>Address
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.unit_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>Unit/Apartment Number
+                            </label>
+                            {{ form.unit_number }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.street_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>Street Number
+                            </label>
+                            {{ form.street_number }}
+                            {% if form.street_number.errors %}
+                                <div class="mt-1">
+                                    {% for error in form.street_number.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.street_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>Street Name <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.street_name }}
+                            {% if form.street_name.errors %}
+                                <div class="mt-1">
+                                    {% for error in form.street_name.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.city.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                City <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.city }}
+                            {% if form.city.errors %}
+                                <div class="mt-1">
+                                    {% for error in form.city.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.postcode.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Postcode <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.postcode }}
+                            {% if form.postcode.errors %}
+                                <div class="mt-1">
+                                    {% for error in form.postcode.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Address Information Notice -->
+                    <div class="bg-red-500 p-4 rounded-lg mt-4">
+                        <p class="text-white text-sm">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            <strong>Important:</strong> By sharing your complete address, you enable our artificial intelligence to deliver personalised insights into local market trends, rental growth, and more—helping you make smarter, data-driven decisions. Stay ahead with tailored updates!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Financial Information Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-check mr-2"></i>Financial Information
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.purchase_price.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-pound-sign mr-2 text-gray-400"></i>Purchase Price <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.purchase_price }}
+                            {% if form.purchase_price.errors %}
+                                <div class="mt-1">
+                                    {% for error in form.purchase_price.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.deposit_paid.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-pound-sign mr-2 text-gray-400"></i>Deposit Paid
+                            </label>
+                            {{ form.deposit_paid }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.estimated_market_value.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-chart-line mr-2 text-gray-400"></i>Estimated Market Value
+                            </label>
+                            {{ form.estimated_market_value }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.weekly_rent.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-money-bill-wave mr-2 text-gray-400"></i>Weekly Rent
+                            </label>
+                            {{ form.weekly_rent }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ownership Information Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-check mr-2"></i>Ownership Information
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.ownership_status.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user mr-2 text-gray-400"></i>Ownership Status <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.ownership_status }}
+                            {% if form.ownership_status.errors %}
+                                <div class="mt-1">
+                                    {% for error in form.ownership_status.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mortgage Information Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-check mr-2"></i>Mortgage Information
+                        </h2>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="flex items-center">
+                            {{ form.has_mortgage }}
+                            <label for="{{ form.has_mortgage.id_for_label }}" class="ml-2 text-sm text-gray-700">
+                                Property has a mortgage
+                            </label>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="{{ form.mortgage_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-home mr-2 text-gray-400"></i>Mortgage Type
+                                </label>
+                                {{ form.mortgage_type }}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ form.outstanding_mortgage_balance.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-pound-sign mr-2 text-gray-400"></i>Outstanding Mortgage Balance
+                                </label>
+                                {{ form.outstanding_mortgage_balance }}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ form.mortgage_interest_rate.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-percentage mr-2 text-gray-400"></i>Mortgage Interest Rate (%)
+                                </label>
+                                {{ form.mortgage_interest_rate }}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ form.mortgage_years_remaining.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-calendar-alt mr-2 text-gray-400"></i>Years Remaining
+                                </label>
+                                {{ form.mortgage_years_remaining }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Property Expenses Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-check mr-2"></i>Property Expenses
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.property_management_fees.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-users mr-2 text-gray-400"></i>Property Management Fees (%)
+                            </label>
+                            {{ form.property_management_fees }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.service_charge.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-tools mr-2 text-gray-400"></i>Annual Service Charge
+                            </label>
+                            {{ form.service_charge }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.ground_rent.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-home mr-2 text-gray-400"></i>Annual Ground Rent
+                            </label>
+                            {{ form.ground_rent }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.other_annual_costs.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-receipt mr-2 text-gray-400"></i>Other Annual Costs
+                                <button type="button" onclick="showCostsModal()" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
+                                    <i class="fas fa-info-circle text-sm"></i>
+                                </button>
+                            </label>
+                            {{ form.other_annual_costs }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Income & Tax Information Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-check mr-2"></i>Income & Tax Information
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                        <div>
+                            <label for="{{ form.annual_income.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-chart-line mr-2 text-gray-400"></i>Total Annual Income
+                                <button type="button" onclick="showIncomeModal()" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
+                                    <i class="fas fa-info-circle text-sm"></i>
+                                </button>
+                            </label>
+                            {{ form.annual_income }}
+                        </div>
+                        
+                        <div class="flex items-center">
+                            {{ form.uk_resident }}
+                            <label for="{{ form.uk_resident.id_for_label }}" class="ml-2 text-sm text-gray-700">
+                                Property owner is a UK resident
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            {{ form.uk_taxfree_allowance }}
+                            <label for="{{ form.uk_taxfree_allowance.id_for_label }}" class="ml-2 text-sm text-gray-700">
+                                Eligible for UK tax-free allowance
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Income & Tax Information Notice -->
+                    <div class="bg-red-500 p-4 rounded-lg mt-4">
+                        <p class="text-white text-sm">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            <strong>Important:</strong> Please enter your UK income (excluding this property) so we can accurately analyse your tax liabilities and provide you with the most accurate analysis.
+                        </p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end mt-8">
+                        <button type="submit" 
+                                style="background-color: #ec4899 !important; color: white !important; padding: 12px 24px !important; border-radius: 8px !important; font-weight: 600 !important; transition: background-color 0.2s !important; border: none !important; cursor: pointer !important; font-size: 16px !important;"
+                                onmouseover="this.style.backgroundColor='#db2777'" 
+                                onmouseout="this.style.backgroundColor='#ec4899'">
+                            Analyse Property
+                        </button>
+                    </div>
+
+
+
+                </div>
+                </div>
+                </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Income Information Modal -->
+<div id="incomeModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border shadow-lg rounded-md bg-white" style="width: 350px;">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">What is "Your Annual Income"?</h3>
+                <button type="button" onclick="hideIncomeModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="mt-2 px-1 py-3">
+                <p class="text-sm text-gray-700 mb-3">
+                    Please enter your gross annual income before tax, <strong>excluding the income from your BtL</strong>.
+                </p>
+                <p class="text-sm text-gray-700 mb-3">
+                    This information is required in order to accurately work out how much income tax is due to your BtL.
+                </p>
+                <p class="text-sm text-red-600 font-medium">
+                    If you do not enter your income the tax calculations will not work.
+                </p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button type="button" onclick="hideIncomeModal()" class="px-4 py-2 bg-primary-blue text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Other Annual Costs Information Modal -->
+<div id="costsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border shadow-lg rounded-md bg-white" style="width: 350px;">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Other Annual Costs</h3>
+                <button type="button" onclick="hideCostsModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="mt-2 px-1 py-3">
+                <p class="text-sm text-gray-700 mb-3">
+                    These are other costs associated with your Buy-to-Let, such as gas & electrical safety certificates, insurances, landlord registration schemes, gardening, etc.
+                </p>
+                <p class="text-sm text-gray-700 mb-3">
+                    Please use the total annual cost.
+                </p>
+                <p class="text-sm text-red-600 font-medium">
+                    Do not include maintenance costs these are already accounted for in the assumptions.
+                </p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button type="button" onclick="hideCostsModal()" class="px-4 py-2 bg-primary-blue text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showIncomeModal() {
+    document.getElementById('incomeModal').classList.remove('hidden');
+}
+
+function hideIncomeModal() {
+    document.getElementById('incomeModal').classList.add('hidden');
+}
+
+function showCostsModal() {
+    document.getElementById('costsModal').classList.remove('hidden');
+}
+
+function hideCostsModal() {
+    document.getElementById('costsModal').classList.add('hidden');
+}
+
+// Close modals when clicking outside of them
+document.getElementById('incomeModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        hideIncomeModal();
+    }
+});
+
+document.getElementById('costsModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        hideCostsModal();
+    }
+});
+</script>
+
+{% endblock %}

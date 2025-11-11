@@ -1,0 +1,19 @@
+{
+  "name": "node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build-css": "tailwindcss -i ./input.css -o ../static/dist/output.css",
+    "watch-css": "tailwindcss -i ./input.css -o ../static/dist/output.css --watch",
+    "build-css-min": "tailwindcss -i ./input.css -o ../static/dist/output.css --minify",
+    "test": "echo \"No tests specified\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "tailwindcss": "^4.1.17"
+  }
+}

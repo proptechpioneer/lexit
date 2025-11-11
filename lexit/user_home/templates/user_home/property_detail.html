@@ -1,0 +1,1799 @@
+{% extends "layout.html" %}
+{% load humanize %}
+
+{% block title %}
+    LEXIT | {{ property.property_name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Main Container -->
+<div class="flex justify-center">
+<div class="w-full mt-4">
+
+    <!-- Header Section -->
+    <div class="mb-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-primary-blue text-3xl font-bold">{{ property.property_name }}</h1>
+                <p class="text-gray-600 mb-0">
+                {{ property.full_address }}
+                </p>
+            </div>
+            <div class="flex gap-2">
+                <a href="{% url 'user_home:edit_property' property.slug %}" class="bg-pink-500 hover:bg-pink-700 text-white px-4 py-2 rounded-lg inline-flex items-center transition-colors">
+                <i class="fas fa-edit mr-2"></i> <span class="hidden sm:inline">Edit Property</span>
+                </a>
+                <a href="{% url 'user_home:user_home' %}" class="border border-primary-blue hover:bg-primary-blue hover:text-white text-primary-blue px-4 py-2 rounded-lg inline-flex items-center transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> <span class="hidden sm:inline">Back to Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- End Header Section -->
+
+    <!-- Main Hero Grid Container -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+        
+        <!-- Left Side - Image Box -->
+        <div class="md:col-span-1">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden h-full flex items-center justify-center">
+                <div class="p-2 w-full h-full flex items-center justify-center">
+                    <img src="{{ property.get_property_image_url }}" 
+                        class="w-full rounded-lg object-contain" 
+                        style="max-height: 100%;"
+                        alt="{{ property.property_name }}">
+                </div>
+            </div>
+        </div>
+        <!-- End Left Side - Image Box -->
+
+        <!-- Right Side - 2x2 Grid -->
+        <div class="md:col-span-1">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 h-full min-h-[400px] max-h-[600px]">
+                
+                <!-- Top Left Square -->
+                <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full border border-gray-200">
+                    <div class="flex items-center justify-center">
+                        <h4 class="text-primary-blue mb-0 font-bold text-base sm:text-xl md:text-2xl lg:text-3xl">Estimated Value</h4>
+                        <button type="button" onclick="console.log('Button clicked'); showEstimatedValueModal();" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
+                            <i class="fas fa-info-circle text-lg sm:text-xl md:text-2xl lg:text-2xl"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Interactive Gauge -->
+                    <div class="flex-1 flex flex-col justify-center items-center min-h-0">
+                        <div class="relative w-40 h-20 md:w-48 md:h-24 lg:w-56 lg:h-28 xl:w-64 xl:h-32 2xl:w-72 2xl:h-36 mx-auto">
+                            <canvas id="propertyValueGauge" class="w-full h-full"></canvas>
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
+                                <h5 class="text-primary-blue mb-0 font-bold text-xs md:text-sm lg:text-base xl:text-lg">£{{ property.estimated_market_value|floatformat:0|default:"0"|intcomma }}</h5>
+                                <small class="text-primary-blue block text-xs md:text-sm lg:text-base">Est. Value</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Status Display -->
+                    <div>
+                        {% if property.estimated_market_value and property.purchase_price %}
+                        <div class="mb-1">
+                            <span class="{% if capital_appreciation >= 0 %}text-green-600{% else %}text-red-600{% endif %} font-bold text-xs sm:text-sm md:text-base">
+                            {% if capital_appreciation >= 0 %}
+                                +£{{ capital_appreciation|floatformat:0|intcomma }}
+                            {% else %}
+                                {% with neg_value=capital_appreciation|add:"0" %}
+                                -£{{ neg_value|floatformat:0|intcomma|slice:"1:" }}
+                                {% endwith %}
+                            {% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+                        <span class="{% if property.estimated_market_value and property.purchase_price %}{% if capital_appreciation >= 0 %}bg-green-500{% else %}bg-red-500{% endif %}{% else %}bg-gray-500{% endif %} text-white px-2 py-1 rounded-full text-xs sm:text-sm md:text-base">
+                        {% if property.estimated_market_value and property.purchase_price %}
+                            {% if capital_appreciation >= 0 %}Capital Gained{% else %}Capital Lost{% endif %}
+                        {% else %}
+                            Analysis Pending
+                        {% endif %}
+                        </span>
+                    </div>
+                </div>
+                <!-- End Left Square -->
+
+                <!-- Top Right Square -->
+                <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
+                    <div class="flex items-center justify-center">
+                        <h4 class="text-primary-blue mb-0 font-bold text-base sm:text-xl md:text-2xl lg:text-3xl">Monthly Income</h4>
+                        <button type="button" onclick="console.log('Monthly Income button clicked'); showMonthlyIncomeModal();" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
+                            <i class="fas fa-info-circle text-lg sm:text-xl md:text-2xl lg:text-2xl"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Interactive Gauge -->
+                    <div class="flex-1 flex flex-col justify-center items-center min-h-0">
+                        <div class="relative w-40 h-20 md:w-48 md:h-24 lg:w-56 lg:h-28 xl:w-64 xl:h-32 2xl:w-72 2xl:h-36 mx-auto">
+                            <canvas id="monthlyIncomeGaugeSmall" class="w-full h-full"></canvas>
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
+                                <h5 class="text-primary-blue mb-0 font-bold text-xs md:text-sm lg:text-base xl:text-lg">£{{ net_monthly_income|floatformat:0|default:"0"|intcomma }}</h5>
+                                <small class="text-primary-blue block text-xs md:text-sm lg:text-base">Net Income</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Monthly Income Status Display -->
+                    <div>
+                        <div class="mb-1">
+                            <span class="{% if net_monthly_income > 0 %}text-green-600{% elif net_monthly_income == 0 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-xs sm:text-sm md:text-base">
+                            {% if net_monthly_income > 0 %}
+                                +£{{ net_monthly_income|floatformat:0|intcomma }}
+                            {% elif net_monthly_income == 0 %}
+                                Breaking even
+                            {% else %}
+                                {% with neg_value=net_monthly_income|add:"0" %}
+                                -£{{ neg_value|floatformat:0|intcomma|slice:"1:" }}
+                                {% endwith %}
+                            {% endif %}
+                            </span>
+                        </div>
+                        
+                        <span class="{% if net_monthly_income > 0 %}bg-green-500{% elif net_monthly_income == 0 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 rounded-full text-xs sm:text-sm md:text-base">
+                        {% if net_monthly_income > 0 %}Positive{% elif net_monthly_income == 0 %}Break Even{% else %}Negative{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <!-- End Right Square -->
+
+                <!-- Bottom Left Square -->
+                <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
+                    <div class="flex items-center justify-center">
+                        <h4 class="text-primary-blue mb-0 font-bold text-base sm:text-xl md:text-2xl lg:text-3xl">Gross Yield</h4>
+                        <button type="button" onclick="console.log('Gross Yield button clicked'); showGrossYieldModal();" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
+                            <i class="fas fa-info-circle text-lg sm:text-xl md:text-2xl lg:text-2xl"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Interactive Gauge -->
+                    <div class="flex-1 flex flex-col justify-center items-center min-h-0">
+                        <div class="relative w-40 h-20 md:w-48 md:h-24 lg:w-56 lg:h-28 xl:w-64 xl:h-32 2xl:w-72 2xl:h-36 mx-auto">
+                            <canvas id="weeklyRentGauge" class="w-full h-full"></canvas>
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
+                                <h5 class="text-primary-blue mb-0 font-bold text-xs md:text-sm lg:text-base xl:text-lg">{{ gross_annual_yield|floatformat:1|default:"0" }}%</h5>
+                                <small class="text-primary-blue block text-xs md:text-sm lg:text-base">Annual return</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Yield Status Display -->
+                    <div>
+                        <div class="mb-1">
+                            <span class="{% if gross_annual_yield > 5 %}text-green-600{% elif gross_annual_yield > 3 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-xs sm:text-sm md:text-base">
+                                {% if gross_annual_yield > 5 %}
+                                    Excellent
+                                {% elif gross_annual_yield > 3 %}
+                                    Good
+                                {% else %}
+                                    Below average
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <span class="{% if gross_annual_yield > 5 %}bg-green-500{% elif gross_annual_yield > 3 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 rounded-full text-xs sm:text-sm md:text-base">
+                            {% if gross_annual_yield > 5 %}High{% elif gross_annual_yield > 3 %}Moderate{% else %}Low{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <!-- End Bottom Left Square -->
+
+                <!-- Bottom Right Square -->
+                <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
+                    <div class="flex items-center justify-center">
+                        <h4 class="text-primary-blue mb-0 font-bold text-base sm:text-xl md:text-2xl lg:text-3xl">Net Yield</h4>
+                        <button type="button" onclick="console.log('Net Yield button clicked'); showNetYieldModal();" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
+                            <i class="fas fa-info-circle text-lg sm:text-xl md:text-2xl lg:text-2xl"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Interactive Gauge -->
+                    <div class="flex-1 flex flex-col justify-center items-center min-h-0">
+                        <div class="relative w-40 h-20 md:w-48 md:h-24 lg:w-56 lg:h-28 xl:w-64 xl:h-32 2xl:w-72 2xl:h-36 mx-auto">
+                            <canvas id="grossYieldGaugeSmall" class="w-full h-full"></canvas>
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
+                                <h5 class="text-primary-blue mb-0 font-bold text-xs md:text-sm lg:text-base xl:text-lg">{{ net_annual_yield|floatformat:1|default:"0" }}%</h5>
+                                <small class="text-primary-blue block text-xs md:text-sm lg:text-base">Net return</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Net Yield Status Display -->
+                    <div>
+                        <div class="mb-1">
+                            <span class="{% if net_annual_yield > 4 %}text-green-600{% elif net_annual_yield > 2 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-xs sm:text-sm md:text-base">
+                                {% if net_annual_yield > 4 %}
+                                    Excellent
+                                {% elif net_annual_yield > 2 %}
+                                    Good
+                                {% else %}
+                                    Below average
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <span class="{% if net_annual_yield > 4 %}bg-green-500{% elif net_annual_yield > 2 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 rounded-full text-xs sm:text-sm md:text-base">
+                            {% if net_annual_yield > 4 %}High{% elif net_annual_yield > 2 %}Moderate{% else %}Low{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <!-- End Bottom Right Square -->
+            </div>      
+        </div>
+    </div>
+    <!-- End Main Hero Grid Container -->
+    <br>
+    <!-- KPI Dashboard Section -->
+    <div class="bg-white rounded-lg shadow-lg mb-8 mt-12 overflow-hidden">
+        <div class="p-4 sm:p-6 lg:p-8">
+            <div class="text-center mb-6 sm:mb-8">
+                <h1 class="text-4xl text-primary-blue mb-3 font-bold">Performance Dashboard</h1>
+                <p class="text-sm sm:text-base text-primary-blue px-2">Advanced analytics benchmarked against industry standards</p>
+            </div>
+            
+            <!-- Overall Performance Ranking -->
+            <div class="rounded-lg text-center mb-6 sm:mb-8 relative overflow-hidden border-2 {% if net_yield > 4.0 and dscr > 1.25 and opex_load < 20 %}bg-green-100/80 border-green-500{% elif net_yield > 2 and dscr > 1 and opex_load < 25 %}bg-blue-100/80 border-blue-500{% elif net_yield < 2 and opex_load > 25 %}bg-yellow-100/80 border-yellow-500{% else %}bg-red-100/80 border-red-500{% endif %} p-4 sm:p-6">
+                <div class="relative">
+                    <h2 class="text-xl sm:text-2xl lg:text-3xl mb-3 text-primary-blue font-bold">
+                        Overall Performance Ranking
+                    </h2>
+                    <div class="inline-block {% if net_yield > 4.0 and dscr > 1.25 and opex_load < 20 %}bg-green-500{% elif net_yield > 2 and dscr > 1 and opex_load < 25 %}bg-blue-500{% elif net_yield < 2 and opex_load > 25 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white text-lg sm:text-2xl lg:text-3xl font-bold mb-3 px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg">
+                        {% if net_yield > 4.0 and dscr > 1.25 and opex_load < 20 %} 
+                        Excellent
+                        {% elif net_yield > 2 and dscr > 1 and opex_load < 25 %}     
+                        Good
+                        {% elif net_yield < 2 and opex_load > 25 %}
+                        Moderate (Monitor)
+                        {% else %}
+                        Needs Attention
+                        {% endif %}
+                    </div>
+                    <p class="mb-0 text-primary-blue text-sm sm:text-base lg:text-lg font-medium px-2">
+                        {% if net_yield > 4.0 and dscr > 1.25 and opex_load < 20 %} 
+                        Outstanding performance across all metrics. Your property is generating excellent returns.
+                        {% elif net_yield > 2 and dscr > 1 and opex_load < 25 %} 
+                        Strong performance with good returns. Minor optimisations could enhance profitability.
+                        {% elif net_yield < 2 and opex_load > 25 %}
+                        Moderate performance. Monitor closely and consider optimisation opportunities.
+                        {% else %}
+                        Performance below expectations. Review expenses and rental income immediately.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <!-- End of Performance Heading -->
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6">
+                
+                <!-- Debt Service Coverage Ratio -->
+                <div class="bg-white rounded-lg shadow-lg flex flex-col justify-center items-center p-6 text-center h-full">
+                    <div class="flex items-center mb-3">
+                        <h4 class="text-primary-blue mb-0 font-bold text-lg">Debt Service Coverage Ratio (DSCR)</h4>
+                        <button type="button" onclick="console.log('DSCR button clicked'); showDscrModal();" class="ml-2 text-pink-500 hover:text-pink-700 transition-colors" title="What is DSCR?">
+                            <i class="fas fa-info-circle text-lg"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Interactive Gauge -->
+                    <div class="relative mb-3 w-40 h-20 sm:w-44 sm:h-22 md:w-48 md:h-24 lg:w-52 lg:h-26 mx-auto">
+                        <canvas id="dscrGauge" class="w-full h-full"></canvas>
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 15px;">
+                            <h5 class="text-primary-blue mb-0 font-bold text-sm">{{ dscr|floatformat:2|default:"0.00" }}</h5>
+                            <small class="text-primary-blue block text-xs">DSCR</small>
+                        </div>
+                    </div>
+                    
+                    <!-- DSCR Status Display -->
+                    <div class="mb-2">
+                        <span class="{% if dscr >= 1.25 %}text-green-600{% elif dscr >= 1.0 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-sm">
+                            {% if dscr >= 1.25 %}
+                                Healthy debt service coverage
+                            {% elif dscr >= 1.0 %}
+                                Marginal debt service coverage
+                            {% else %}
+                                Insufficient debt service coverage
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <span class="{% if dscr >= 1.25 %}bg-green-500{% elif dscr >= 1.0 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-3 py-2 rounded-full text-sm">
+                        {% if dscr >= 1.25 %}Healthy Coverage{% elif dscr >= 1.0 %}Marginal Coverage{% else %}Insufficient Coverage{% endif %}
+                    </span>
+                </div>
+                <!-- End Debt Service Coverage Ratio -->    
+
+
+
+                <!-- Operating Expense Load -->
+                <div class="bg-white rounded-lg shadow-lg flex flex-col justify-center items-center p-6 text-center h-full">
+                    <div class="flex items-center mb-3">
+                        <h4 class="text-primary-blue mb-0 font-bold text-lg">OPEX Load<br>(% of Rental Income)</h4>
+                        <button type="button" onclick="console.log('OPEX Load button clicked'); showOpexModal();" class="ml-2 text-pink-500 hover:text-pink-700 transition-colors" title="What is OPEX Load?">
+                            <i class="fas fa-info-circle text-lg"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Interactive Gauge -->
+                    <div class="relative mb-3 w-40 h-20 sm:w-44 sm:h-22 md:w-48 md:h-24 lg:w-52 lg:h-26 mx-auto">
+                        <canvas id="opexGauge" class="w-full h-full"></canvas>
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 15px;">
+                            <h5 class="text-primary-blue mb-0 font-bold text-sm">{{ opex_load|floatformat:1|default:"0.0" }}%</h5>
+                            <small class="text-primary-blue block text-xs">Expense ratio</small>
+                        </div>
+                    </div>
+                    
+                    <!-- OPEX Status Display -->
+                    <div class="mb-2">
+                        <span class="{% if opex_load <= 20 %}text-green-600{% elif opex_load <= 30 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-sm">
+                            {% if opex_load <= 20 %}
+                                Highly efficient operations
+                            {% elif opex_load <= 30 %}
+                                Efficient expense management
+                            {% else %}
+                                High operating expenses
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <span class="{% if opex_load <= 20 %}bg-green-500{% elif opex_load <= 30 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-3 py-2 rounded-full text-sm">
+                        {% if opex_load <= 20 %}Highly Efficient{% elif opex_load <= 30 %}Efficient{% else %}Inefficient{% endif %}
+                    </span>
+                </div>
+                <!-- End Operating Expense Load -->
+
+
+
+                <!-- Net Return After Tax -->
+                <div class="bg-white rounded-lg shadow-lg flex flex-col justify-center items-center p-6 text-center h-full">
+                    <div class="flex items-center mb-3">
+                        <h4 class="text-primary-blue mb-0 font-bold text-lg">Net Return (after tax)<br>(% of Capital Employed)</h4>
+                        <button type="button" onclick="console.log('NRAT button clicked'); showNratModal();" class="ml-2 text-pink-500 hover:text-pink-700 transition-colors" title="What is NRAT?">
+                            <i class="fas fa-info-circle text-lg"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Interactive Gauge -->
+                    <div class="relative mb-3 w-40 h-20 sm:w-44 sm:h-22 md:w-48 md:h-24 lg:w-52 lg:h-26 mx-auto">
+                        <canvas id="nratGauge" class="w-full h-full"></canvas>
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 15px;">
+                            <h5 class="text-primary-blue mb-0 font-bold text-sm">{{ nrat_percentage|floatformat:1|default:"0.0" }}%</h5>
+                            <small class="text-primary-blue block text-xs">Annual return</small>
+                        </div>
+                    </div>
+                    
+                    <!-- NRAT Status Display -->
+                    <div class="mb-2">
+                        <span class="{% if nrat_percentage >= 8 %}text-green-600{% elif nrat_percentage >= 5 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-sm">
+                            {% if nrat_percentage >= 8 %}
+                                Excellent return on investment
+                            {% elif nrat_percentage >= 5 %}
+                                Good return on investment
+                            {% else %}
+                                Below average returns
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <span class="{% if nrat_percentage >= 8 %}bg-green-500{% elif nrat_percentage >= 5 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-3 py-2 rounded-full text-sm">
+                        {% if nrat_percentage >= 8 %}Excellent ROI{% elif nrat_percentage >= 5 %}Good ROI{% else %}Poor ROI{% endif %}
+                    </span>
+                </div>
+                <!-- End Net Return After Tax -->
+
+            </div>        
+        <!-- Dont go past here -->    
+        </div>
+    </div>        
+    <!-- End KPI Dashboard Section -->
+    
+    <!-- Start of Cashflow -->
+    <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
+        <div class="p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl text-primary-blue mb-3 font-bold">Cash Flow Forecast</h1>
+                <p>A ten-year forecast of the anticipated annual cash flow generated by <strong>{{ property.property_name }}</strong>, including your potential tax liabilities.</p>
+                <p>Over the next ten years, your BtL is forecast to generate 
+                    <strong class="{% if total_net_income_after_tax < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                        £{{ total_net_income_after_tax|floatformat:0|intcomma }}
+                    </strong> in net income (after tax) in total.
+                </p>
+            </div>
+            
+            <!-- Cash Flow Projection Table -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead class="bg-gray-800 text-white">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 text-center font-medium">Year</th>
+                            <th scope="col" class="px-4 py-3 text-center font-medium">Gross Rental Income</th>
+                            <th scope="col" class="px-4 py-3 text-center font-medium">Total Operating Expenses</th>
+                            <th scope="col" class="px-4 py-3 text-center font-medium">Mortgage Expenses</th>
+                            <th scope="col" class="px-4 py-3 text-center font-medium">Tax Payable</th>
+                            <th scope="col" class="px-4 py-3 text-center font-medium">Net Income After Tax</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for projection in cashflow_projection %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 text-center font-bold">{{ projection.year }}</td>
+                            <td class="px-4 py-3 text-center">£{{ projection.gross_rent|floatformat:0|intcomma }}</td>
+                            <td class="px-4 py-3 text-center">£{{ projection.total_expenses|floatformat:0|intcomma }}</td>
+                            <td class="px-4 py-3 text-center">£{{ projection.annual_total_mortgage_payment|floatformat:0|intcomma }}</td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="{% if projection.applicable_tax > 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                    £{{ projection.applicable_tax|floatformat:0|intcomma }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center font-bold">
+                                <span class="{% if projection.net_cash_flow_after_tax > 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                                    £{{ projection.net_cash_flow_after_tax|floatformat:0|intcomma }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                No cash flow projections available. Please ensure all required property details are provided.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="bg-gray-100">
+                        <tr class="font-bold">
+                            <td colspan="5" class="px-4 py-3 text-center">10-Year Total Net Income After Tax</td>
+                            <td class="px-4 py-3 text-center text-primary-blue text-lg">
+                                £{{ total_net_income_after_tax|floatformat:0|intcomma }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <!-- Additional Cash Flow Details (Collapsible) -->
+            <div class="mt-6">
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-2 max-w-2xl">
+                    <button onclick="toggleDetailedCashFlow()" class="bg-pink-500 hover:bg-pink-700 text-white px-4 py-2 rounded-lg transition-colors max-w-xs" type="button">
+                        <i class="fas fa-chart-line mr-2"></i>View Detailed Cash Flow Breakdown
+                    </button>
+                    
+                    <button onclick="toggleCashFlowChart()" class="border border-primary-blue hover:bg-primary-blue hover:text-white text-primary-blue px-4 py-2 rounded-lg transition-colors max-w-xs" type="button">
+                        <i class="fas fa-chart-bar mr-2 text-primary-blue"></i>View Cash Flow Chart
+                    </button>
+                </div>
+                
+                <!-- Cash Flow Chart Section -->
+                <div class="mt-4 hidden" id="cashFlowChart">
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="bg-gray-100 px-2 sm:px-4 py-3 border-b border-gray-200">
+                            <h6 class="mb-0 font-medium text-sm sm:text-base"><i class="fas fa-chart-area mr-2"></i>10-Year Cash Flow Visualization</h6>
+                        </div>
+                        <div class="p-2 sm:p-4">
+                            <div class="w-full overflow-x-auto overflow-y-hidden" style="scroll-behavior: smooth;">
+                                <div class="min-w-[800px] sm:min-w-[600px] h-80 sm:h-96">
+                                    <canvas id="cashFlowLineChart" class="w-full h-full"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Detailed Breakdown Section -->
+                <div class="mt-4 hidden" id="detailedCashFlow">
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="bg-gray-100 px-4 py-3 border-b border-gray-200">
+                            <h6 class="mb-0 font-medium"><i class="fas fa-table mr-2"></i>Detailed Annual Breakdown</h6>
+                        </div>
+                        <div class="p-4">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full bg-white border border-gray-200">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="px-4 py-3 text-center font-medium border-b border-gray-200">Year</th>
+                                            <th class="px-4 py-3 text-center font-medium border-b border-gray-200">Interest Payment</th>
+                                            <th class="px-4 py-3 text-center font-medium border-b border-gray-200">Principal Payment</th>
+                                            <th class="px-4 py-3 text-center font-medium border-b border-gray-200">Tax Loss Carryforward</th>
+                                            <th class="px-4 py-3 text-center font-medium border-b border-gray-200">Remaining Mortgage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        {% for projection in cashflow_projection %}
+                                        <tr>
+                                            <td class="px-4 py-3 text-center">{{ projection.year }}</td>
+                                            <td class="px-4 py-3 text-center">£{{ projection.annual_interest_payment|floatformat:0|intcomma }}</td>
+                                            <td class="px-4 py-3 text-center">£{{ projection.annual_principal_payment|floatformat:0|intcomma }}</td>
+                                            <td class="px-4 py-3 text-center">
+                                                <span class="{% if projection.tax_loss_carryforward_ending > 0 %}text-yellow-600{% else %}text-gray-500{% endif %}">
+                                                    £{{ projection.tax_loss_carryforward_ending|floatformat:0|intcomma }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-3 text-center">£{{ projection.remaining_mortgage_balance|floatformat:0|intcomma }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <p class="text-primary-blue"><strong>Note: The figures above are estimates and should be considered a guide only. Please consult your accountant or financial advisor for more accurate calculations.</strong></p>
+            
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+                <h5 class="text-blue-800 font-medium mb-3"><i class="fas fa-info-circle mr-2"></i>Cashflow Assumptions</h5>
+                <ul class="mb-0 text-blue-700 space-y-1">
+                    <li>Vacancy rate assumed of 3.85% p.a. (ie. 2 weeks rent)</li>
+                    <li>Repairs and management assumed at 3.50% p.a.</li>
+                    <li>Costs are increase in-line with assumed inflation of 2.80% p.a.</li>
+                    <li>Rent is increased annually at 3.71% p.a. (England's average)</li>
+                    <li>Property is assumed to grow annually at 3.40% p.a. (England's average)</li>
+                    <li>Taxes are based on UK income tax rates as at 1 June 2025 (no allowances made for NI or any other allowances).</li>
+                </ul>
+            </div>
+     <!-- End of Cashflow Forecast -->
+        </div>
+        </div>        
+        <!-- End of Cashflow Forecast -->
+
+
+        <!-- Start of Capital Growth -->
+     <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
+        <div class="p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl text-primary-blue mb-3 font-bold">Capital Growth Analysis</h1>
+                <p class="text-primary-blue">This section provides an analysis of the capital growth forecast for the property, including historical trends and future projections. <strong>Many buy-to-let investors buy property assuming that they will get capital appreciation. We have tested this for you to give you some insight into what capital appreciation you may achieve over the next 10 years.</strong></p>
+            </div>
+
+        <h3 class="text-primary-blue text-xl font-bold">10 Year Forecast Capital Growth</h3>
+        <p class="text-primary-blue">What happens to your overall return, with different growth scenarions? In this section we have considered first your BtL based on different growth scenarios:</p>
+        <ul class="text-primary-blue list-disc list-inside space-y-1">
+            <li>0% (ie no) Capital Growth</li>
+            <li>1.7% p.a. Capital Growth (half the English average growth rate)</li>
+            <li>3.4% p.a. Capital Growth (average English average growth rate)</li>
+        </ul>
+
+        <!-- Capital Growth Analysis Table -->
+        <div class="overflow-x-auto mt-6 mb-6">
+            <table class="min-w-full bg-white border border-gray-200">
+                <thead class="bg-gray-800 text-white">
+                    <tr>
+                        <th scope="col" class="px-4 py-3 text-center font-medium">Annual Growth Rate</th>
+                        <th scope="col" class="px-4 py-3 text-center font-medium">Forecast Net Capital Growth</th>
+                        <th scope="col" class="px-4 py-3 text-center font-medium">Notional Equity</th>
+                        <th scope="col" class="px-4 py-3 text-center font-medium">Notional Return on Equity</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 text-center font-bold">0%</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="{% if no_growth_value < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                £{{ no_growth_value|floatformat:0|intcomma }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-center">£{{ notional_equity|floatformat:0|intcomma }}</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="{% if no_growth_annual_capital_return_rate < 0 %}text-red-600{% else %}text-green-600{% endif %} font-bold">
+                                {{ no_growth_annual_capital_return_rate|floatformat:1 }}%
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 text-center font-bold">1.7%</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="{% if moderate_growth_value < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                £{{ moderate_growth_value|floatformat:0|intcomma }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-center">£{{ notional_equity|floatformat:0|intcomma }}</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="{% if moderate_growth_annual_capital_return_rate < 0 %}text-red-600{% else %}text-green-600{% endif %} font-bold">
+                                {{ moderate_growth_annual_capital_return_rate|floatformat:1 }}%
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 text-center font-bold">3.4%</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="{% if average_growth_value < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                £{{ average_growth_value|floatformat:0|intcomma }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-center">£{{ notional_equity|floatformat:0|intcomma }}</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="{% if average_growth_annual_capital_return_rate < 0 %}text-red-600{% else %}text-green-600{% endif %} font-bold">
+                                {{ average_growth_annual_capital_return_rate|floatformat:1 }}%
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+                <h5 class="text-blue-800 font-medium mb-3"><i class="fas fa-info-circle mr-2"></i>Growth Assumptions</h5>
+                <p class="text-blue-700">This growth forecast makes a number of assumptions set out below:</p>
+                <ul class="mb-0 text-blue-700 space-y-1">
+                    <li>Property is assumed to grow annually inline with the relevant forecast rate</li>
+                    <li>EPC Upgrade Costs, if your property has a level below EPC C.</li>
+                    <li>Sales Agency Fees to sell the property of (1.5%)</li>
+                    <li>Legal Fees for conveyancing of £1,500</li>
+                    <li>Assumes Capital Gains Tax (CGT), is paid at the prevailing rates as at 1 June 2025</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- End of Capital Growth -->
+    </div>        
+    <!-- End of Capital Growth -->
+
+    <!-- Start Risk Analysis -->
+    <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
+        <div class="p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl text-primary-blue mb-3 font-bold">Risk Analysis</h1>
+                <p class="text-primary-blue">Many Buy-to-let landlords only consider upside rather than downside, our risk analysis considers how much cash you will need to come up with if you have a bad tenant, a dispute or breach the Renters Rights Bill.</p>
+            </div>
+        <h4 class="text-primary-blue text-xl font-bold">Tenant Dispute Budget</h4>    
+        <p class="text-primary-blue">Based on current market data, we have estimated the potential costs associated with tenant disputes and legal actions. This includes average legal fees, court costs, and potential compensation amounts.</p>
+        <div class="bg-red-600 p-4 rounded-lg mb-4">
+            <p class="text-white mb-2">Total Estimated Costs: <strong>£{{ Tenant_Dispute_Total|floatformat:0|intcomma }}</strong> in total</p>
+            <p class="text-white mb-0">Total Estimated Monthly Costs: <strong>£{{ Tenant_Dispute_monthly|floatformat:0|intcomma }}</strong> monthly for upto 18 months.</p>
+        </div>
+
+        <h4 class="text-primary-blue text-xl font-bold">Renters Rights Budget</h4>    
+        <p class="text-primary-blue">The renters' rights bill could impose hefty fines on landlords for any violations, even minor ones, increasing their financial risk. It also allows tenants to recover rents more easily, which may lead to landlords facing higher costs and potential cash flow issues.</p>
+        <div class="bg-red-600 p-4 rounded-lg mb-4">
+            <p class="text-white mb-2">Potential Fines: <strong>£2,000 to £7,000</strong> per infraction</p>
+            <p class="text-white mb-0">Potential to claw back up to 2 years rent: <strong>£{{ RRB_rent_recovery|floatformat:0|intcomma }}</strong></p>
+        </div>
+        <p class="text-red-600">It is the landlords responsibility to ensure they are compliant with the new legislation.</p>
+
+        </div>
+    </div>
+    <!-- End Risk Analysis -->
+
+    <!-- Investment Summary -->
+    <div class="bg-white rounded-lg shadow-lg mb-8 mt-32 overflow-hidden">
+        <div class="p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl text-primary-blue mb-3 font-bold">Investment Summary</h1>
+                <p class="text-primary-blue">Below we have summarised you current financial return together with the potential capital growth generated by your property.</p>
+            </div>
+
+            <!-- Comprehensive Return Analysis Table -->
+            <div class="overflow-x-auto mt-6 mb-6">
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead class="bg-gray-800 text-white">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 text-center font-medium">Based on Growth Rates</th>
+                            <th scope="col" class="px-4 py-3 text-center font-medium">Total Net Income After Tax<br><small class="text-gray-300">(10 Years)</small></th>
+                            <th scope="col" class="px-4 py-3 text-center font-medium">Capital Growth<br><small class="text-gray-300">(10 Years)</small></th>
+                            <th scope="col" class="px-4 py-3 text-center font-medium">Total Return After Tax<br><small class="text-gray-300">(Income + Capital)</small></th>
+                            <th scope="col" class="px-4 py-3 text-center font-medium">Estimated Equity</th>
+                            <th scope="col" class="px-4 py-3 text-center font-medium">Average Annual Return on Equity</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 text-center font-bold">0% Growth</td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="{% if total_net_income_after_tax < 0 %}text-red-600{% else %}text-green-600{% endif %} font-bold">
+                                    £{{ total_net_income_after_tax|floatformat:0|intcomma }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="{% if no_growth_capital_growth_display < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                    £{{ no_growth_capital_growth_display|floatformat:0|intcomma }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="{% if total_net_income_after_tax < 0 %}text-red-600{% else %}text-green-600{% endif %} font-bold">
+                                    £{{ total_net_income_after_tax|floatformat:0|intcomma }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center">£{{ notional_equity|floatformat:0|intcomma }}</td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="{% if no_growth_annual_return_rate < 0 %}text-red-600{% else %}text-green-600{% endif %} font-bold">
+                                    {{ no_growth_annual_return_rate|floatformat:1 }}%
+                                </span>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 text-center font-bold">1.7% Growth</td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="{% if total_net_income_after_tax < 0 %}text-red-600{% else %}text-green-600{% endif %} font-bold">
+                                    £{{ total_net_income_after_tax|floatformat:0|intcomma }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="{% if moderate_growth_capital_growth_display < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                    £{{ moderate_growth_capital_growth_display|floatformat:0|intcomma }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                {% with total_return=total_net_income_after_tax|add:moderate_growth_value %}
+                                <span class="{% if total_return < 0 %}text-red-600{% else %}text-green-600{% endif %} font-bold">
+                                    £{{ total_return|floatformat:0|intcomma }}
+                                </span>
+                                {% endwith %}
+                            </td>
+                            <td class="px-4 py-3 text-center">£{{ notional_equity|floatformat:0|intcomma }}</td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="{% if moderate_growth_annual_return_rate < 0 %}text-red-600{% else %}text-green-600{% endif %} font-bold">
+                                    {{ moderate_growth_annual_return_rate|floatformat:1 }}%
+                                </span>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 text-center font-bold">3.4% Growth</td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="{% if total_net_income_after_tax < 0 %}text-red-600{% else %}text-green-600{% endif %} font-bold">
+                                    £{{ total_net_income_after_tax|floatformat:0|intcomma }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="{% if average_growth_capital_growth_display < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                    £{{ average_growth_capital_growth_display|floatformat:0|intcomma }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                {% with total_return=total_net_income_after_tax|add:average_growth_value %}
+                                <span class="{% if total_return < 0 %}text-red-600{% else %}text-green-600{% endif %} font-bold">
+                                    £{{ total_return|floatformat:0|intcomma }}
+                                </span>
+                                {% endwith %}
+                            </td>
+                            <td class="px-4 py-3 text-center">£{{ notional_equity|floatformat:0|intcomma }}</td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="{% if average_growth_annual_return_rate < 0 %}text-red-600{% else %}text-green-600{% endif %} font-bold">
+                                    {{ average_growth_annual_return_rate|floatformat:1 }}%
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+                <h5 class="text-blue-800 font-medium mb-3"><i class="fas fa-info-circle mr-2"></i>Key Insights</h5>
+                <ul class="mb-0 text-blue-700 space-y-1">
+                    <li><strong>Total Net Income After Tax</strong> remains constant across all scenarios as it's based on rental income and operating expenses</li>
+                    <li><strong>Capital Growth</strong> varies significantly based on property appreciation rates</li>
+                    <li><strong>Total Return</strong> combines both income and capital gains for a comprehensive view</li>
+                    <li><strong>Return on Equity</strong> shows the efficiency of your investment relative to your initial equity</li>
+                </ul>
+            </div>
+
+    </div>
+    
+    </div>
+    <!-- End Conclusion -->
+    <p class="text-red-600 font-bold text-center mb-8"><strong>NOTE: You cannot rely on this analysis alone. It is intended to provide some insight into the potential performance of your property. You should always seek professional advice before making any financial decisions.</strong></p>
+</div>
+<!-- THIS IS THE END -->
+</div>    
+<!--I AM THE FINAL DIV-->
+</div>
+<!--I AM THE FINAL DIV-->
+</div>
+
+
+<!-- MODALS FOR INFO BUTTONS -->
+<!-- Estimated Value Modal -->
+<div id="estimatedValueModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border shadow-lg rounded-lg bg-white" style="width: 400px;">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Estimated Value</h3>
+                <button type="button" onclick="hideEstimatedValueModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="mt-2 px-1 py-3">
+                <p class="text-sm text-gray-700">
+                    The Estimated Value: is the value you have estimated for your property, this is used throughout the analysis. <br><br>If you have entered your property address information our ai LLM will start reviewing this for you to determine how accurate this is. It will also make suggestions in terms of things which are going on in your location which may impact the value of your property.
+                </p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button type="button" onclick="hideEstimatedValueModal()" class="px-4 py-2 bg-primary-blue text-white text-base font-medium rounded-lg w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Monthly Income Modal -->
+<div id="monthlyIncomeModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border shadow-lg rounded-lg bg-white" style="width: 400px;">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Monthly Income</h3>
+                <button type="button" onclick="hideMonthlyIncomeModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="mt-2 px-1 py-3">
+                <p class="text-sm text-gray-700">
+                    The monthly income is your estimated monthly income you would expect to receive after you cover all costs except income tax.
+                </p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button type="button" onclick="hideMonthlyIncomeModal()" class="px-4 py-2 bg-primary-blue text-white text-base font-medium rounded-lg w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gross Annual Yield Modal -->
+<div id="grossYieldModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border shadow-lg rounded-lg bg-white" style="width: 500px;">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Gross Annual Yield</h3>
+                <button type="button" onclick="hideGrossYieldModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="mt-2 px-1 py-3">
+                <p class="text-sm text-gray-700 mb-3">
+                    Gross yield is a metric used in property investment to measure the annual rental income as a percentage of the property's estimated market value. It is calculated by dividing the annual rent by the property's estimated market value and multiplying by 100.
+                </p>
+                <p class="text-sm text-gray-700 mb-3">
+                    However, gross yield is not always the best measure for assessing a property's investment potential because it doesn't account for expenses. Factors such as property management fees, maintenance costs, taxes, insurance, and vacancy rates can significantly impact the net profitability.
+                </p>
+                <p class="text-sm text-gray-700">
+                    Therefore, relying solely on gross yield may give an overly optimistic view of the investment's actual returns. A more comprehensive measure, like net yield, considers these expenses for a clearer picture of the investment's performance.
+                </p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button type="button" onclick="hideGrossYieldModal()" class="px-4 py-2 bg-primary-blue text-white text-base font-medium rounded-lg w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Net Annual Yield Modal -->
+<div id="netYieldModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border shadow-lg rounded-lg bg-white" style="width: 500px;">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Net Annual Yield</h3>
+                <button type="button" onclick="hideNetYieldModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="mt-2 px-1 py-3">
+                <p class="text-sm text-gray-700 mb-3">
+                    Net yield is a more accurate measure of a property's investment performance compared to gross yield. It represents the annual rental income after deducting all operating expenses, expressed as a percentage of the property's value or purchase price.
+                </p>
+                <p class="text-sm text-gray-700 mb-3">
+                    To calculate net yield, you subtract costs such as property management fees, maintenance, taxes, insurance, and vacancy costs from the annual rental income, then divide the net income by the property's estimated value and multiply by 100.
+                </p>
+                <p class="text-sm text-gray-700 mb-3">
+                    For example, if a property generates £12,000 in annual rent but incurs £3,000 in expenses, the net income is £9,000. If the property's value is £200,000, the net yield is 4.5%.
+                </p>
+                <p class="text-sm text-gray-700">
+                    Net yield provides a more realistic view of a property's profitability by reflecting the true income generated after expenses, making it a better measure for assessing investment viability than gross yield.
+                </p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button type="button" onclick="hideNetYieldModal()" class="px-4 py-2 bg-primary-blue text-white text-base font-medium rounded-lg w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DSCR Modal -->
+<div id="dscrModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border shadow-lg rounded-lg bg-white" style="width: 500px;">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Debt Service Coverage Ratio (DSCR)</h3>
+                <button type="button" onclick="hideDscrModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="mt-2 px-1 py-3">
+                <p class="text-sm text-gray-700 mb-3">
+                    The debt service coverage ratio (DSCR) measures a landlord's ability to generate enough cash to cover their mortgage obligations. A DSCR of 1.00 means the operating income matches the debt service costs exactly.
+                </p>
+                <p class="text-sm text-gray-700 mb-3">
+                    Less than 1.00 indicates the landlord cannot cover the mortgage without additional capital. For instance, a DSCR of 0.95 covers only 95% of annual debt payments.
+                </p>
+                <p class="text-sm text-gray-700">
+                    A higher DSCR indicates better financial health and lower risk, while a lower DSCR suggests potential cash flow challenges and increased investment risk.
+                </p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button type="button" onclick="hideDscrModal()" class="px-4 py-2 bg-primary-blue text-white text-base font-medium rounded-lg w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- OPEX Load Modal -->
+<div id="opexModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border shadow-lg rounded-lg bg-white" style="width: 500px;">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">OPEX Load (% of Rental Income)</h3>
+                <button type="button" onclick="hideOpexModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="mt-2 px-1 py-3">
+                <p class="text-sm text-gray-700 mb-3">
+                    OPEX Load refers to the ongoing operational expenses a landlord incurs to operate a property. It includes costs such as service charges, management expenses, and maintenance costs, etc.
+                </p>
+                <p class="text-sm text-gray-700">
+                    Effective management of OPEX Load is important for enhancing profitability and ensuring the sustainability of the investment.
+                </p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button type="button" onclick="hideOpexModal()" class="px-4 py-2 bg-primary-blue text-white text-base font-medium rounded-lg w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- NRAT Modal -->
+<div id="nratModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border shadow-lg rounded-lg bg-white" style="width: 500px;">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Net Return After Tax (NRAT)</h3>
+                <button type="button" onclick="hideNratModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="mt-2 px-1 py-3">
+                <p class="text-sm text-gray-700 mb-3">
+                    Net Return After Tax (NRAT) shows your annual return as a percentage of the total cash you deployed to acquire the property, including the purchase price, deposit, and Stamp Duty Land Tax (SDLT).
+                </p>
+                <p class="text-sm text-gray-700">
+                    This metric helps you understand the true efficiency of your investment by considering all upfront costs and taxes on your returns.
+                </p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button type="button" onclick="hideNratModal()" class="px-4 py-2 bg-primary-blue text-white text-base font-medium rounded-lg w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--SCRIPTS START -->
+<script>
+// Initialize Bootstrap tabs
+document.addEventListener('DOMContentLoaded', function() {
+    var triggerTabList = [].slice.call(document.querySelectorAll('#nav-tab button'));
+    triggerTabList.forEach(function (triggerEl) {
+        var tabTrigger = new bootstrap.Tab(triggerEl);
+        triggerEl.addEventListener('click', function (event) {
+            event.preventDefault();
+            tabTrigger.show();
+        });
+    });
+
+    // Store chart instances for resize
+    var chartInstances = [];
+
+    // Function to get appropriate gauge size based on viewport
+    function getGaugeSize() {
+        const width = window.innerWidth;
+        if (width >= 1280) return { width: 400, height: 256 }; // xl
+        if (width >= 1024) return { width: 320, height: 208 }; // lg  
+        if (width >= 768) return { width: 240, height: 160 };  // md
+        return { width: 120, height: 80 }; // mobile
+    }
+
+    // Gauge data configuration
+    var data = {
+        value: {{ property.estimated_market_value|default:0 }},
+        max: 1000000,
+        label: "Property Value"
+    };
+
+    // Chart.js configuration for clean gauge
+    var config = {
+        type: 'doughnut',
+        data: {
+            labels: [data.label],
+            datasets: [{
+                data: [data.value, data.max - data.value],
+                backgroundColor: ['rgba(255, 19, 146, 0.8)', 'rgba(0, 0, 0, 0.1)'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '85%',
+            rotation: -90,
+            circumference: 180,
+            plugins: {
+                tooltip: {
+                    enabled: false
+                },
+                legend: {
+                    display: false
+                }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: false,
+                duration: 2000
+            }
+        }
+    };
+
+    // Create the gauge chart
+    var chartCtx = document.getElementById('valueGauge');
+    if (chartCtx) {
+        var gaugeChart = new Chart(chartCtx.getContext('2d'), config);
+        chartInstances.push(gaugeChart);
+    }
+
+    // Gross Annual Yield Gauge
+    var grossYieldData = {
+        value: {{ gross_annual_yield|default:0 }},
+        max: 15, // 15% max yield
+        label: "Gross Annual Yield"
+    };
+
+    var grossYieldConfig = {
+        type: 'doughnut',
+        data: {
+            labels: [grossYieldData.label],
+            datasets: [{
+                data: [grossYieldData.value, grossYieldData.max - grossYieldData.value],
+                backgroundColor: ['rgba(255, 19, 146, 0.8)', 'rgba(0, 0, 0, 0.1)'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '85%',
+            rotation: -90,
+            circumference: 180,
+            plugins: {
+                tooltip: { enabled: false },
+                legend: { display: false }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: false,
+                duration: 2000
+            }
+        }
+    };
+
+    var grossYieldCtx = document.getElementById('grossYieldGauge');
+    if (grossYieldCtx) {
+        var grossYieldChart = new Chart(grossYieldCtx.getContext('2d'), grossYieldConfig);
+        chartInstances.push(grossYieldChart);
+    }
+
+    // Net Annual Yield Gauge
+    var netYieldData = {
+        value: {{ net_annual_yield|default:0 }},
+        max: 12, // 12% max net yield
+        label: "Net Annual Yield"
+    };
+
+    // Handle negative values for net yield
+    var netYieldValue = netYieldData.value;
+    var netYieldGaugeValue = netYieldValue < 0 ? netYieldData.max * 0.05 : netYieldValue;
+    var netYieldBackgroundColor = netYieldValue < 0 ? '#ef4444' : 'rgba(255, 19, 146, 0.8)';
+
+    var netYieldConfig = {
+        type: 'doughnut',
+        data: {
+            labels: [netYieldData.label],
+            datasets: [{
+                data: [netYieldGaugeValue, netYieldData.max - netYieldGaugeValue],
+                backgroundColor: [netYieldBackgroundColor, 'rgba(0, 0, 0, 0.1)'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '85%',
+            rotation: -90,
+            circumference: 180,
+            plugins: {
+                tooltip: { enabled: false },
+                legend: { display: false }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: false,
+                duration: 2000
+            }
+        }
+    };
+
+    var netYieldCtx = document.getElementById('netYieldGauge');
+    if (netYieldCtx) {
+        var netYieldChart = new Chart(netYieldCtx.getContext('2d'), netYieldConfig);
+        chartInstances.push(netYieldChart);
+    }
+
+    // Small Property Value Gauge (Top Left Square)
+    var propertyValueSmallData = {
+        value: {{ property.estimated_market_value|default:0 }},
+        max: 1000000,
+        label: "Property Value"
+    };
+
+    var propertyValueSmallConfig = {
+        type: 'doughnut',
+        data: {
+            labels: [propertyValueSmallData.label],
+            datasets: [{
+                data: [propertyValueSmallData.value, propertyValueSmallData.max - propertyValueSmallData.value],
+                backgroundColor: ['rgba(255, 19, 146, 0.8)', 'rgba(0, 0, 0, 0.1)'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '85%',
+            rotation: -90,
+            circumference: 180,
+            plugins: {
+                tooltip: { enabled: false },
+                legend: { display: false }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: false,
+                duration: 2000
+            }
+        }
+    };
+
+    var propertyValueSmallCtx = document.getElementById('propertyValueGauge');
+    if (propertyValueSmallCtx) {
+        var propertyValueSmallChart = new Chart(propertyValueSmallCtx.getContext('2d'), propertyValueSmallConfig);
+        chartInstances.push(propertyValueSmallChart);
+    }
+
+    // Small Monthly Income Gauge (Top Right Square)
+    var monthlyIncomeSmallData = {
+        value: {{ net_monthly_income|default:0 }},
+        max: 5000, // £5000 max monthly income
+        label: "Monthly Income"
+    };
+
+    // Handle negative values for monthly income
+    var monthlyIncomeValue = monthlyIncomeSmallData.value;
+    var monthlyIncomeGaugeValue = monthlyIncomeValue < 0 ? monthlyIncomeSmallData.max * 0.05 : monthlyIncomeValue;
+    var monthlyIncomeBackgroundColor = monthlyIncomeValue < 0 ? '#ef4444' : 'rgba(255, 19, 146, 0.8)';
+
+    var monthlyIncomeSmallConfig = {
+        type: 'doughnut',
+        data: {
+            labels: [monthlyIncomeSmallData.label],
+            datasets: [{
+                data: [monthlyIncomeGaugeValue, monthlyIncomeSmallData.max - monthlyIncomeGaugeValue],
+                backgroundColor: [monthlyIncomeBackgroundColor, 'rgba(0, 0, 0, 0.1)'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '85%',
+            rotation: -90,
+            circumference: 180,
+            plugins: {
+                tooltip: { enabled: false },
+                legend: { display: false }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: false,
+                duration: 2000
+            }
+        }
+    };
+
+    var monthlyIncomeSmallCtx = document.getElementById('monthlyIncomeGaugeSmall');
+    if (monthlyIncomeSmallCtx) {
+        var monthlyIncomeSmallChart = new Chart(monthlyIncomeSmallCtx.getContext('2d'), monthlyIncomeSmallConfig);
+        chartInstances.push(monthlyIncomeSmallChart);
+    }
+
+    // Weekly Rent Gauge (Bottom Left Square)
+    var weeklyRentData = {
+        value: {{ property.weekly_rent|default:0 }},
+        max: 1000, // £1000 max weekly rent
+        label: "Weekly Rent"
+    };
+
+    var weeklyRentConfig = {
+        type: 'doughnut',
+        data: {
+            labels: [weeklyRentData.label],
+            datasets: [{
+                data: [weeklyRentData.value, weeklyRentData.max - weeklyRentData.value],
+                backgroundColor: ['rgba(255, 19, 146, 0.8)', 'rgba(0, 0, 0, 0.1)'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '85%',
+            rotation: -90,
+            circumference: 180,
+            plugins: {
+                tooltip: { enabled: false },
+                legend: { display: false }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: false,
+                duration: 2000
+            }
+        }
+    };
+
+    var weeklyRentCtx = document.getElementById('weeklyRentGauge');
+    if (weeklyRentCtx) {
+        var weeklyRentChart = new Chart(weeklyRentCtx.getContext('2d'), weeklyRentConfig);
+        chartInstances.push(weeklyRentChart);
+    }
+
+    // Small Gross Yield Gauge (Bottom Right Square)
+    var grossYieldSmallData = {
+        value: {{ net_annual_yield|default:0 }},
+        max: 15, // 15% max yield
+        label: "Net Yield"
+    };
+
+    // Handle negative values for net yield
+    var grossYieldSmallValue = grossYieldSmallData.value;
+    var grossYieldSmallGaugeValue = grossYieldSmallValue < 0 ? grossYieldSmallData.max * 0.05 : grossYieldSmallValue;
+    var grossYieldSmallBackgroundColor = grossYieldSmallValue < 0 ? '#ef4444' : 'rgba(255, 19, 146, 0.8)';
+
+    var grossYieldSmallConfig = {
+        type: 'doughnut',
+        data: {
+            labels: [grossYieldSmallData.label],
+            datasets: [{
+                data: [grossYieldSmallGaugeValue, grossYieldSmallData.max - grossYieldSmallGaugeValue],
+                backgroundColor: [grossYieldSmallBackgroundColor, 'rgba(0, 0, 0, 0.1)'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '85%',
+            rotation: -90,
+            circumference: 180,
+            plugins: {
+                tooltip: { enabled: false },
+                legend: { display: false }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: false,
+                duration: 2000
+            }
+        }
+    };
+
+    var grossYieldSmallCtx = document.getElementById('grossYieldGaugeSmall');
+    if (grossYieldSmallCtx) {
+        var grossYieldSmallChart = new Chart(grossYieldSmallCtx.getContext('2d'), grossYieldSmallConfig);
+        chartInstances.push(grossYieldSmallChart);
+    }
+
+    // DSCR Gauge
+    var dscrData = {
+        value: {{ dscr|default:0 }},
+        max: 3.0, // 3.0 max DSCR
+        label: "DSCR"
+    };
+
+    // Handle low/negative DSCR values (below 1.0 is problematic)
+    var dscrValue = dscrData.value;
+    var dscrGaugeValue = dscrValue < 0 ? dscrData.max * 0.05 : dscrValue;
+    var dscrBackgroundColor = dscrValue < 0 ? '#ef4444' : 'rgba(255, 19, 146, 0.8)';
+
+    var dscrConfig = {
+        type: 'doughnut',
+        data: {
+            labels: [dscrData.label],
+            datasets: [{
+                data: [dscrGaugeValue, dscrData.max - dscrGaugeValue],
+                backgroundColor: [dscrBackgroundColor, 'rgba(0, 0, 0, 0.1)'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '85%',
+            rotation: -90,
+            circumference: 180,
+            plugins: {
+                tooltip: { enabled: false },
+                legend: { display: false }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: false,
+                duration: 2000
+            }
+        }
+    };
+
+    var dscrCtx = document.getElementById('dscrGauge');
+    if (dscrCtx) {
+        var dscrChart = new Chart(dscrCtx.getContext('2d'), dscrConfig);
+        chartInstances.push(dscrChart);
+    }
+
+    // OPEX Load Gauge
+    var opexData = {
+        value: {{ opex_load|default:0 }},
+        max: 50, // 50% max OPEX load
+        label: "OPEX Load"
+    };
+
+    var opexConfig = {
+        type: 'doughnut',
+        data: {
+            labels: [opexData.label],
+            datasets: [{
+                data: [opexData.value, opexData.max - opexData.value],
+                backgroundColor: ['rgba(255, 19, 146, 0.8)', 'rgba(0, 0, 0, 0.1)'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '85%',
+            rotation: -90,
+            circumference: 180,
+            plugins: {
+                tooltip: { enabled: false },
+                legend: { display: false }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: false,
+                duration: 2000
+            }
+        }
+    };
+
+    var opexCtx = document.getElementById('opexGauge');
+    if (opexCtx) {
+        var opexChart = new Chart(opexCtx.getContext('2d'), opexConfig);
+        chartInstances.push(opexChart);
+    }
+
+    // NRAT Gauge
+    var nratData = {
+        value: {{ nrat_percentage|default:0 }},
+        max: 20, // 20% max NRAT
+        label: "NRAT"
+    };
+
+    // Handle negative values for NRAT
+    var nratValue = nratData.value;
+    var nratGaugeValue = nratValue < 0 ? nratData.max * 0.05 : nratValue;
+    var nratBackgroundColor = nratValue < 0 ? '#ef4444' : 'rgba(255, 19, 146, 0.8)';
+
+    var nratConfig = {
+        type: 'doughnut',
+        data: {
+            labels: [nratData.label],
+            datasets: [{
+                data: [nratGaugeValue, nratData.max - nratGaugeValue],
+                backgroundColor: [nratBackgroundColor, 'rgba(0, 0, 0, 0.1)'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '85%',
+            rotation: -90,
+            circumference: 180,
+            plugins: {
+                tooltip: { enabled: false },
+                legend: { display: false }
+            },
+            animation: {
+                animateRotate: true,
+                duration: 2000
+            }
+        }
+    };
+
+    var nratCtx = document.getElementById('nratGauge');
+    if (nratCtx) {
+        var nratChart = new Chart(nratCtx.getContext('2d'), nratConfig);
+        chartInstances.push(nratChart);
+    }
+
+    // Cash Flow Line Chart
+    var cashFlowCtx = document.getElementById('cashFlowLineChart');
+    if (cashFlowCtx) {
+        // Prepare data from Django template
+        var cashFlowData = {
+            labels: [{% for projection in cashflow_projection %}'Year {{ projection.year }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [
+                {
+                    label: 'Gross Rental Income',
+                    data: [{% for projection in cashflow_projection %}{{ projection.gross_rent|floatformat:0 }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    fill: false,
+                    tension: 0.1
+                },
+                {
+                    label: 'Total Operating Expenses',
+                    data: [{% for projection in cashflow_projection %}{{ projection.total_expenses|floatformat:0 }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                    borderColor: 'rgba(220, 53, 69, 1)',
+                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                    fill: false,
+                    tension: 0.1
+                },
+                {
+                    label: 'Mortgage Expenses',
+                    data: [{% for projection in cashflow_projection %}{{ projection.annual_total_mortgage_payment|floatformat:0 }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                    borderColor: 'rgba(255, 193, 7, 1)',
+                    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                    fill: false,
+                    tension: 0.1
+                },
+                {
+                    label: 'Tax Payable',
+                    data: [{% for projection in cashflow_projection %}{{ projection.applicable_tax|floatformat:0 }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                    borderColor: 'rgba(108, 117, 125, 1)',
+                    backgroundColor: 'rgba(108, 117, 125, 0.1)',
+                    fill: false,
+                    tension: 0.1
+                },
+                {
+                    label: 'Net Income After Tax',
+                    data: [{% for projection in cashflow_projection %}{{ projection.net_cash_flow_after_tax|floatformat:0 }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    fill: true,
+                    tension: 0.1,
+                    borderWidth: 3
+                }
+            ]
+        };
+
+        var cashFlowConfig = {
+            type: 'line',
+            data: cashFlowData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '10-Year Property Cash Flow Analysis',
+                        font: {
+                            size: window.innerWidth < 768 ? 12 : 16,
+                            weight: 'bold'
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            boxWidth: window.innerWidth < 768 ? 8 : 12,
+                            font: {
+                                size: window.innerWidth < 768 ? 10 : 12
+                            },
+                            padding: window.innerWidth < 768 ? 8 : 20
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += '£' + context.parsed.y.toLocaleString();
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Years',
+                            font: {
+                                size: window.innerWidth < 768 ? 10 : 12
+                            }
+                        },
+                        ticks: {
+                            font: {
+                                size: window.innerWidth < 768 ? 9 : 11
+                            },
+                            maxTicksLimit: window.innerWidth < 768 ? 6 : 10
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Amount (£)',
+                            font: {
+                                size: window.innerWidth < 768 ? 10 : 12
+                            }
+                        },
+                        ticks: {
+                            font: {
+                                size: window.innerWidth < 768 ? 9 : 11
+                            },
+                            callback: function(value, index, values) {
+                                // Shorter format for mobile
+                                if (window.innerWidth < 768) {
+                                    if (value >= 1000000) {
+                                        return '£' + (value / 1000000).toFixed(1) + 'M';
+                                    } else if (value >= 1000) {
+                                        return '£' + (value / 1000).toFixed(0) + 'K';
+                                    }
+                                    return '£' + value.toLocaleString();
+                                }
+                                return '£' + value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                }
+            }
+        };
+
+        var cashFlowChart = new Chart(cashFlowCtx.getContext('2d'), cashFlowConfig);
+        chartInstances.push(cashFlowChart);
+    }
+    
+    // Modal functions - moved inside DOMContentLoaded
+    window.showEstimatedValueModal = function() {
+        document.getElementById('estimatedValueModal').classList.remove('hidden');
+    }
+
+    window.hideEstimatedValueModal = function() {
+        document.getElementById('estimatedValueModal').classList.add('hidden');
+    }
+
+    window.showMonthlyIncomeModal = function() {
+        document.getElementById('monthlyIncomeModal').classList.remove('hidden');
+    }
+
+    window.hideMonthlyIncomeModal = function() {
+        document.getElementById('monthlyIncomeModal').classList.add('hidden');
+    }
+
+    window.showGrossYieldModal = function() {
+        document.getElementById('grossYieldModal').classList.remove('hidden');
+    }
+
+    window.hideGrossYieldModal = function() {
+        document.getElementById('grossYieldModal').classList.add('hidden');
+    }
+
+    window.showNetYieldModal = function() {
+        console.log('Net Yield modal button clicked');
+        document.getElementById('netYieldModal').classList.remove('hidden');
+    }
+
+    window.hideNetYieldModal = function() {
+        document.getElementById('netYieldModal').classList.add('hidden');
+    }
+
+    window.showDscrModal = function() {
+        console.log('DSCR modal button clicked');
+        document.getElementById('dscrModal').classList.remove('hidden');
+    }
+
+    window.hideDscrModal = function() {
+        document.getElementById('dscrModal').classList.add('hidden');
+    }
+
+    window.showOpexModal = function() {
+        console.log('OPEX Load modal button clicked');
+        document.getElementById('opexModal').classList.remove('hidden');
+    }
+
+    window.hideOpexModal = function() {
+        document.getElementById('opexModal').classList.add('hidden');
+    }
+
+    window.showNratModal = function() {
+        console.log('NRAT modal button clicked');
+        document.getElementById('nratModal').classList.remove('hidden');
+    }
+
+    window.hideNratModal = function() {
+        document.getElementById('nratModal').classList.add('hidden');
+    }
+
+    // Cash flow toggle functions
+    window.toggleDetailedCashFlow = function() {
+        const element = document.getElementById('detailedCashFlow');
+        if (element) {
+            element.classList.toggle('hidden');
+        }
+    }
+
+    window.toggleCashFlowChart = function() {
+        const element = document.getElementById('cashFlowChart');
+        if (element) {
+            element.classList.toggle('hidden');
+        }
+    }
+
+    // Close modal when clicking outside of it
+    const estimatedValueModal = document.getElementById('estimatedValueModal');
+    if (estimatedValueModal) {
+        estimatedValueModal.addEventListener('click', function(event) {
+            if (event.target === this) {
+                hideEstimatedValueModal();
+            }
+        });
+    }
+
+    const monthlyIncomeModal = document.getElementById('monthlyIncomeModal');
+    if (monthlyIncomeModal) {
+        monthlyIncomeModal.addEventListener('click', function(event) {
+            if (event.target === this) {
+                hideMonthlyIncomeModal();
+            }
+        });
+    }
+
+    const grossYieldModal = document.getElementById('grossYieldModal');
+    if (grossYieldModal) {
+        grossYieldModal.addEventListener('click', function(event) {
+            if (event.target === this) {
+                hideGrossYieldModal();
+            }
+        });
+    }
+
+    const netYieldModal = document.getElementById('netYieldModal');
+    if (netYieldModal) {
+        netYieldModal.addEventListener('click', function(event) {
+            if (event.target === this) {
+                hideNetYieldModal();
+            }
+        });
+    }
+
+    const dscrModal = document.getElementById('dscrModal');
+    if (dscrModal) {
+        dscrModal.addEventListener('click', function(event) {
+            if (event.target === this) {
+                hideDscrModal();
+            }
+        });
+    }
+
+    const opexModal = document.getElementById('opexModal');
+    if (opexModal) {
+        opexModal.addEventListener('click', function(event) {
+            if (event.target === this) {
+                hideOpexModal();
+            }
+        });
+    }
+
+    const nratModal = document.getElementById('nratModal');
+    if (nratModal) {
+        nratModal.addEventListener('click', function(event) {
+            if (event.target === this) {
+                hideNratModal();
+            }
+        });
+    }
+
+    // Add window resize listener to update chart sizes
+    window.addEventListener('resize', function() {
+        chartInstances.forEach(function(chart) {
+            if (chart && chart.resize) {
+                chart.resize();
+            }
+        });
+    });
+});
+</script>
+
+<style>
+/* Enhanced mobile chart interactions */
+@media (max-width: 768px) {
+    #cashFlowChart .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        padding-bottom: 10px; /* Space for scrollbar */
+    }
+    
+    #cashFlowChart canvas {
+        touch-action: pan-x pan-y;
+        cursor: grab;
+    }
+    
+    #cashFlowChart canvas:active {
+        cursor: grabbing;
+    }
+    
+    /* Make sure chart takes full width on small screens */
+    #cashFlowChart .min-w-\[800px\] {
+        min-width: 800px !important;
+    }
+}
+
+/* Improve scrollbar visibility on all devices */
+#cashFlowChart .overflow-x-auto::-webkit-scrollbar {
+    height: 12px;
+}
+
+#cashFlowChart .overflow-x-auto::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 6px;
+    margin: 0 4px;
+}
+
+#cashFlowChart .overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 6px;
+    border: 2px solid #f1f5f9;
+}
+
+#cashFlowChart .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Chart.js responsive container heights */
+#cashFlowChart .min-w-\[600px\] {
+    max-height: 500px; /* Cap maximum height */
+}
+</style>
+{% endblock %}

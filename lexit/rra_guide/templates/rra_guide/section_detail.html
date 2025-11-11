@@ -1,0 +1,156 @@
+{% extends "layout.html" %}
+{% load humanize %}
+
+{% block title %}
+    LEXIT | {{ section.title }} - Renters' Rights Act Guide
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Main Container -->
+    <div class="flex justify-center">
+        <div class="w-full mt-4">
+
+            <!-- Progress Bar -->
+            <div class="mb-6">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                    <span>Section {{ current_index }} of {{ total_sections }}</span>
+                    <span>{{ progress_percentage|floatformat:0 }}% Complete</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-primary-blue h-2 rounded-full transition-all duration-300" style="width: {{ progress_percentage }}%"></div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center">
+                    {% if prev_section %}
+                    <a href="{% url 'rra_guide:section_detail' prev_section %}" 
+                       class="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-blue border border-primary-blue rounded-lg hover:bg-primary-blue hover:text-white transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Previous
+                    </a>
+                    {% else %}
+                    <a href="{% url 'rra_guide:home' %}" 
+                       class="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-blue border border-primary-blue rounded-lg hover:bg-primary-blue hover:text-white transition-colors">
+                        <i class="fas fa-home mr-2"></i>
+                        Guide Home
+                    </a>
+                    {% endif %}
+                    
+                    <h1 class="text-2xl md:text-3xl font-bold text-primary-blue text-center flex-grow mx-4">{{ section.title }}</h1>
+                    
+                    {% if next_section %}
+                    <a href="{% url 'rra_guide:section_detail' next_section %}" 
+                       class="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-blue border border-primary-blue rounded-lg hover:bg-primary-blue hover:text-white transition-colors">
+                        Next
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'rra_guide:faqs' %}" 
+                       class="inline-flex items-center px-4 py-2 text-sm font-medium text-pink-500 border border-pink-500 rounded-lg hover:bg-pink-500 hover:text-white transition-colors">
+                        FAQs
+                        <i class="fas fa-question-circle ml-2"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Explainer Section -->
+            <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
+                <div class="bg-blue-50 px-6 py-4 border-b border-blue-200">
+                    <h2 class="text-xl font-bold text-primary-blue flex items-center">
+                        <i class="fas fa-book mr-3"></i>
+                        {{ section.explainer.title }}
+                    </h2>
+                </div>
+                <div class="p-6 md:p-8">
+                    <div class="prose max-w-none">
+                        {% for paragraph in section.explainer.content %}
+                        <p class="text-gray-700 mb-4 leading-relaxed">{{ paragraph }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Impact Section -->
+            <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
+                <div class="bg-yellow-50 px-6 py-4 border-b border-yellow-200">
+                    <h2 class="text-xl font-bold text-primary-blue flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-3 text-yellow-600"></i>
+                        {{ section.impact.title }}
+                    </h2>
+                </div>
+                <div class="p-6 md:p-8">
+                    <div class="prose max-w-none">
+                        {% for item in section.impact.content %}
+                        <div class="mb-4 p-4 bg-gray-50 rounded-lg border-l-4 border-primary-blue">
+                            <p class="text-gray-700 leading-relaxed">{{ item|safe }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
+                <div class="p-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                        <div class="flex space-x-4">
+                            {% if prev_section %}
+                            <a href="{% url 'rra_guide:section_detail' prev_section %}" 
+                               class="inline-flex items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors">
+                                <i class="fas fa-arrow-left mr-2"></i>
+                                Previous Section
+                            </a>
+                            {% endif %}
+                            
+                            <a href="{% url 'rra_guide:home' %}" 
+                               class="inline-flex items-center px-6 py-3 border border-primary-blue hover:bg-primary-blue hover:text-white text-primary-blue font-medium rounded-lg transition-colors">
+                                <i class="fas fa-home mr-2"></i>
+                                Guide Home
+                            </a>
+                        </div>
+                        
+                        <div class="flex space-x-4">
+                            {% if next_section %}
+                            <a href="{% url 'rra_guide:section_detail' next_section %}" 
+                               class="inline-flex items-center px-6 py-3 bg-primary-blue hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+                                Next Section
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                            {% else %}
+                            <a href="{% url 'rra_guide:faqs' %}" 
+                               class="inline-flex items-center px-6 py-3 bg-pink-500 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors">
+                                View FAQs
+                                <i class="fas fa-question-circle ml-2"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Overview -->
+            <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-primary-blue mb-4">All Sections</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <!-- This would be populated with all sections if needed -->
+                        <div class="text-center">
+                            <a href="{% url 'rra_guide:home' %}" 
+                               class="text-sm text-primary-blue hover:text-blue-700 hover:underline">
+                                View All Sections
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

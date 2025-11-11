@@ -1,0 +1,82 @@
+/* CKEditor Content Styles */
+.article-content {
+    line-height: 1.6;
+}
+
+.article-content p {
+    margin-bottom: 1rem;
+    color: #05113A; /* primary-blue */
+    font-family: 'Anek Latin', sans-serif;
+}
+
+.article-content strong {
+    font-weight: bold;
+    color: #05113A;
+}
+
+.article-content em {
+    font-style: italic;
+}
+
+.article-content u {
+    text-decoration: underline;
+}
+
+.article-content ul {
+    list-style-type: disc;
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+.article-content ol {
+    list-style-type: decimal;
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+.article-content li {
+    margin-bottom: 0.5rem;
+    color: #05113A;
+    font-family: 'Anek Latin', sans-serif;
+}
+
+.article-content h1, .article-content h2, .article-content h3, .article-content h4, .article-content h5, .article-content h6 {
+    font-family: 'Archivo', sans-serif;
+    font-weight: bold;
+    color: #05113A;
+    margin-bottom: 1rem;
+    margin-top: 1.5rem;
+}
+
+.article-content h1 {
+    font-size: 2.5rem;
+}
+
+.article-content h2 {
+    font-size: 2rem;
+}
+
+.article-content h3 {
+    font-size: 1.75rem;
+}
+
+.article-content h4 {
+    font-size: 1.5rem;
+}
+
+.article-content h5 {
+    font-size: 1.25rem;
+}
+
+.article-content h6 {
+    font-size: 1rem;
+}
+
+.article-content a {
+    color: #D94590; /* dark-pink */
+    text-decoration: underline;
+}
+
+.article-content a:hover {
+    color: #E0BBFF; /* pink */
+}

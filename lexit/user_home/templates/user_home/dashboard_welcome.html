@@ -1,0 +1,525 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+    LEXIT | Welcome
+{% endblock %}
+
+{% block content %}
+
+<style>
+/* CTA Container Section - RRB Guide Advertisement */
+.figma-cta-container-section {
+    background: #d94590 !important;
+}
+
+/* Force RRB card to have no padding/margin whatsoever */
+.rrb-card-no-padding {
+    padding: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.rrb-card-no-padding .card-body {
+    padding: 0 !important;
+}
+.figma-cta-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.figma-cta-container-gradient {
+    position: absolute;
+    top: -118px;
+    left: 438px;
+    width: 1354px;
+    height: 1131px;
+    border-radius: 677px/565.5px;
+    background: radial-gradient(50% 50% at 50% 50%, rgba(90,24,154,0.5) 0%, rgba(255,255,255,0) 90%);
+    z-index: 1;
+}
+.figma-cta-visual-content {
+    position: absolute;
+    top: 31px;
+    left: 550px;
+    width: 707px;
+    height: 602px;
+    z-index: 2;
+}
+.figma-speech-bubble-container {
+    position: absolute;
+    top: 46px;
+    left: 83px;
+    width: 338px;
+    height: 85px;
+}
+.figma-speech-bubble {
+    position: absolute;
+    top: 0;
+    left: 36px;
+    width: 302px;
+    height: 80px;
+}
+.figma-speech-text {
+    position: absolute;
+    top: 9px;
+    left: 61px;
+    width: 263px;
+    font-family: 'Anek Latin', Arial, sans-serif;
+    font-weight: 500;
+    color: #05113a;
+    font-size: 16px;
+    line-height: 22px;
+    margin: 0;
+}
+.figma-user-avatar {
+    position: absolute;
+    top: 49px;
+    left: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+.figma-decorative-icon {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+}
+.figma-icon-1 {
+    top: 249px;
+    left: 167px;
+}
+.figma-icon-2 {
+    top: 416px;
+    left: 555px;
+}
+.figma-icon-3 {
+    top: 7px;
+    left: 575px;
+}
+.figma-progress-widget {
+    position: absolute;
+    top: 126px;
+    left: 503px;
+    width: 200px;
+    height: 100px;
+    border-radius: 12px;
+    border: 1px solid rgba(122,122,122,0.13);
+    backdrop-filter: blur(40px);
+    background: linear-gradient(180deg, rgba(236,244,245,0.33) 0%, rgba(236,244,245,0.5) 45%, rgba(236,244,245,0.33) 95%);
+    padding: 8px;
+}
+.figma-progress-title {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Anek Latin', Arial, sans-serif;
+    font-weight: 700;
+    color: #05113a;
+    font-size: 14px;
+    line-height: 22px;
+    white-space: nowrap;
+}
+.figma-week-days {
+    position: absolute;
+    top: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 177px;
+    height: 29px;
+    display: flex;
+    justify-content: space-between;
+}
+.figma-week-days span {
+    width: 13px;
+    height: 29px;
+    font-family: 'Anek Latin', Arial, sans-serif;
+    font-weight: 500;
+    color: #05113a;
+    font-size: 14px;
+    text-align: center;
+    line-height: 22px;
+    flex: none;
+}
+.figma-progress-dots {
+    position: absolute;
+    top: 58px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 177px;
+    height: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.figma-progress-dots .figma-dot {
+    position: relative;
+    left: auto !important;
+    flex: none;
+}
+.figma-dot {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.4);
+}
+.figma-dot.completed {
+    background-image: url('https://c.animaapp.com/zCYCnLC1/img/frame-33.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.figma-calendar-person {
+    position: absolute;
+    top: 0;
+    left: 161px;
+    width: 546px;
+    height: 602px;
+    object-fit: cover;
+    aspect-ratio: 0.91;
+}
+.figma-contact-widget {
+    position: absolute;
+    top: 471px;
+    left: 0;
+    width: 359px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(122,122,122,0.13);
+    backdrop-filter: blur(40px);
+    background: linear-gradient(180deg, rgba(236,244,245,0.33) 0%, rgba(236,244,245,0.5) 45%, rgba(236,244,245,0.33) 95%);
+}
+.figma-contact-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+.figma-contact-photo {
+    width: 45px;
+    height: 45px;
+    border-radius: 100px;
+    background-size: 100% 100%;
+    flex-shrink: 0;
+}
+.figma-contact-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    overflow: hidden;
+}
+.figma-contact-name {
+    font-family: 'Avenir-Medium', Arial, sans-serif;
+    font-weight: 500;
+    color: #05113a;
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: 0.38px;
+    margin: 0;
+}
+.figma-contact-type {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+.figma-contact-actions {
+    flex-shrink: 0;
+    width: 72px;
+    height: 36px;
+}
+.figma-cta-main-content {
+    position: absolute;
+    top: 150px;
+    left: 40px;
+    z-index: 3;
+    width: 745px;
+}
+.figma-cta-main-title {
+    font-family: 'Archivo', Arial, sans-serif;
+    font-weight: 500;
+    color: white !important;
+    font-size: 64px;
+    line-height: 60px;
+    margin: 0 0 35px 0;
+    width: 745px;
+    letter-spacing: 0;
+}
+.figma-cta-main-description {
+    font-family: 'Anek Latin', Arial, sans-serif;
+    font-weight: 400;
+    color: white !important;
+    font-size: 24px;
+    line-height: 32px;
+    margin: 0 0 45px 0;
+    width: 510px;
+    letter-spacing: 0;
+    opacity: 0.9;
+}
+.figma-cta-main-button {
+    position: relative;
+    top: 0;
+    left: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 270px;
+    height: 64px;
+    background: #05113a;
+    border-radius: 60px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+}
+.figma-cta-main-button:hover {
+    background: #0a1a52;
+}
+.figma-cta-main-button-text {
+    margin-top: 1px;
+    height: 17px;
+    width: 178px;
+    font-family: 'Archivo', Arial, sans-serif;
+    font-weight: 700;
+    color: white !important;
+    font-size: 16px;
+    text-align: center;
+    line-height: normal;
+    white-space: nowrap;
+}
+
+/* Force button text to be white with highest specificity */
+.figma-cta-main-button .figma-cta-main-button-text,
+a.figma-cta-main-button .figma-cta-main-button-text,
+a.figma-cta-main-button span.figma-cta-main-button-text {
+    color: white !important;
+}
+
+/* Feature highlight cards - consistent corner radius */
+.figma-style {
+    border-radius: 30px !important;
+}
+</style>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <br>
+    <div class="pb-4" style="padding-bottom: 2rem;">
+        <h4 class="text-2xl font-bold text-primary-blue">Hi {{ user.first_name|default:user.username }}, welcome to LEXIT</h4>
+        <p class="text-primary-blue">Add a property to get started</p>
+    </div>
+    <!-- Get Started Card with MP4 Video -->
+    <div class="bg-white rounded-lg shadow-lg mb-8 relative overflow-hidden" style="min-height: 400px;">
+        <!-- Background Video -->
+        <video autoplay muted loop playsinline class="absolute top-0 left-0 w-full h-full object-cover z-10">
+            <source src="{% static 'images/roullette_wheel.mp4' %}" type="video/mp4">
+            <!-- Fallback image if video doesn't load -->
+            <img src="{% static 'images/banner_add_lemon.png' %}" alt="Background" class="w-full h-full object-cover">
+        </video>
+        
+        <!-- Content overlay with absolute positioning for bottom third -->
+        <div class="absolute inset-0 z-20">
+            <!-- Text positioned in bottom third (around 70% from top) -->
+            <div class="absolute w-full text-center" style="top: 70%; left: 50%; transform: translateX(-50%) translateY(-50%);">
+                <h3 class="text-base mb-4 font-bold" style="font-family: 'Cooper Hewitt', sans-serif; text-shadow: 25px 25px 25px rgba(255, 19, 146, 0.3); color: white !important;">Stop playing Buy-to-Let roulette...</h3>
+            </div>
+            
+            <!-- Button positioned in bottom third (around 85% from top) -->
+            <div class="absolute w-full text-center" style="top: 85%; left: 50%; transform: translateX(-50%) translateY(-50%);">
+                <a href="{% url 'user_home:upload_property' %}" class="bg-pink-500 hover:bg-pink-600 px-6 py-3 rounded-lg text-lg font-bold inline-flex items-center transition-colors" style="color: white !important;">
+                    <i class="fas fa-plus mr-2" style="color: white !important;"></i><span style="color: white !important;">Add Your First Property</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Introduction Section -->
+    <div class="mt-6">
+        <div class="text-center">
+            
+            <!-- Feature highlights -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="mb-3">
+                    <div class="bg-white rounded-3xl shadow-lg h-full">
+                        <div class="p-6 text-center">
+                            <i class="fas fa-calculator text-2xl text-blue-600 mb-3"></i>
+                            <h5 class="font-bold text-lg text-gray-800 mb-3">Tax Calculations</h5>
+                            <p class="text-gray-600">Calculate SDLT, income tax, and capital gains for your properties.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="bg-white rounded-3xl shadow-lg h-full">
+                        <div class="p-6 text-center">
+                            <i class="fas fa-chart-line text-2xl text-blue-600 mb-3"></i>
+                            <h5 class="font-bold text-lg text-gray-800 mb-3">Portfolio Analytics</h5>
+                            <p class="text-gray-600">Track yields, cash flow, and portfolio performance over time.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="bg-white rounded-3xl shadow-lg h-full">
+                        <div class="p-6 text-center">
+                            <i class="fas fa-newspaper text-2xl text-blue-600 mb-3"></i>
+                            <h5 class="font-bold text-lg text-gray-800 mb-3">Market Insights</h5>
+                            <p class="text-gray-600">Stay updated with the latest property market news and regulations.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Container Section -->
+<section class="relative w-full max-w-[1440px] mx-auto py-16 lg:py-20">
+    <!-- Add responsive CSS for centering -->
+    <style>
+        @media (max-width: 1023px) {
+            .dashboard-cta-container {
+                height: auto !important;
+                min-height: 500px !important;
+            }
+            
+            .dashboard-cta-left-content {
+                padding: 2rem !important;
+                text-align: center !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            
+            .dashboard-cta-right-content {
+                display: none !important;
+            }
+        }
+    </style>
+    
+    <div class="mx-5 lg:mx-[21px]">
+            <div class="dashboard-cta-container relative w-full max-w-[1398px] mx-auto h-[633px] bg-[#d94590] rounded-[30px] overflow-hidden">
+                <!-- Background Gradient -->
+                <div class="absolute top-0 left-0 w-full h-full">
+                    <div class="absolute -top-[118px] right-0 w-[1354px] h-[1131px] rounded-[677px/565.5px] opacity-50"
+                         style="background: radial-gradient(50% 50% at 50% 50%, rgba(90,24,154,0.5) 0%, rgba(255,255,255,0) 90%);">
+                    </div>
+                </div>
+
+                <!-- Left Content -->
+                <div class="dashboard-cta-left-content relative z-10 flex flex-col justify-center h-full px-8 lg:px-[118px]">
+                    <!-- Main Headline -->
+                    <h2 class="font-archivo font-medium text-2xl lg:text-5xl tracking-[0] leading-tight lg:leading-[60px] mb-8 max-w-[745px]" style="color: white !important;">
+                        Renters' Rights Act
+                    </h2>
+
+                    <!-- Description -->
+                    <p class="font-normal text-[#ffffffd6] text-lg lg:text-2xl tracking-[0] leading-7 lg:leading-8 mb-12 max-w-[510px] max-md:text-base">
+                        Time is runninning out! Stay of the Renters' Right Act - non compliant landlords face significant costs and hefty fines. 
+                    </p>
+                    <p class="font-normal text-[#ffffffd6] text-lg lg:text-2xl tracking-[0] leading-7 lg:leading-8 mb-12 max-w-[510px] max-md:text-base">
+                        Act now to avoid the consequences.
+                    </p>
+
+                    <!-- CTA Button -->
+                    <a href="{% url 'rra_guide:home' %}" 
+                       class="w-[270px] h-16 bg-primary-blue flex items-center justify-center rounded-[60px] overflow-hidden cursor-pointer hover:bg-[#0a1a52] transition-colors">
+                        <span class="font-archivo font-bold text-white text-base text-center tracking-[0] leading-[normal] whitespace-nowrap">
+                            ACCESS OUR RRA GUIDE
+                        </span>
+                    </a>
+                </div>
+
+                <!-- Right Visual Content -->
+                <div class="dashboard-cta-right-content absolute top-[31px] right-[31px] w-[707px] h-[602px] hidden lg:block">
+                    <!-- Speech Bubble -->
+                    <div class="absolute top-[46px] left-[83px] w-[338px] h-[85px]">
+                        <img class="absolute top-0 left-9 w-[302px] h-20" 
+                             alt="Speech bubble" 
+                             src="https://c.animaapp.com/zCYCnLC1/img/union.svg" />
+                        
+                        <p class="absolute top-[9px] left-[61px] w-[263px] font-medium text-primary-blue text-base tracking-[0] leading-[22px]">
+                            If I can't sell quickly, I'll be paying the mortgage with no rental income…
+                        </p>
+                        
+                        <img class="absolute top-[49px] left-0 w-9 h-9 rounded-full bg-cover bg-center" 
+                             alt="User avatar" 
+                             src="https://c.animaapp.com/zCYCnLC1/img/photo@2x.png" />
+                    </div>
+
+                    <!-- Calendar Widget -->
+                    <div class="absolute top-[126px] left-[503px] w-[200px] h-[100px] rounded-xl overflow-hidden border border-[#7a7a7a21] backdrop-blur-2xl"
+                         style="background: linear-gradient(180deg, rgba(236,244,245,0.33) 0%, rgba(236,244,245,0.5) 45%, rgba(236,244,245,0.33) 95%);">
+                        
+                        <div class="absolute top-[18px] left-[21px] font-bold text-primary-blue text-sm tracking-[0] leading-[22px]">
+                            Day 6 of 7
+                        </div>
+                        
+                        <!-- Week Days -->
+                        <div class="absolute top-[42px] left-[18px] flex gap-3">
+                            <div class="w-[13px] h-[29px] font-medium text-primary-blue text-sm text-center">S</div>
+                            <div class="w-[13px] h-[29px] font-medium text-primary-blue text-sm text-center">M</div>
+                            <div class="w-[13px] h-[29px] font-medium text-primary-blue text-sm text-center">T</div>
+                            <div class="w-[13px] h-[29px] font-medium text-primary-blue text-sm text-center">W</div>
+                            <div class="w-[13px] h-[29px] font-medium text-primary-blue text-sm text-center">T</div>
+                            <div class="w-[13px] h-[29px] font-medium text-primary-blue text-sm text-center">F</div>
+                            <div class="w-[13px] h-[29px] font-medium text-primary-blue text-sm text-center">S</div>
+                        </div>
+                        
+                        <!-- Progress Dots -->
+                        <div class="absolute top-16 left-4 flex gap-[7px]">
+                            <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                            <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                            <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                            <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                            <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                            <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                            <div class="w-[18px] h-[18px] bg-[#ffffff66] rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- Main Image -->
+                    <img class="absolute top-0 left-[161px] w-[546px] h-[602px] object-cover" 
+                         alt="Person looking at calendar" 
+                         src="https://c.animaapp.com/zCYCnLC1/img/freepik--create-an-image-of-a-guy-looking-at-a-calendar-and--481.png" />
+
+                    <!-- Contact Card -->
+                    <div class="absolute bottom-[42px] left-0 w-[359px] h-[90px] rounded-xl border border-[#7a7a7a21] backdrop-blur-2xl p-4"
+                         style="background: linear-gradient(180deg, rgba(236,244,245,0.33) 0%, rgba(236,244,245,0.5) 45%, rgba(236,244,245,0.33) 95%);">
+                        
+                        <div class="flex items-center gap-4">
+                            <img class="w-[45px] h-[45px] rounded-full" 
+                                 alt="Contact photo" 
+                                 src="https://c.animaapp.com/zCYCnLC1/img/---contact-photo@2x.png" />
+                            
+                            <div class="flex flex-col">
+                                <div class="font-medium text-primary-blue text-xl">Petra Herber</div>
+                                <div class="text-gray-600 text-sm">mobile</div>
+                            </div>
+                            
+                            <img class="ml-auto" 
+                                 alt="Call and message actions" 
+                                 src="https://c.animaapp.com/zCYCnLC1/img/actions.svg" />
+                        </div>
+                    </div>
+
+                    <!-- Decorative Icons -->
+                    <img class="absolute top-[7px] left-[575px] w-12 h-12" 
+                         alt="Decorative icon" 
+                         src="https://c.animaapp.com/zCYCnLC1/img/frame-2.svg" />
+                    <img class="absolute top-[249px] left-[167px] w-12 h-12" 
+                         alt="Decorative icon" 
+                         src="https://c.animaapp.com/zCYCnLC1/img/frame-4.svg" />
+                    <img class="absolute top-[416px] left-[555px] w-12 h-12" 
+                         alt="Decorative icon" 
+                         src="https://c.animaapp.com/zCYCnLC1/img/frame-6.svg" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

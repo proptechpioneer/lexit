@@ -1,0 +1,678 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&display=swap');
+
+/* Tailwind CSS v4 theme configuration */
+@theme {
+  /* Custom Colors */
+  --color-primary-blue: #05113A;
+  --color-primary-blue-force: #05113A; 
+  --color-yellow: #FFD700;
+  --color-light-yellow: #FFF5C8;
+  --color-light-blue: #A2CADD;
+  --color-pink: #E0BBFF;
+  --color-purple: #A084CA;
+  --color-dark-purple: #5A189A;
+  --color-dark-pink: #D94590;
+  --color-light-grey: #E5E3E6;
+  
+  /* Category Badge Colors */
+  --color-red-400: #f87171;
+  --color-green-400: #4ade80;
+  --color-purple-400: #a78bfa;
+  --color-blue-400: #60a5fa;
+  --color-orange-400: #fb923c;
+  
+  /* Custom Fonts */
+  --font-archivo: 'Archivo', sans-serif;
+  --font-anek-latin: 'Anek Latin', sans-serif;
+  --font-sans: 'Anek Latin', ui-sans-serif, system-ui, sans-serif;
+  
+  /* Custom Font Sizes */
+  --font-size-h1-custom: 96px;
+  --line-height-h1-custom: 88px;
+  --font-size-h2-custom: 64px; 
+  --line-height-h2-custom: 64px;
+  --font-size-h3-custom: 40px;
+  --line-height-h3-custom: 100%;
+  --font-size-h4-custom: 32px;
+  --line-height-h4-custom: 36px;
+  --font-size-h5-custom: 20px;
+  --line-height-h5-custom: 24px;
+}
+
+/* Base styles */
+body {
+  font-family: 'Anek Latin', sans-serif;
+  color: #05113A;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Archivo', sans-serif;
+  color: #05113A;
+  font-weight: 500;
+}
+
+/* Default heading sizes - can be overridden by utility classes */
+h1:not([class*="text-"]) {
+  font-size: 96px;
+  line-height: 88px;
+}
+
+h2:not([class*="text-"]) {
+  font-size: 64px;
+  line-height: 64px;
+}
+
+h3:not([class*="text-"]) {
+  font-size: 40px;
+  line-height: 100%;
+}
+
+h4:not([class*="text-"]) {
+  font-size: 32px;
+  line-height: 36px;
+}
+
+h5:not([class*="text-"]) {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* Custom utility classes */
+.text-h1-custom {
+  font-size: 96px;
+  line-height: 88px;
+  font-weight: 500;
+}
+
+.text-h2-custom {
+  font-size: 64px;
+  line-height: 64px;
+  font-weight: 500;
+}
+
+.text-h3-custom {
+  font-size: 40px;
+  line-height: 100%;
+  font-weight: 500;
+}
+
+.text-h4-custom {
+  font-size: 32px;
+  line-height: 36px;
+  font-weight: 500;
+}
+
+.text-h5-custom {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 500;
+}
+
+.font-archivo {
+  font-family: 'Archivo', sans-serif;
+}
+
+.font-anek-latin {
+  font-family: 'Anek Latin', sans-serif;
+}
+
+/* Component styles */
+.btn-primary {
+  background-color: #05113A;
+  color: white;
+  font-family: 'Anek Latin', sans-serif;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #5A189A;
+}
+
+.section-title {
+  font-size: 64px;
+  line-height: 64px;
+  font-weight: 500;
+  font-family: 'Archivo', sans-serif;
+  color: #05113A;
+  margin-bottom: 1rem;
+}
+
+/* Testimonials Section Styles */
+.figma-testimonials-section {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 80px 20px;
+  background-color: white;
+}
+
+.figma-testimonials-container {
+  font-family: 'archivo', sans-serif;
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  padding: 60px;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.figma-quote-mark {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 30px;
+}
+
+.figma-bullet-points {
+  position: absolute;
+  left: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.figma-bullet-point {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #ffd700;
+}
+
+.figma-testimonial-content-area {
+  flex: 1;
+  max-width: 600px;
+  padding-left: 80px;
+}
+
+.figma-testimonial-quote {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 500;
+  color: #05113A;
+  font-size: 20px;
+  line-height: 1.4;
+  margin-bottom: 20px;
+}
+
+.figma-testimonial-description {
+  font-family: 'Anek Latin', sans-serif;
+  color: #05113A;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.figma-testimonial-author {
+  margin-top: 24px;
+}
+
+.figma-author-name {
+  font-family: 'Archivo', sans-serif;
+  font-weight: bold;
+  color: #05113A;
+  font-size: 14px;
+  margin: 0 0 4px 0;
+}
+
+.figma-author-role {
+  font-family: 'Anek Latin', sans-serif;
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+.figma-testimonial-image {
+  flex-shrink: 0;
+  width: 280px;
+  height: 350px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.figma-testimonial-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Secondary Navigation Enhancements */
+.secondary-nav-dropdown:hover .opacity-0 {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Ensure dropdown menu positioning and behavior */
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
+.group:hover .group-hover\:visible {
+  visibility: visible;
+}
+
+/* Secondary Navigation Button Styles */
+.secondary-nav-btn {
+  transition: all 0.2s ease;
+}
+
+.secondary-nav-btn:hover {
+  background-color: #ec4899 !important; /* Pink background on hover */
+  color: white !important;
+}
+
+.secondary-nav-btn.active {
+  background-color: #ec4899 !important; /* Pink background when active */
+  color: #05113A !important; /* Primary blue text when active */
+}
+
+/* Figma Component Classes */
+.figma-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.figma-style {
+  /* Basic styling for figma components */
+  border: 1px solid #e5e7eb;
+}
+
+.figma-h3 {
+  font-size: 40px;
+  line-height: 100%;
+  font-weight: 500;
+  font-family: 'Archivo', sans-serif;
+  color: #05113A;
+}
+
+.figma-text-small {
+  font-size: 14px;
+  line-height: 1.4;
+  font-family: 'Anek Latin', sans-serif;
+}
+
+.figma-text-base {
+  font-size: 16px;
+  line-height: 1.5;
+  font-family: 'Anek Latin', sans-serif;
+}
+
+.figma-btn-medium {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.figma-btn-medium-primary {
+  background-color: #ec4899;
+  color: white;
+  border: 1px solid #ec4899;
+}
+
+.figma-btn-medium-primary:hover {
+  background-color: #db2777;
+  border-color: #db2777;
+}
+
+.figma-btn-medium-secondary {
+  background-color: transparent;
+  color: #ec4899;
+  border: 1px solid #ec4899;
+}
+
+.figma-btn-medium-secondary:hover {
+  background-color: #ec4899;
+  color: white;
+}
+
+.figma-btn-small {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+}
+
+.figma-btn-small-primary {
+  background-color: #ec4899;
+  color: white;
+  border: 1px solid #ec4899;
+}
+
+.figma-btn-small-primary:hover {
+  background-color: #db2777;
+  border-color: #db2777;
+}
+
+.figma-btn-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.figma-btn-link-text {
+  margin-right: 8px;
+}
+
+.figma-btn-link-icon {
+  font-size: 12px;
+}
+
+.figma-btn-medium-text,
+.figma-btn-small-text,
+.figma-btn-link-text {
+  /* Text inside buttons should inherit color */
+  color: inherit;
+}
+
+/* Blog component styles */
+.figma-blog-image {
+  background-size: cover;
+  background-position: center;
+  border-radius: 24px;
+}
+
+.figma-blog-date {
+  font-family: 'Anek Latin', sans-serif;
+  color: #6b7280;
+}
+
+.figma-blog-category {
+  font-family: 'Anek Latin', sans-serif;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.figma-blog-post-title {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 900;
+  color: #1e293b;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.figma-blog-description {
+  font-family: 'Anek Latin', sans-serif;
+  color: #1e293b;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Advantages Section Styles */
+.figma-advantages-section {
+  background-color: #A2CADD;
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 80px 0 112px;
+  margin-top: -32px;
+}
+
+@media (min-width: 992px) {
+  .figma-advantages-section {
+    margin-top: 0;
+  }
+}
+
+.figma-advantages-container {
+  position: relative;
+  margin: 0 20px 32px;
+  margin-bottom: 32px;
+}
+
+.figma-advantages-title {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 500;
+  color: #05113A;
+  font-size: 32px;
+  line-height: 1.2;
+  margin-bottom: 32px;
+  text-align: center;
+  padding: 0 16px;
+}
+
+@media (min-width: 1024px) {
+  .figma-advantages-title {
+    font-size: 64px;
+    line-height: 64px;
+    margin-bottom: 64px;
+    padding: 0;
+  }
+}
+
+.figma-challenges-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  max-width: 1300px;
+  margin: 0 auto;
+  height: auto;
+}
+
+@media (min-width: 1024px) {
+  .figma-challenges-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+.figma-challenge-card {
+  min-height: 264px;
+  border-radius: 30px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.figma-challenge-card.image-card {
+  background-size: cover;
+  background-position: center;
+  padding: 0;
+}
+
+.figma-challenge-card.epc-card {
+  background-color: #f7c8e0;
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.figma-challenge-card.renters-card {
+  background-color: #d7c7ee;
+  grid-column: span 1;
+  grid-row: span 2;
+}
+
+.figma-challenge-card.finance-card {
+  background-color: #fff5c8;
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.figma-challenge-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 24px;
+}
+
+h3.figma-challenge-title {
+  font-family: 'Archivo', sans-serif;
+  font-weight: bold;
+  color: #05113A;
+  font-size: 18px !important;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.figma-challenge-description {
+  font-family: 'Anek Latin', sans-serif;
+  color: #05113A;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.figma-advantage-section-wrapper {
+  margin: 0 20px;
+  background-color: white;
+  border-radius: 30px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .figma-advantage-section-wrapper {
+    padding: 0;
+  }
+}
+
+.figma-advantage-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.figma-gradient-1 {
+  position: absolute;
+  top: 123px;
+  left: 348px;
+  width: 1299px;
+  height: 1244px;
+  border-radius: 50%;
+  opacity: 0.5;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.figma-gradient-2 {
+  position: absolute;
+  top: -487px;
+  left: 675px;
+  width: 1271px;
+  height: 1216px;
+  border-radius: 50%;
+  opacity: 0.5;
+  background: radial-gradient(circle, rgba(162, 202, 221, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.figma-gradient-3 {
+  position: absolute;
+  top: -456px;
+  left: -420px;
+  width: 1271px;
+  height: 1216px;
+  border-radius: 50%;
+  opacity: 0.5;
+  background: radial-gradient(circle, rgba(162, 202, 221, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.figma-advantage-content {
+  position: relative;
+  z-index: 10;
+  padding: 48px 0;
+}
+
+@media (min-width: 1024px) {
+  .figma-advantage-content {
+    padding: 96px 0;
+  }
+}
+
+.figma-advantage-title {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 500;
+  color: #05113A;
+  font-size: 32px;
+  line-height: 1.2;
+  margin-bottom: 48px;
+  text-align: center;
+  padding: 0 32px;
+}
+
+@media (min-width: 1024px) {
+  .figma-advantage-title {
+    font-size: 64px;
+    line-height: 64px;
+    margin-bottom: 80px;
+    padding: 0 64px;
+  }
+}
+
+.figma-advantage-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  padding: 0 16px;
+  max-width: 1152px;
+  margin: 0 auto;
+  justify-items: center;
+}
+
+@media (min-width: 1024px) {
+  .figma-advantage-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+    padding: 0 32px;
+  }
+}
+
+.figma-advantage-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .figma-advantage-card {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+.figma-advantage-icon {
+  width: 98px;
+  height: 96px;
+  margin-bottom: 24px;
+}
+
+.figma-advantage-card-title {
+  font-family: 'Archivo', sans-serif;
+  font-weight: bold;
+  color: #05113A;
+  font-size: 20px;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.figma-advantage-card-description {
+  font-family: 'Anek Latin', sans-serif;
+  color: #05113A;
+  font-size: 16px;
+  line-height: 1.375;
+  margin: 0;
+}

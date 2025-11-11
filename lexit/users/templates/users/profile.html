@@ -1,0 +1,359 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    LEXIT | Edit Profile
+{% endblock %}
+
+{% block content %}
+<!-- Main Container -->
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header Section -->
+        <div class="mb-8 bg-primary-blue p-6 rounded-lg">
+            <h1 class="text-base font-bold mb-4" style="font-size: 40px !important; font-family: 'Archivo', sans-serif !important; color: white !important;">Edit Profile</h1>
+            <p class="text-lg" style="color: white !important;">Update your personal information and preferences below.</p>
+        </div>
+
+        <!-- Form Container -->
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Basic Information Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-check mr-2"></i>Basic Information
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ user_form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user mr-2 text-primary-blue"></i>First Name <span class="text-red-500">*</span>
+                            </label>
+                            {{ user_form.first_name }}
+                            {% if user_form.first_name.errors %}
+                                <div class="mt-1">
+                                    {% for error in user_form.first_name.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ user_form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user mr-2 text-gray-400"></i>Last Name
+                            </label>
+                            {{ user_form.last_name }}
+                            {% if user_form.last_name.errors %}
+                                <div class="mt-1">
+                                    {% for error in user_form.last_name.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ user_form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-envelope mr-2 text-gray-400"></i>Email Address <span class="text-red-500">*</span>
+                            </label>
+                            {{ user_form.email }}
+                            {% if user_form.email.errors %}
+                                <div class="mt-1">
+                                    {% for error in user_form.email.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Picture Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-check mr-2"></i>Profile Picture
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ profile_form.profile_image.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-image mr-2 text-gray-400"></i>Upload Profile Image
+                            </label>
+                            {{ profile_form.profile_image }}
+                            {% if profile_form.profile_image.errors %}
+                                <div class="mt-1">
+                                    {% for error in profile_form.profile_image.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ profile_form.avatar_choice.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user-circle mr-2 text-gray-400"></i>Or Choose Avatar
+                            </label>
+                            {{ profile_form.avatar_choice }}
+                            {% if profile_form.avatar_choice.errors %}
+                                <div class="mt-1">
+                                    {% for error in profile_form.avatar_choice.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex items-center">
+                            {{ profile_form.use_avatar }}
+                            <label for="{{ profile_form.use_avatar.id_for_label }}" class="ml-2 text-sm text-gray-700">
+                                Use avatar instead of uploaded image
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Information Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-check mr-2"></i>Location Information
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ profile_form.country.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-globe mr-2 text-gray-400"></i>Country
+                            </label>
+                            {{ profile_form.country }}
+                            {% if profile_form.country.errors %}
+                                <div class="mt-1">
+                                    {% for error in profile_form.country.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ profile_form.city.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-city mr-2 text-gray-400"></i>City
+                            </label>
+                            {{ profile_form.city }}
+                            {% if profile_form.city.errors %}
+                                <div class="mt-1">
+                                    {% for error in profile_form.city.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Investment Objectives Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-check mr-2"></i>Investment Objectives
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center">
+                            {{ profile_form.retirement_objective }}
+                            <label for="{{ profile_form.retirement_objective.id_for_label }}" class="ml-2 text-sm text-gray-700">
+                                <i class="fas fa-piggy-bank mr-2 text-gray-400"></i>Retirement Planning
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            {{ profile_form.income_objective }}
+                            <label for="{{ profile_form.income_objective.id_for_label }}" class="ml-2 text-sm text-gray-700">
+                                <i class="fas fa-money-bill-wave mr-2 text-gray-400"></i>Regular Income
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            {{ profile_form.capital_gain_objective }}
+                            <label for="{{ profile_form.capital_gain_objective.id_for_label }}" class="ml-2 text-sm text-gray-700">
+                                <i class="fas fa-chart-line mr-2 text-gray-400"></i>Capital Growth
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            {{ profile_form.accidental_landlord }}
+                            <label for="{{ profile_form.accidental_landlord.id_for_label }}" class="ml-2 text-sm text-gray-700">
+                                <i class="fas fa-home mr-2 text-gray-400"></i>Accidental Landlord
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label for="{{ profile_form.future_ownership.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-crystal-ball mr-2 text-gray-400"></i>Future Ownership Plans
+                        </label>
+                        {{ profile_form.future_ownership }}
+                        {% if profile_form.future_ownership.errors %}
+                            <div class="mt-1">
+                                {% for error in profile_form.future_ownership.errors %}
+                                    <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Social Media & Website Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-check mr-2"></i>Social Media & Website
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ profile_form.facebook_url.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fab fa-facebook mr-2 text-blue-600"></i>Facebook Profile
+                            </label>
+                            {{ profile_form.facebook_url }}
+                            {% if profile_form.facebook_url.errors %}
+                                <div class="mt-1">
+                                    {% for error in profile_form.facebook_url.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ profile_form.linkedin_url.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fab fa-linkedin mr-2 text-blue-700"></i>LinkedIn Profile
+                            </label>
+                            {{ profile_form.linkedin_url }}
+                            {% if profile_form.linkedin_url.errors %}
+                                <div class="mt-1">
+                                    {% for error in profile_form.linkedin_url.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ profile_form.twitter_url.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fab fa-twitter mr-2 text-blue-400"></i>Twitter Profile
+                            </label>
+                            {{ profile_form.twitter_url }}
+                            {% if profile_form.twitter_url.errors %}
+                                <div class="mt-1">
+                                    {% for error in profile_form.twitter_url.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ profile_form.whatsapp_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fab fa-whatsapp mr-2 text-green-500"></i>WhatsApp Number
+                            </label>
+                            {{ profile_form.whatsapp_number }}
+                            {% if profile_form.whatsapp_number.errors %}
+                                <div class="mt-1">
+                                    {% for error in profile_form.whatsapp_number.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label for="{{ profile_form.website_url.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-globe mr-2 text-gray-400"></i>Website URL
+                            </label>
+                            {{ profile_form.website_url }}
+                            {% if profile_form.website_url.errors %}
+                                <div class="mt-1">
+                                    {% for error in profile_form.website_url.errors %}
+                                        <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Me Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-check mr-2"></i>About Me
+                        </h2>
+                    </div>
+                    <div>
+                        <label for="{{ profile_form.bio.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-user-edit mr-2 text-gray-400"></i>Biography
+                        </label>
+                        {{ profile_form.bio }}
+                        {% if profile_form.bio.errors %}
+                            <div class="mt-1">
+                                {% for error in profile_form.bio.errors %}
+                                    <p class="text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <p class="text-sm text-gray-500 mt-1">Tell others about yourself, your investment experience, or anything you'd like to share (max 500 characters).</p>
+                    </div>
+                </div>
+
+                <!-- Privacy Settings Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-check mr-2"></i>Privacy Settings
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center">
+                            {{ profile_form.show_email }}
+                            <label for="{{ profile_form.show_email.id_for_label }}" class="ml-2 text-sm text-gray-700">
+                                <i class="fas fa-envelope mr-2 text-gray-400"></i>Make email address visible to other users
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            {{ profile_form.show_social_media }}
+                            <label for="{{ profile_form.show_social_media.id_for_label }}" class="ml-2 text-sm text-gray-700">
+                                <i class="fas fa-share-alt mr-2 text-gray-400"></i>Make social media links visible to other users
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Privacy Information Notice -->
+                    <div class="bg-blue-500 p-4 rounded-lg mt-4">
+                        <p class="text-white text-sm">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            <strong>Privacy Notice:</strong> Your personal information is secure and will only be shared according to your privacy preferences. You can update these settings at any time.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end mt-8">
+                    <button type="submit" 
+                            style="background-color: #ec4899 !important; color: white !important; padding: 12px 24px !important; border-radius: 8px !important; font-weight: 600 !important; transition: background-color 0.2s !important; border: none !important; cursor: pointer !important; font-size: 16px !important;"
+                            onmouseover="this.style.backgroundColor='#db2777'" 
+                            onmouseout="this.style.backgroundColor='#ec4899'">
+                        Update Profile
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

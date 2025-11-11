@@ -1,0 +1,1521 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}LEXIT | Home{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section with smaller image and properly aligned text -->
+<div class="relative w-full pt-12 -mt-8" style="background: radial-gradient(ellipse 1040.94px 845.56px at center, rgba(160, 132, 202, 0.3) 0%, rgba(255, 255, 255, 0.8) 60%, #FFFFFF 100%);">
+  <div class="max-w-[1440px] mx-auto px-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center justify-items-center lg:justify-items-stretch">
+      
+
+      <!-- Left Content - Text with badge -->
+      <div class="space-y-6 lg:pl-30 text-center lg:text-left w-full">
+        <!-- Badge and subtitle side by side -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 justify-center lg:justify-start lg:items-start items-center">
+          <!-- Yellow Badge -->
+          <span class="inline-block bg-[#ffd700] text-[#05113a] px-4 py-2 rounded-full font-bold text-sm shrink-0">
+            Landlords
+          </span>
+          
+          <!-- Subtitle -->
+          <h2 class="text-primary-blue-force text-xl font-semibold whitespace-nowrap">
+            Beware of the coming financial storm
+          </h2>
+        </div>
+        
+        <!-- Main headline -->
+        <h1 class="text-3xl md:text-5xl lg:text-5xl xl:text-7xl font-medium text-primary-blue-force leading-none mb-16 font-archivo">
+          <span class="font-black whitespace-nowrap"><strong>Buy-to-let landlords:</strong></span><br>
+          <span class="font-medium whitespace-nowrap">Take back control in a</span><br class="block sm:hidden">
+          <span class="font-medium whitespace-nowrap">changing market</span>
+        </h1>
+        
+        <!-- Button -->
+        <a href="{% url 'users:register' %}" 
+           class="inline-block bg-[#05113a] text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-bold text-sm sm:text-base hover:bg-blue-800 transition-colors">
+          TRY IT FOR FREE
+        </a>
+      </div>
+
+      <!-- Right Content - MUCH smaller hero image -->
+      <div class="flex justify-center lg:justify-end w-full">
+        <img src="{% static 'images/HeroImage.png' %}" 
+             alt="Dashboard preview" 
+             class="w-full max-w-[700px] lg:max-w-[600px] xl:max-w-[700px] h-auto">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Advantages Section -->
+<section class="figma-advantages-section">
+    <!-- Why Most Landlords are Losing Money -->
+    <div class="figma-advantages-container">
+        <!-- Section Title -->
+        <h2 class="figma-advantages-title">
+            Why Most Landlords are<br><span>Losing Money</span>
+        </h2>
+        
+        <!-- Challenge Cards Grid -->
+        <div class="figma-challenges-grid">
+            <!-- Image Card 1 -->
+            <div class="figma-challenge-card image-card" 
+                 style="background-image: url('https://c.animaapp.com/zCYCnLC1/img/image-2@2x.png')">
+            </div>
+            
+            <!-- EPC Standards Card -->
+            <div class="figma-challenge-card epc-card">
+                <img class="figma-challenge-icon" alt="EPC Standards" src="https://c.animaapp.com/zCYCnLC1/img/icon-5@2x.png" />
+                <h3 class="figma-challenge-title">
+                    New Energy Performance Certificate (EPC) standards
+                </h3>
+                <p class="figma-challenge-description">
+                    Upgrading to meet new EPC standards will be extremely costly — many properties will require expensive refurbishments just to comply. Worst of all, it will soon be illegal to rent out any property that doesn't meet these minimum standards.
+                </p>
+            </div>
+            
+            <!-- Renters' Rights Act Card -->
+            <div class="figma-challenge-card renters-card">
+                <img class="figma-challenge-icon" alt="Renters Rights" src="https://c.animaapp.com/zCYCnLC1/img/icon-6@2x.png" />
+                <h3 class="figma-challenge-title">
+                    Renters' Rights Act 2025
+                </h3>
+                <p class="figma-challenge-description">
+                    The new Renters Rights Act skyrockets your risks as a landlord. Increasing the rent to market value will now be far more challenging, leaving your income stagnant while costs soar. <br><br>Removing trouble tenants? An even bigger legal nightmare, with hefty penalties and expanded tenant rights to claw back rent, turning enforcement into a minefield.<br><br>Your potential returns shrink as legal pitfalls and costly mistakes grow. One wrong move could cost thousands, trap you with difficult tenants longer, and wipe out your profits. The risks outweigh the rewards—unless you're ready to face a far more vulnerable investment landscape.
+                </p>
+            </div>
+            
+            <!-- Finance Act Card -->
+            <div class="figma-challenge-card finance-card">
+                <img class="figma-challenge-icon" alt="Finance Act" src="https://c.animaapp.com/zCYCnLC1/img/icon-4@2x.png" />
+                <h3 class="figma-challenge-title">
+                    Finance Act 2015
+                </h3>
+                <p class="figma-challenge-description">
+                    The Finance Act 2015 ended mortgage interest tax relief for landlords. That was manageable at record-low rates, but with rising interest costs, your profits are shrinking. No going back — your costs are only going up.
+                </p>
+            </div>
+            
+            <!-- Image Card 2 -->
+            <div class="figma-challenge-card image-card" 
+                 style="background-image: url('https://c.animaapp.com/zCYCnLC1/img/image-3@2x.png')">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Your Advantage in a Changing Market -->
+    <div class="figma-advantage-section-wrapper">
+        <!-- Background Gradients -->
+        <div class="figma-advantage-background">
+            <div class="figma-gradient-1"></div>
+            <div class="figma-gradient-2"></div>
+            <div class="figma-gradient-3"></div>
+        </div>
+        
+        <!-- Content -->
+        <div class="figma-advantage-content">
+            <!-- Section Title -->
+            <h2 class="figma-advantage-title">
+                Your Advantage in a<br><span>Changing Market</span>
+            </h2>
+            
+            <!-- Advantage Cards -->
+            <div class="figma-advantage-grid">
+                <!-- Compliance Card -->
+                <article class="figma-advantage-card">
+                    <img class="figma-advantage-icon" alt="Compliance" src="https://c.animaapp.com/zCYCnLC1/img/icon-2.svg" />
+                    <h3 class="figma-challenge-title">
+                        Stay Compliant with the Renters' Rights Act
+                    </h3>
+                    <p class="figma-advantage-card-description">
+                        Step-by-step guidance to navigate the new Renters Rights Act, ensuring full compliance and protecting your investments from legal pitfalls.
+                    </p>
+                </article>
+                
+                <!-- Clear Answers Card -->
+                <article class="figma-advantage-card">
+                    <img class="figma-advantage-icon" alt="Clear Answers" src="https://c.animaapp.com/zCYCnLC1/img/icon-3.svg" />
+                    <h3 class="figma-challenge-title">
+                        Financial Analysis for Clearer Insights
+                    </h3>
+                    <p class="figma-advantage-card-description">
+                        LEXIT transforms confusing financial data into simple insights, so even non-experts can make confident decisions.
+                    </p>
+                </article>
+                
+                <!-- International Card -->
+                <article class="figma-advantage-card">
+                    <img class="figma-advantage-icon" alt="International" src="https://c.animaapp.com/zCYCnLC1/img/icon-1.svg" />
+                    <h3 class="figma-challenge-title">
+                        Built for Domestic, International and Company Landlords
+                    </h3>
+                    <p class="figma-advantage-card-description">
+                        LEXIT understands the needs of international landlords and speaks your language, whether you're based in the UK or abroad.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How LEXIT Works - Main Header Section -->
+<section class="relative w-full max-w-[1440px] mx-auto py-8 lg:py-10 bg-light-yellow">
+    <div class="text-left px-4 pl-16" style="padding-left: 100px;">
+        <h1 class="font-archivo font-medium text-primary-blue text-4xl md:text-5xl lg:text-[64px] tracking-[0] leading-tight lg:leading-[normal]">
+            <span class="font-medium">How </span>
+            <span class="font-bold">LEXIT</span>
+            <span class="font-medium"> Works</span>
+        </h1>
+    </div>
+</section>
+
+<!-- Step 1: Enter Your Details (Start of Step 1 Section) -->
+<section class="relative w-full max-w-[1440px] mx-auto bg-[#fff5c8]">
+    <div class="flex flex-col lg:flex-row items-center lg:items-center">
+        <!-- Left Content -->
+        <div class="flex-1 px-4 md:px-8 lg:pr-8 mb-0 lg:mb-0 max-w-[543px] lg:max-w-none flex flex-col justify-center lg:pl-[100px]">
+            <!-- Step Indicator -->
+            <div class="font-archivo font-bold text-dark-pink text-xl md:text-2xl tracking-[0] leading-[normal] mb-4 lg:mb-6 text-center lg:text-left w-full mx-auto lg:mx-0">
+                01 STEP
+            </div>
+
+            <!-- Step Title -->
+            <h2 class="font-archivo font-medium text-primary-blue text-2xl md:text-3xl lg:text-[40px] tracking-[0] leading-[normal] mb-6 lg:mb-8 text-center lg:text-left">
+                Enter Your Details
+            </h2>
+
+            <!-- Step Description -->
+            <p class="font-normal text-primary-blue text-lg md:text-xl lg:text-2xl tracking-[0] leading-7 lg:leading-8 max-w-[475px] mx-auto lg:mx-0 text-center lg:text-left">
+                Fill in your property information — purchase price, rental income, expenses, and a few more basics. It only takes a moment.
+            </p>
+        </div>
+
+        <!-- Right Side - Form Screenshot -->
+        <div class="flex-1 flex items-end justify-end">
+            <div class="relative w-full max-w-[500px] lg:max-w-[600px]">
+                <img class="w-full h-auto object-contain object-right-bottom" 
+                     alt="Property information form screenshot showing input fields for property details"
+                     src="{% static 'images/step1.png' %}" />
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Step 2: Hit the Button -->
+<section class="relative w-full max-w-[1440px] mx-auto overflow-hidden" style="background: linear-gradient(135deg, #A2CADD 0%, #7FB3D3 50%, #5A9BD4 100%);">
+    <!-- Right-side ellipse gradient overlay -->
+    <div class="absolute top-0 right-0 w-[800px] h-full opacity-40" style="background: radial-gradient(ellipse 600px 400px at 80% 50%, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 40%, transparent 70%);"></div>
+    
+    <div class="relative z-10 flex flex-col lg:flex-row items-center lg:items-center">
+        <!-- Left Side - Dashboard Screenshot -->
+        <div class="flex-1 lg:px-0 order-1 lg:order-1 flex items-center justify-start">
+            <div class="relative w-full max-w-[500px] lg:max-w-[600px]">
+                <img class="w-full h-auto object-contain" 
+                     alt="Process step illustration showing interface interaction"
+                     src="{% static 'images/step2.png' %}" />
+            </div>
+        </div>
+
+        <!-- Right Content -->
+        <div class="flex-1 px-4 md:px-8 lg:pr-[136px] lg:pl-8 max-w-[543px] lg:max-w-none order-2 lg:order-2 flex flex-col justify-center">
+            <!-- Step Indicator -->
+            <div class="font-archivo font-bold text-dark-pink text-xl md:text-2xl tracking-[0] leading-[normal] mb-4 lg:mb-6 text-center lg:text-left">
+                02 STEP
+            </div>
+
+            <!-- Step Title -->
+            <h2 class="font-archivo font-medium text-primary-blue text-2xl md:text-3xl lg:text-[40px] tracking-[0] leading-[normal] mb-6 lg:mb-8 text-center lg:text-left">
+                Hit the Button
+            </h2>
+
+            <!-- Step Description -->
+            <p class="font-normal text-primary-blue text-lg md:text-xl lg:text-2xl tracking-[0] leading-7 lg:leading-8 max-w-[475px] mx-auto lg:mx-0 text-center lg:text-left">
+                With one click, get a comprehensive buy-to-let assessment. Our algorithm analyzes your property's financial performance instantly.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Step 3: Get Your Results -->
+<section class="relative w-full max-w-[1440px] mx-auto pt-8 lg:pt-10" style="background-color: #E5E3E6;">
+    <div class="flex flex-col lg:flex-row items-center lg:items-center">
+        <!-- Left Side - Content -->
+        <div class="flex-1 px-4 md:px-8 lg:pr-8 mb-8 lg:mb-0 max-w-[543px] lg:max-w-none flex flex-col justify-center lg:pl-[100px]">
+            <!-- Step Indicator -->
+            <div class="font-archivo font-bold text-dark-pink text-xl md:text-2xl tracking-[0] leading-[normal] mb-8 lg:mb-12 text-center lg:text-left">
+                03 STEP
+            </div>
+
+            <!-- Step Title -->
+            <h2 class="font-archivo font-medium text-primary-blue text-2xl md:text-3xl lg:text-[40px] tracking-[0] leading-[normal] mb-8 lg:mb-16 text-center lg:text-left">
+                Get Your Results
+            </h2>
+
+            <!-- Step Description -->
+            <p class="font-normal text-primary-blue text-lg md:text-xl lg:text-2xl tracking-[0] leading-7 lg:leading-8 max-w-[418px] mx-auto lg:mx-0 text-center lg:text-left">
+                That's it! In just a few seconds you'll have a comprehensive assessment of your buy-to-let.
+            </p>
+        </div>
+
+        <!-- Right Side - Dashboard Screenshots -->
+        <div class="flex-1 flex items-center justify-end">
+            <div class="relative w-full max-w-[500px] lg:max-w-[600px]">
+                <img class="w-full h-auto object-contain object-right-bottom" 
+                     alt="Results dashboard screenshot showing buy-to-let assessment interface"
+                     src="{% static 'images/step3.png' %}" />
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Managed Exits Section -->
+<style>
+    /* Managed Exits Section Responsive Text */
+    
+    /* Mobile styles (up to 768px) */
+    @media (max-width: 768px) {
+        .managed-exits-title {
+            font-size: 28px !important;
+            line-height: 1.2 !important;
+        }
+        
+        .managed-exits-description {
+            font-size: 16px !important;
+            line-height: 1.4 !important;
+        }
+        
+        .managed-exits-badge {
+            font-size: 12px !important;
+        }
+    }
+    
+    /* Tablet styles (769px-1024px) */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .managed-exits-title {
+            font-size: 40px !important;
+            line-height: 1.1 !important;
+        }
+        
+        .managed-exits-description {
+            font-size: 18px !important;
+            line-height: 1.5 !important;
+        }
+    }
+    
+    /* Small desktop (1025px-1439px) */
+    @media (min-width: 1025px) and (max-width: 1439px) {
+        .managed-exits-title {
+            font-size: 50px !important;
+            line-height: 1.1 !important;
+        }
+        
+        .managed-exits-description {
+            font-size: 20px !important;
+            line-height: 1.5 !important;
+        }
+        
+        .managed-exits-image {
+            width: 400px !important;
+            height: 400px !important;
+        }
+    }
+    
+    /* Responsive image sizing for all viewports */
+    .managed-exits-image {
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+    }
+    
+    /* Mobile styles for images */
+    @media (max-width: 768px) {
+        .managed-exits-image {
+            width: 250px !important;
+            height: 250px !important;
+            max-width: 90vw;
+            margin: 0 auto;
+        }
+    }
+    
+    /* Tablet styles for images */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .managed-exits-image {
+            width: 350px !important;
+            height: 350px !important;
+        }
+    }
+    
+    /* Center content on mobile and tablet (below 1024px) */
+    @media (max-width: 1023px) {
+        .managed-exits-section .grid {
+            text-align: center !important;
+        }
+        
+        .managed-exits-section .lg\:max-w-\[456px\],
+        .managed-exits-section .lg\:max-w-\[439px\],
+        .managed-exits-section .lg\:max-w-\[534px\] {
+            max-width: none !important;
+            margin: 0 auto !important;
+            text-align: center !important;
+        }
+        
+        .managed-exits-section .inline-flex {
+            justify-content: center !important;
+        }
+        
+        .managed-exits-section .order-first {
+            order: 0 !important;
+        }
+        
+        .managed-exits-section .lg\:order-last {
+            order: 0 !important;
+        }
+        
+        .managed-exits-image {
+            margin: 0 auto !important;
+        }
+    }
+</style>
+
+<section class="managed-exits-section relative w-full max-w-[1440px] mx-auto py-20 lg:py-28">
+    <div class="flex flex-col gap-20">
+        
+        <!-- Section 1: Managed Exits (Image Right) -->
+        <article class="mx-5 lg:mx-[138px] relative">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                <!-- Content Left -->
+                <div class="lg:max-w-[456px]">
+                    <!-- Badge -->
+                    <div class="inline-flex items-center justify-center px-4 py-1 bg-[#a2cadd] rounded-[30px] mb-8">
+                        <span class="managed-exits-badge font-bold text-primary-blue text-sm text-center">Landlords</span>
+                    </div>
+                    
+                    <!-- Title -->
+                    <h2 class="managed-exits-title font-archivo font-medium text-primary-blue text-4xl lg:text-[64px] tracking-[0] leading-tight lg:leading-[normal] mb-8 whitespace-nowrap">
+                        Managed Exits
+                    </h2>
+                    
+                    <!-- Description -->
+                    <p class="managed-exits-description font-normal text-primary-blue text-xl lg:text-2xl tracking-[0] leading-7 lg:leading-8">
+                        Most landlords who sell dont sell via a high street agent. Instead, they opt for managed exit strategies that minimise hassle and maximise returns.
+                    </p>
+                </div>
+                
+                <!-- Image Right -->
+                <div class="order-first lg:order-last">
+                    <img class="managed-exits-image w-full h-auto lg:w-[572px] lg:h-[512px] object-cover" 
+                         alt="Managed Exits" 
+                         src="https://c.animaapp.com/zCYCnLC1/img/image.png" />
+                </div>
+            </div>
+        </article>
+
+        <!-- Section 2: Renters' Reform Bill (Image Left) -->
+        <article class="mx-5 lg:mx-[138px] relative">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                <!-- Image Left -->
+                <div>
+                    <img class="managed-exits-image w-full h-auto lg:w-[572px] lg:h-[512px] object-cover" 
+                         alt="Renters Reform Bill" 
+                         src="https://c.animaapp.com/zCYCnLC1/img/--------------2025-10-03---12-34-53-2.png" />
+                </div>
+                
+                <!-- Content Right -->
+                <div class="lg:max-w-[439px]">
+                    <!-- Badge -->
+                    <div class="inline-flex items-center justify-center px-4 py-1 bg-[#ffd700] rounded-[30px] mb-8">
+                        <span class="managed-exits-badge font-bold text-primary-blue text-sm text-center">Regulations</span>
+                    </div>
+                    
+                    <!-- Title -->
+                    <h2 class="managed-exits-title font-archivo font-medium text-primary-blue text-4xl lg:text-[64px] tracking-[0] leading-tight lg:leading-16 mb-8">
+                        Renters' Reform Act
+                    </h2>
+                    
+                    <!-- Description -->
+                    <p class="managed-exits-description font-normal text-primary-blue text-xl lg:text-2xl tracking-[0] leading-7 lg:leading-8">
+                        New rules due to be introduced in the Renters' Reform Act, mean if a landlord removes a tenant buy is unable to sell will be prevented from re-letting the property for 12 months.
+                    </p>
+                </div>
+            </div>
+        </article>
+
+        <!-- Section 3: Smarter Decisions (Image Right) -->
+        <article class="mx-5 lg:mx-[138px] relative">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                <!-- Content Left -->
+                <div class="lg:max-w-[534px]">
+                    <!-- Badge -->
+                    <div class="inline-flex items-center justify-center px-4 py-1 rounded-[30px] mb-8" style="background-color: #e0bbff;">
+                        <span class="managed-exits-badge font-semibold text-primary-blue text-sm text-center">Management</span>
+                    </div>
+                    
+                    <!-- Title -->
+                    <h2 class="managed-exits-title font-archivo font-medium text-primary-blue text-4xl lg:text-[64px] tracking-[0] leading-tight lg:leading-16 mb-8">
+                        <span>Smarter Decisions </span>
+                        <span>for Landlords</span>
+                    </h2>
+                    
+                    <!-- Description -->
+                    <p class="managed-exits-description font-normal text-primary-blue text-xl lg:text-2xl tracking-[0] leading-7 lg:leading-8">
+                        The LEXIT analyser helps investors identify potential risks in their Buy-to-Let properties and make informed decisions.
+                    </p>
+                </div>
+                
+                <!-- Image Right -->
+                <div class="order-first lg:order-last">
+                    <img class="managed-exits-image w-full h-auto lg:w-[572px] lg:h-[512px] object-cover" 
+                         alt="Smarter Decisions" 
+                         src="https://c.animaapp.com/zCYCnLC1/img/--------------2025-10-03---12-34-53-3.png" />
+                </div>
+            </div>
+        </article>
+
+    </div>
+</section>
+
+<!-- CTA Container Section -->
+<style>
+    /* Remove left padding on medium-large screens (1024px-1439px) */
+    @media (min-width: 1024px) and (max-width: 1439px) {
+        .cta-left-content {
+            padding-left: 2rem !important; /* 32px instead of 118px */
+        }
+    }
+    
+    /* Mobile and tablet responsive layout (below 1024px) */
+    @media (max-width: 1023px) {
+        .cta-container {
+            height: auto !important;
+            min-height: 500px !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        
+        .cta-left-content {
+            padding: 2rem !important;
+            text-align: center !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            order: 1 !important;
+            flex: 1 !important;
+        }
+        
+        .cta-right-content {
+            order: 2 !important;
+            position: relative !important;
+            top: auto !important;
+            right: auto !important;
+            width: 100% !important;
+            height: 300px !important;
+            padding: 1rem !important;
+            display: none !important; /* Hide all right content on mobile */
+        }
+    }
+    
+    /* Extra small mobile adjustments */
+    @media (max-width: 768px) {
+        .cta-container {
+            min-height: 400px !important;
+        }
+        
+        .cta-left-content h2 {
+            font-size: 1.5rem !important;
+            line-height: 1.3 !important;
+        }
+        
+        .cta-left-content p {
+            font-size: 1rem !important;
+            line-height: 1.4 !important;
+        }
+        
+        .cta-right-content {
+            height: 200px !important;
+            display: none !important; /* Keep hidden on extra small mobile */
+        }
+    }
+</style>
+<section class="relative w-full max-w-[1440px] mx-auto py-16 lg:py-20">
+    <div class="mx-5 lg:mx-[21px]">
+        <div class="cta-container relative w-full max-w-[1398px] mx-auto h-[633px] bg-[#d94590] rounded-[30px] overflow-hidden">
+            <!-- Background Gradient -->
+            <div class="absolute top-0 left-0 w-full h-full">
+                <div class="absolute -top-[118px] right-0 w-[1354px] h-[1131px] rounded-[677px/565.5px] opacity-50"
+                     style="background: radial-gradient(50% 50% at 50% 50%, rgba(90,24,154,0.5) 0%, rgba(255,255,255,0) 90%);">
+                </div>
+            </div>
+
+            <!-- Left Content -->
+            <div class="cta-left-content relative z-10 flex flex-col justify-center h-full px-8 lg:px-[118px]">
+                <!-- Main Headline -->
+                <h2 class="font-archivo font-medium text-2xl lg:text-5xl tracking-[0] leading-tight lg:leading-[60px] mb-8 max-w-[745px]" style="color: white !important;">
+                    Don't Get Caught Waiting!
+                </h2>
+
+                <!-- Description -->
+                <p class="font-normal text-[#ffffffd6] text-lg lg:text-2xl tracking-[0] leading-7 lg:leading-8 mb-12 max-w-[510px]">
+                    With LEXIT Analyser, you get clear insights into your risks and the smartest strategy to act fast, minimise losses, and protect your returns.
+                </p>
+
+                <!-- CTA Button -->
+                <a href="{% url 'users:register' %}" 
+                   class="w-[270px] h-16 bg-[#05113a] flex items-center justify-center rounded-[60px] overflow-hidden cursor-pointer hover:bg-[#0a1a52] transition-colors">
+                    <span class="font-archivo font-bold text-white text-base text-center tracking-[0] leading-[normal] whitespace-nowrap">
+                        TRY IT FOR FREE NOW
+                    </span>
+                </a>
+            </div>
+
+            <!-- Right Visual Content -->
+            <div class="cta-right-content absolute top-[31px] right-[31px] w-[707px] h-[602px] lg:block">
+                <!-- Speech Bubble -->
+                <div class="absolute top-[46px] left-[83px] w-[338px] h-[85px]">
+                    <img class="absolute top-0 left-9 w-[302px] h-20" 
+                         alt="Speech bubble" 
+                         src="https://c.animaapp.com/zCYCnLC1/img/union.svg" />
+                    
+                    <p class="absolute top-[9px] left-[61px] w-[263px] font-medium text-[#05113a] text-base tracking-[0] leading-[22px]">
+                        If I can't sell quickly, I'll be paying the mortgage with no rental income…
+                    </p>
+                    
+                    <img class="absolute top-[49px] left-0 w-9 h-9 rounded-full bg-cover bg-center" 
+                         alt="User avatar" 
+                         src="https://c.animaapp.com/zCYCnLC1/img/photo@2x.png" />
+                </div>
+
+                <!-- Calendar Widget -->
+                <div class="absolute top-[126px] left-[503px] w-[200px] h-[100px] rounded-xl overflow-hidden border border-[#7a7a7a21] backdrop-blur-2xl"
+                     style="background: linear-gradient(180deg, rgba(236,244,245,0.33) 0%, rgba(236,244,245,0.5) 45%, rgba(236,244,245,0.33) 95%);">
+                    
+                    <div class="absolute top-[18px] left-[21px] font-bold text-[#05113a] text-sm tracking-[0] leading-[22px]">
+                        Day 6 of 7
+                    </div>
+                    
+                    <!-- Week Days -->
+                    <div class="absolute top-[42px] left-[18px] flex gap-3">
+                        <div class="w-[13px] h-[29px] font-medium text-[#05113a] text-sm text-center">S</div>
+                        <div class="w-[13px] h-[29px] font-medium text-[#05113a] text-sm text-center">M</div>
+                        <div class="w-[13px] h-[29px] font-medium text-[#05113a] text-sm text-center">T</div>
+                        <div class="w-[13px] h-[29px] font-medium text-[#05113a] text-sm text-center">W</div>
+                        <div class="w-[13px] h-[29px] font-medium text-[#05113a] text-sm text-center">T</div>
+                        <div class="w-[13px] h-[29px] font-medium text-[#05113a] text-sm text-center">F</div>
+                        <div class="w-[13px] h-[29px] font-medium text-[#05113a] text-sm text-center">S</div>
+                    </div>
+                    
+                    <!-- Progress Dots -->
+                    <div class="absolute top-16 left-4 flex gap-[7px]">
+                        <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                        <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                        <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                        <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                        <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                        <img class="w-[18px] h-[18px]" src="https://c.animaapp.com/zCYCnLC1/img/frame-33.svg" alt="Completed" />
+                        <div class="w-[18px] h-[18px] bg-[#ffffff66] rounded-full"></div>
+                    </div>
+                </div>
+
+                <!-- Main Image -->
+                <div class="cta-main-image-wrapper">
+                    <img class="cta-main-image absolute top-0 left-[161px] w-[546px] h-[602px] object-cover" 
+                         alt="Person looking at calendar" 
+                         src="https://c.animaapp.com/zCYCnLC1/img/freepik--create-an-image-of-a-guy-looking-at-a-calendar-and--481.png" />
+                </div>
+
+                <!-- Contact Card -->
+                <div class="absolute bottom-[42px] left-0 w-[359px] h-[90px] rounded-xl border border-[#7a7a7a21] backdrop-blur-2xl p-4"
+                     style="background: linear-gradient(180deg, rgba(236,244,245,0.33) 0%, rgba(236,244,245,0.5) 45%, rgba(236,244,245,0.33) 95%);">
+                    
+                    <div class="flex items-center gap-4">
+                        <img class="w-[45px] h-[45px] rounded-full" 
+                             alt="Contact photo" 
+                             src="https://c.animaapp.com/zCYCnLC1/img/---contact-photo@2x.png" />
+                        
+                        <div class="flex flex-col">
+                            <div class="font-medium text-[#05113a] text-xl">Petra Herber</div>
+                            <div class="text-gray-600 text-sm">mobile</div>
+                        </div>
+                        
+                        <img class="ml-auto" 
+                             alt="Call and message actions" 
+                             src="https://c.animaapp.com/zCYCnLC1/img/actions.svg" />
+                    </div>
+                </div>
+
+                <!-- Decorative Icons -->
+                <img class="absolute top-[7px] left-[575px] w-12 h-12" 
+                     alt="Decorative icon" 
+                     src="https://c.animaapp.com/zCYCnLC1/img/frame-2.svg" />
+                <img class="absolute top-[249px] left-[167px] w-12 h-12" 
+                     alt="Decorative icon" 
+                     src="https://c.animaapp.com/zCYCnLC1/img/frame-4.svg" />
+                <img class="absolute top-[416px] left-[555px] w-12 h-12" 
+                     alt="Decorative icon" 
+                     src="https://c.animaapp.com/zCYCnLC1/img/frame-6.svg" />
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Benefits Section -->
+<style>
+    /* Benefits Section Responsive Text */
+    
+    /* Mobile styles (up to 768px) */
+    @media (max-width: 768px) {
+        .benefits-number {
+            font-size: 36px !important;
+            line-height: 1.1 !important;
+        }
+        
+        .benefits-description {
+            font-size: 12px !important;
+            line-height: 1.3 !important;
+        }
+        
+        .benefits-container {
+            height: auto !important;
+            min-height: 200px !important;
+            flex-direction: column !important;
+            padding: 30px 20px !important;
+        }
+        
+        .benefits-item {
+            padding: 20px 15px !important;
+            text-align: center !important;
+            width: 100% !important;
+            margin-bottom: 20px !important;
+        }
+        
+        .benefits-item:last-child {
+            margin-bottom: 0 !important;
+        }
+    }
+    
+    /* Tablet styles (769px-1024px) */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .benefits-number {
+            font-size: 48px !important;
+            line-height: 1.1 !important;
+        }
+        
+        .benefits-description {
+            font-size: 14px !important;
+            line-height: 1.4 !important;
+        }
+        
+        .benefits-container {
+            height: 250px !important;
+        }
+    }
+    
+    /* Small desktop (1025px-1439px) */
+    @media (min-width: 1025px) and (max-width: 1439px) {
+        .benefits-number {
+            font-size: 60px !important;
+            line-height: 1.1 !important;
+        }
+        
+        .benefits-description {
+            font-size: 15px !important;
+            line-height: 1.4 !important;
+        }
+    }
+</style>
+
+
+<!-- Benefits Section Part 2-->
+<section class="relative w-full max-w-[1440px] mx-auto py-16 lg:py-20">
+    <div class="mx-5 lg:mx-[21px]">
+        <div class="benefits-container w-full max-w-[1400px] mx-auto h-80 flex rounded-[30px] overflow-hidden" style="background-color: #b090d4;">
+            <!-- Benefit 1: 92% -->
+            <div class="benefits-item flex-1 flex flex-col justify-center items-center px-8 lg:px-12">
+                <div class="benefits-number font-archivo font-bold text-primary-blue text-6xl lg:text-8xl tracking-[0] leading-[normal] whitespace-nowrap mb-4">
+                    92%
+                </div>
+                <p class="benefits-description font-normal text-primary-blue text-base tracking-[0] leading-6 text-center max-w-[273px]">
+                    of landlords who used LEXIT exited faster than with a high street agent.
+                </p>
+            </div>
+
+            <!-- Benefit 2: 300+ -->
+            <div class="benefits-item flex-1 flex flex-col justify-center items-center px-8 lg:px-12">
+                <div class="benefits-number font-archivo font-bold text-primary-blue text-6xl lg:text-8xl tracking-[0] leading-[normal] whitespace-nowrap mb-4">
+                    300+
+                </div>
+                <p class="benefits-description font-normal text-primary-blue text-base tracking-[0] leading-6 text-center max-w-[305px]">
+                    landlords across Asia and the UK already protected their investments with LEXIT.
+                </p>
+            </div>
+
+            <!-- Benefit 3: £15,000 -->
+            <div class="benefits-item flex-1 flex flex-col justify-center items-center px-8 lg:px-12">
+                <div class="benefits-number font-archivo font-bold text-primary-blue text-6xl lg:text-8xl tracking-[0] leading-[normal] whitespace-nowrap mb-4">
+                    £15,000
+                </div>
+                <p class="benefits-description font-normal text-primary-blue text-base tracking-[0] leading-6 text-center max-w-[286px]">
+                    have achieved an average cost savings per landlord in the UK.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Testimonials Section: Dynamic Carousel -->
+{% if testimonials %}
+    <!-- Add CSS to hide yellow dots below 1440px and make text responsive -->
+    <style>
+        @media (max-width: 1439px) {
+            .figma-bullet-points {
+                display: none !important;
+            }
+        }
+        
+        /* Default desktop sizes (1440px and above) */
+        .figma-testimonial-quote {
+            font-size: 24px !important;
+            line-height: 1.4 !important;
+        }
+        
+        .figma-testimonial-description {
+            font-size: 18px !important;
+        }
+        
+        .figma-author-name {
+            font-size: 14px !important;
+        }
+        
+        .figma-author-role {
+            font-size: 12px !important;
+        }
+        
+        /* Mobile responsive layout (below 1024px) */
+        @media (max-width: 1023px) {
+            .figma-testimonials-container {
+                flex-direction: column !important;
+                padding: 20px 15px !important;
+                gap: 20px !important;
+                align-items: center !important;
+            }
+            
+            .testimonial-carousel {
+                order: 1 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 10px !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+            }
+            
+            .figma-testimonial-image {
+                order: 2 !important;
+                width: 200px !important;
+                height: 200px !important;
+                margin: 20px auto 0 auto !important;
+                flex-shrink: 0 !important;
+            }
+            
+            /* Reposition navigation arrows for mobile */
+            .testimonial-nav.prev {
+                left: 10px !important;
+                width: 40px !important;
+                height: 40px !important;
+                font-size: 16px !important;
+            }
+            
+            .testimonial-nav.next {
+                right: 10px !important;
+                width: 40px !important;
+                height: 40px !important;
+                font-size: 16px !important;
+            }
+        }
+        
+        /* Extra constraints for very narrow viewports */
+        @media (max-width: 480px) {
+            .figma-testimonials-container {
+                padding: 15px 10px !important;
+                margin: 0 5px !important;
+            }
+            
+            .testimonial-carousel {
+                padding: 0 5px !important;
+            }
+            
+            .testimonial-nav.prev,
+            .testimonial-nav.next {
+                width: 35px !important;
+                height: 35px !important;
+                font-size: 14px !important;
+            }
+            
+            .testimonial-nav.prev {
+                left: 5px !important;
+            }
+            
+            .testimonial-nav.next {
+                right: 5px !important;
+            }
+            
+            .testimonial-slide {
+                padding: 10px 5px !important;
+            }
+            
+            .figma-testimonial-content-area {
+                padding: 5px !important;
+                max-width: 100% !important;
+            }
+        }
+        
+        /* Mobile responsive text sizing */
+        @media (max-width: 768px) {
+            .figma-testimonial-quote {
+                font-size: 16px !important;
+                line-height: 1.3 !important;
+            }
+            
+            .figma-testimonial-description {
+                font-size: 13px !important;
+            }
+            
+            .figma-author-name {
+                font-size: 11px !important;
+            }
+            
+            .figma-author-role {
+                font-size: 10px !important;
+            }
+            
+            .figma-testimonials-container {
+                padding: 15px 10px !important;
+                gap: 15px !important;
+            }
+            
+            .figma-testimonial-image {
+                width: 150px !important;
+                height: 150px !important;
+            }
+            
+            .testimonial-nav.prev,
+            .testimonial-nav.next {
+                width: 35px !important;
+                height: 35px !important;
+                font-size: 14px !important;
+            }
+        }
+        
+        /* Tablet responsive text sizing */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .figma-testimonial-quote {
+                font-size: 20px !important;
+                line-height: 1.35 !important;
+            }
+            
+            .figma-testimonial-description {
+                font-size: 16px !important;
+            }
+            
+            .figma-author-name {
+                font-size: 13px !important;
+            }
+        }
+        
+        /* Small desktop responsive text sizing */
+        @media (min-width: 1025px) and (max-width: 1439px) {
+            .figma-testimonial-quote {
+                font-size: 22px !important;
+                line-height: 1.38 !important;
+            }
+            
+            .figma-testimonial-description {
+                font-size: 17px !important;
+            }
+            
+            /* Reduce container padding on small desktop */
+            .figma-testimonials-container {
+                padding: 40px 30px !important;
+                gap: 30px !important;
+            }
+        }
+    </style>
+    
+    <section class="figma-testimonials-section" style="position: relative; width: 100%; max-width: 1440px; margin: 0 auto; padding: 80px 20px; background-color: white;">
+        <div class="figma-testimonials-container" style="position: relative; width: 100%; padding: 60px 60px 60px 60px; min-height: 400px; display: flex; align-items: center; gap: 40px; justify-content: space-between;">
+
+            <!-- Yellow Bullet Points -->
+            <div class="figma-bullet-points">
+                <div class="figma-bullet-point"></div>
+                <div class="figma-bullet-point"></div>
+                <div class="figma-bullet-point"></div>
+                <div class="figma-bullet-point"></div>
+                <div class="figma-bullet-point"></div>
+            </div>
+            
+            <!-- Testimonial Carousel Container -->
+            <div class="testimonial-carousel" style="position: relative; overflow: hidden; flex: 1; display: flex; align-items: center; justify-content: center; min-height: 300px;">
+                <!-- Testimonials Wrapper -->
+                <div class="testimonials-wrapper" style="display: flex; transition: transform 0.3s ease-in-out; width: {{ testimonials|length }}00%;">
+                    {% for testimonial in testimonials %}
+                    <div class="testimonial-slide" style="min-width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 20px;">
+                        {% if testimonial.social_media_link %}
+                        <!-- Clickable testimonial content -->
+                        <a href="{{ testimonial.social_media_link }}" target="_blank" rel="noopener noreferrer" 
+                           style="text-decoration: none; color: inherit; display: block; cursor: pointer; width: 100%; max-width: 600px;">
+                            <div class="figma-testimonial-content-area" style="transition: transform 0.2s ease; padding: 10px; border-radius: 10px; text-align: center;">
+                                <div class="figma-quote-mark" style="margin-bottom: 20px; text-align: center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="43" height="35" viewBox="0 0 43 35" fill="none">
+                                        <path d="M42.28 34.3H26.04C24.4533 29.1667 23.66 23.8467 23.66 18.34C23.66 12.74 25.1067 8.30666 28 5.03999C30.9867 1.68 35.3733 0 41.16 0V7.84C36.4933 7.84 34.16 10.6867 34.16 16.38V19.04H42.28V34.3ZM18.62 34.3H2.38C0.793333 29.1667 0 23.8467 0 18.34C0 12.74 1.44667 8.30666 4.34 5.03999C7.32667 1.68 11.7133 0 17.5 0V7.84C12.8333 7.84 10.5 10.6867 10.5 16.38V19.04H18.62V34.3Z" fill="#A2CADD"/>
+                                    </svg>
+                                </div>
+
+                                <h2 class="figma-testimonial-quote" style="font-weight: bold !important; margin-bottom: 20px; text-align: center;">
+                                    {{ testimonial.quote }}
+                                </h2>
+
+                                <p class="figma-testimonial-description" style="text-align: center !important; margin-bottom: 20px;">
+                                    {{ testimonial.description }}
+                                </p>
+                                
+                                <div class="figma-testimonial-author" style="text-align: center;">
+                                    <h3 class="figma-author-name" style="font-size: 14px !important; margin: 0;">
+                                        {{ testimonial.author_name }}
+                                        <!-- Social media icon indicator -->
+                                        <span style="color: #05113a; font-size: 12px; margin-left: 5px;">🔗</span>
+                                    </h3>
+                                    <p class="figma-author-role" style="margin: 5px 0 0 0;">{{ testimonial.author_role }}</p>
+                                    <p style="font-size: 12px; color: #666; margin: 5px 0 0 0; font-style: italic;">Click to view profile</p>
+                                </div>
+                            </div>
+                        </a>
+                        {% else %}
+                        <!-- Non-clickable testimonial content -->
+                        <div class="figma-testimonial-content-area" style="width: 100%; max-width: 600px; text-align: center;">
+                            <div class="figma-quote-mark" style="margin-bottom: 20px; text-align: center;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="43" height="35" viewBox="0 0 43 35" fill="none">
+                                    <path d="M42.28 34.3H26.04C24.4533 29.1667 23.66 23.8467 23.66 18.34C23.66 12.74 25.1067 8.30666 28 5.03999C30.9867 1.68 35.3733 0 41.16 0V7.84C36.4933 7.84 34.16 10.6867 34.16 16.38V19.04H42.28V34.3ZM18.62 34.3H2.38C0.793333 29.1667 0 23.8467 0 18.34C0 12.74 1.44667 8.30666 4.34 5.03999C7.32667 1.68 11.7133 0 17.5 0V7.84C12.8333 7.84 10.5 10.6867 10.5 16.38V19.04H18.62V34.3Z" fill="#A2CADD"/>
+                                </svg>
+                            </div>
+
+                            <h2 class="figma-testimonial-quote" style="font-weight: bold !important; margin-bottom: 20px; text-align: center;">
+                                {{ testimonial.quote }}
+                            </h2>
+
+                            <p class="figma-testimonial-description" style="text-align: center !important; margin-bottom: 20px;">
+                                {{ testimonial.description }}
+                            </p>
+                            
+                            <div class="figma-testimonial-author" style="text-align: center;">
+                                <h3 class="figma-author-name" style="font-size: 14px !important; margin: 0;">
+                                    {{ testimonial.author_name }}
+                                </h3>
+                                <p class="figma-author-role" style="margin: 5px 0 0 0;">{{ testimonial.author_role }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+
+            </div>
+            
+            <!-- Profile Image for Current Testimonial -->
+            <div class="figma-testimonial-image" style="width: 370px; height: 370px; flex-shrink: 0; margin-left: 20px; margin-right: 20px;">
+                {% for testimonial in testimonials %}
+                {% if testimonial.social_media_link %}
+                <!-- Clickable testimonial image -->
+                <a href="{{ testimonial.social_media_link }}" target="_blank" rel="noopener noreferrer" 
+                   class="testimonial-image-link" data-slide="{{ forloop.counter0 }}"
+                   style="display: {% if forloop.counter0 != 0 %}none{% else %}block{% endif %}; width: 100%; height: 100%; cursor: pointer; position: relative; transition: transform 0.2s ease;">
+                    <img src="{{ testimonial.get_author_image_url }}" alt="{{ testimonial.author_name }}" 
+                         class="testimonial-image" data-slide="{{ forloop.counter0 }}"
+                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;" />
+                    <!-- Social media overlay icon -->
+                    <div style="position: absolute; top: 10px; right: 10px; background: rgba(5,17,58,0.9); color: white; padding: 8px; border-radius: 50%; font-size: 14px;">
+                        🔗
+                    </div>
+                    <!-- Hover overlay -->
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(5,17,58,0.8)); color: white; padding: 15px; text-align: center; font-size: 12px; font-weight: bold; border-radius: 0 0 10px 10px;">
+                        Click to view {{ testimonial.author_name }}'s profile
+                    </div>
+                </a>
+                {% else %}
+                <!-- Non-clickable testimonial image -->
+                <img src="{{ testimonial.get_author_image_url }}" alt="{{ testimonial.author_name }}" 
+                     class="testimonial-image" data-slide="{{ forloop.counter0 }}"
+                     style="width: 100%; height: 100%; object-fit: cover; {% if forloop.counter0 != 0 %}display: none;{% endif %}; border-radius: 10px;" />
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Testimonial Dots Indicator (only show if more than 1 testimonial) -->
+        {% if testimonials|length > 1 %}
+        <div class="testimonial-controls" style="text-align: center; margin-top: 30px;">
+            <!-- Testimonial Counter -->
+            <div class="testimonial-counter" style="margin-bottom: 15px;">
+                <span id="current-testimonial" style="font-weight: bold; color: #05113a; font-size: 16px;">1</span>
+                <span style="color: #666; margin: 0 5px;">/</span>
+                <span style="color: #666; font-size: 16px;">{{ testimonials|length }}</span>
+                <span style="color: #666; font-size: 14px; margin-left: 10px;">
+                    • Click dots, use arrows, or swipe to navigate
+                </span>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-bar" style="width: 200px; height: 4px; background: #ddd; margin: 10px auto; border-radius: 2px; overflow: hidden;">
+                <div id="progress-fill" style="height: 100%; background: #05113a; width: 0%; transition: width 0.3s ease; border-radius: 2px;"></div>
+            </div>
+            
+            <!-- Dots Navigation -->
+            <div class="testimonial-dots">
+                {% for testimonial in testimonials %}
+                <span class="dot" onclick="currentTestimonial({{ forloop.counter }})" 
+                      style="height: 15px; width: 15px; margin: 0 8px; 
+                             background-color: {% if forloop.counter0 == 0 %}#05113a{% else %}#bbb{% endif %}; 
+                             border-radius: 50%; display: inline-block; cursor: pointer; 
+                             transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
+                      onmouseover="if(this.style.backgroundColor === 'rgb(187, 187, 187)') { this.style.backgroundColor='#888'; this.style.transform='scale(1.2)' }"
+                      onmouseout="if(this.style.backgroundColor === 'rgb(136, 136, 136)') { this.style.backgroundColor='#bbb'; this.style.transform='scale(1)' }"
+                      title="Testimonial {{ forloop.counter }} - {{ testimonial.author_name }}">
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- JavaScript for Enhanced Testimonial Carousel -->
+        <script>
+        let currentSlide = 0;
+        const totalSlides = {{ testimonials|length }};
+        let autoRotateInterval;
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+
+        // Initialize carousel
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the carousel display
+            updateCarousel();
+            
+            {% if testimonials|length > 1 %}
+            startAutoRotate();
+            addTouchSupport();
+            {% endif %}
+        });
+
+        function changeTestimonial(direction) {
+            currentSlide += direction;
+            
+            if (currentSlide >= totalSlides) {
+                currentSlide = 0;
+            } else if (currentSlide < 0) {
+                currentSlide = totalSlides - 1;
+            }
+            
+            updateCarousel();
+        }
+
+        function currentTestimonial(slideNumber) {
+            currentSlide = slideNumber - 1;
+            updateCarousel();
+        }
+
+        function updateCarousel() {
+            // Move testimonial content with animation
+            const wrapper = document.querySelector('.testimonials-wrapper');
+            if (wrapper) {
+                wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }
+            
+            // Update testimonial images with fade effect
+            const images = document.querySelectorAll('.testimonial-image');
+            const imageLinks = document.querySelectorAll('.testimonial-image-link');
+            
+            // Handle both direct images and image links
+            images.forEach((img, index) => {
+                if (index === currentSlide) {
+                    img.style.display = 'block';
+                    img.style.opacity = '0';
+                    setTimeout(() => { img.style.opacity = '1'; }, 50);
+                } else {
+                    img.style.display = 'none';
+                }
+            });
+
+            imageLinks.forEach((link, index) => {
+                if (index === currentSlide) {
+                    link.style.display = 'block';
+                    link.style.opacity = '0';
+                    setTimeout(() => { link.style.opacity = '1'; }, 50);
+                } else {
+                    link.style.display = 'none';
+                }
+            });
+            
+            // Update dots with smooth transitions
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                if (index === currentSlide) {
+                    dot.style.backgroundColor = '#05113a';
+                    dot.style.borderColor = '#05113a';
+                    dot.style.transform = 'scale(1.2)';
+                } else {
+                    dot.style.backgroundColor = '#bbb';
+                    dot.style.borderColor = '#ddd';
+                    dot.style.transform = 'scale(1)';
+                }
+            });
+
+            // Update counter and progress bar
+            const counter = document.getElementById('current-testimonial');
+            if (counter) {
+                counter.textContent = currentSlide + 1;
+            }
+
+            const progressFill = document.getElementById('progress-fill');
+            if (progressFill) {
+                const progressPercent = ((currentSlide + 1) / totalSlides) * 100;
+                progressFill.style.width = progressPercent + '%';
+            }
+        }
+
+        // Auto-rotate functionality
+        {% if testimonials|length > 1 %}
+        function startAutoRotate() {
+            autoRotateInterval = setInterval(() => {
+                changeTestimonial(1);
+            }, 8000);
+        }
+
+        function stopAutoRotate() {
+            if (autoRotateInterval) {
+                clearInterval(autoRotateInterval);
+            }
+        }
+
+        // Pause auto-rotate on hover
+        const testimonialSection = document.querySelector('.figma-testimonials-section');
+        if (testimonialSection) {
+            testimonialSection.addEventListener('mouseenter', stopAutoRotate);
+            testimonialSection.addEventListener('mouseleave', startAutoRotate);
+        }
+
+        // Touch/Swipe support for mobile
+        function addTouchSupport() {
+            const carousel = document.querySelector('.testimonial-carousel');
+            if (!carousel) return;
+
+            carousel.addEventListener('touchstart', handleTouchStart, { passive: true });
+            carousel.addEventListener('touchmove', handleTouchMove, { passive: false });
+            carousel.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+            // Mouse drag support for desktop
+            carousel.addEventListener('mousedown', handleMouseStart);
+            carousel.addEventListener('mousemove', handleMouseMove);
+            carousel.addEventListener('mouseup', handleMouseEnd);
+            carousel.addEventListener('mouseleave', handleMouseEnd);
+        }
+
+        function handleTouchStart(e) {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+            stopAutoRotate();
+        }
+
+        function handleMouseStart(e) {
+            startX = e.clientX;
+            isDragging = true;
+            stopAutoRotate();
+            e.preventDefault();
+        }
+
+        function handleTouchMove(e) {
+            if (!isDragging) return;
+            currentX = e.touches[0].clientX;
+            e.preventDefault();
+        }
+
+        function handleMouseMove(e) {
+            if (!isDragging) return;
+            currentX = e.clientX;
+        }
+
+        function handleTouchEnd(e) {
+            handleSwipeEnd();
+        }
+
+        function handleMouseEnd(e) {
+            handleSwipeEnd();
+        }
+
+        function handleSwipeEnd() {
+            if (!isDragging) return;
+            
+            const diffX = startX - currentX;
+            const threshold = 50; // Minimum swipe distance
+            
+            if (Math.abs(diffX) > threshold) {
+                if (diffX > 0) {
+                    changeTestimonial(1); // Swipe left - next
+                } else {
+                    changeTestimonial(-1); // Swipe right - previous
+                }
+            }
+            
+            isDragging = false;
+            startAutoRotate();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                changeTestimonial(-1);
+                e.preventDefault();
+            } else if (e.key === 'ArrowRight') {
+                changeTestimonial(1);
+                e.preventDefault();
+            }
+        });
+        {% endif %}
+        </script>
+    </section>
+{% else %}
+    <!-- Fallback testimonial if no database entries exist -->
+    <!-- Add CSS to hide yellow dots below 1440px and make text responsive -->
+    <style>
+        @media (max-width: 1439px) {
+            .figma-bullet-points {
+                display: none !important;
+            }
+        }
+        
+        /* Default desktop sizes (1440px and above) */
+        .figma-testimonial-quote {
+            font-size: 24px !important;
+            line-height: 1.4 !important;
+        }
+        
+        .figma-testimonial-description {
+            font-size: 18px !important;
+        }
+        
+        .figma-author-name {
+            font-size: 14px !important;
+        }
+        
+        .figma-author-role {
+            font-size: 12px !important;
+        }
+        
+        /* Mobile responsive text sizing */
+        @media (max-width: 768px) {
+            .figma-testimonial-quote {
+                font-size: 18px !important;
+                line-height: 1.3 !important;
+            }
+            
+            .figma-testimonial-description {
+                font-size: 14px !important;
+            }
+            
+            .figma-author-name {
+                font-size: 12px !important;
+            }
+            
+            .figma-author-role {
+                font-size: 11px !important;
+            }
+            
+            /* Reduce container padding on mobile */
+            .figma-testimonials-container {
+                padding: 20px !important;
+                gap: 20px !important;
+            }
+        }
+        
+        /* Tablet responsive text sizing */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .figma-testimonial-quote {
+                font-size: 20px !important;
+                line-height: 1.35 !important;
+            }
+            
+            .figma-testimonial-description {
+                font-size: 16px !important;
+            }
+            
+            .figma-author-name {
+                font-size: 13px !important;
+            }
+            
+            /* Reduce container padding on tablet */
+            .figma-testimonials-container {
+                padding: 30px 20px !important;
+                gap: 20px !important;
+            }
+        }
+        
+        /* Small desktop responsive text sizing */
+        @media (min-width: 1025px) and (max-width: 1439px) {
+            .figma-testimonial-quote {
+                font-size: 22px !important;
+                line-height: 1.38 !important;
+            }
+            
+            .figma-testimonial-description {
+                font-size: 17px !important;
+            }
+            
+            /* Reduce container padding on small desktop */
+            .figma-testimonials-container {
+                padding: 40px 30px !important;
+                gap: 30px !important;
+            }
+        }
+    </style>
+    
+    <section class="figma-testimonials-section" style="position: relative; width: 100%; max-width: 1440px; margin: 0 auto; padding: 80px 20px; background-color: white;">
+        <div class="figma-testimonials-container" style="position: relative; width: 100%; padding: 60px 60px 60px 60px; min-height: 400px; display: flex; align-items: center; gap: 40px; justify-content: space-between;">
+
+            <!-- Yellow Bullet Points -->
+            <div class="figma-bullet-points">
+                <div class="figma-bullet-point"></div>
+                <div class="figma-bullet-point"></div>
+                <div class="figma-bullet-point"></div>
+                <div class="figma-bullet-point"></div>
+                <div class="figma-bullet-point"></div>
+            </div>
+            
+            <!-- Main Content Area -->
+            <div class="figma-testimonial-content-area">
+                <div class="figma-quote-mark">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="43" height="35" viewBox="0 0 43 35" fill="none">
+                        <path d="M42.28 34.3H26.04C24.4533 29.1667 23.66 23.8467 23.66 18.34C23.66 12.74 25.1067 8.30666 28 5.03999C30.9867 1.68 35.3733 0 41.16 0V7.84C36.4933 7.84 34.16 10.6867 34.16 16.38V19.04H42.28V34.3ZM18.62 34.3H2.38C0.793333 29.1667 0 23.8467 0 18.34C0 12.74 1.44667 8.30666 4.34 5.03999C7.32667 1.68 11.7133 0 17.5 0V7.84C12.8333 7.84 10.5 10.6867 10.5 16.38V19.04H18.62V34.3Z" fill="#A2CADD"/>
+                    </svg>
+                </div>
+
+                <h2 class="figma-testimonial-quote" style="font-weight: bold !important;">
+                    ...This is the first analyser I have seen which is simple to use and provides such a clear analysis."
+                </h2>
+
+                <p class="figma-testimonial-description" style="text-align: justify !important;">
+                    I work with BtL investors from all over the world and I am constantly asked questions about how to improve tenant experiences. This is the first analyser I have seen which is simple to use and provides such a clear analysis.
+                </p>
+                
+                <div class="figma-testimonial-author">
+                    <h3 class="figma-author-name" style="font-size: 14px !important;">Rebecca Harris</h3>
+                    <p class="figma-author-role">Real Estate Expert</p>
+                </div>
+            </div>
+            
+            <!-- Profile Image -->
+            <div class="figma-testimonial-image" style="width: 370px; height: 370px; flex-shrink: 0; margin-left: 20px; margin-right: 20px;">
+                <img src="{% static 'images/tesitimonial_girl.png' %}" alt="Rebecca Harris" style="width: 100%; height: 100%; object-fit: cover;" />
+            </div>
+        </div>
+    </section>
+{% endif %}
+
+
+
+<!-- Blog Section -->
+<section class="blog-section relative w-full max-w-[1440px] mx-auto py-20 lg:py-28 mb-20 lg:mb-32">
+    <style>
+        /* Add responsive bottom margin to prevent footer overlap */
+        @media (max-width: 768px) {
+            .blog-section {
+                margin-bottom: 60px !important;
+            }
+            
+            /* Make news section heading mobile responsive */
+            .news-section-heading {
+                font-size: 28px !important;
+                line-height: 32px !important;
+                text-align: center !important;
+                margin-bottom: 30px !important;
+            }
+            
+            .news-section-header {
+                flex-direction: column !important;
+                gap: 15px !important;
+                align-items: center !important;
+            }
+            
+            .news-more-link {
+                font-size: 14px !important;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .blog-section {
+                margin-bottom: 80px !important;
+            }
+            
+            .news-section-heading {
+                font-size: 36px !important;
+                line-height: 40px !important;
+            }
+        }
+        
+        @media (min-width: 1025px) {
+            .blog-section {
+                margin-bottom: 100px !important;
+            }
+        }
+    </style>
+    <div class="mx-5 lg:mx-[21px]">
+        <!-- Section Header -->
+        <header class="news-section-header flex items-center justify-between mb-12 lg:mb-16">
+            <h2 class="news-section-heading font-archivo font-medium text-primary-blue text-4xl lg:text-[64px] leading-tight lg:leading-16">
+                Latest news for Landlords
+            </h2>
+            <a href="{% url 'news:news_home' %}" class="news-more-link flex items-center gap-2 text-primary-blue hover:text-dark-purple transition-colors">
+                <span class="font-archivo font-medium text-lg">Find Out More</span>
+                <img class="w-5 h-5" src="https://c.animaapp.com/zCYCnLC1/img/icon.svg" alt="Arrow icon" />
+            </a>
+        </header>
+
+        <!-- Blog Posts Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            {% for article in recent_articles %}
+            <!-- Blog Post {{ forloop.counter }} -->
+            <article class="flex flex-col">
+                <div class="w-full h-48 lg:h-56 rounded-[20px] bg-cover bg-center mb-4" 
+                     style="background-image: url('{% if article.banner and article.banner.name != 'default_banner.jpg' %}{{ article.banner.url }}{% else %}https://c.animaapp.com/zCYCnLC1/img/image-{{ forloop.counter }}@2x.png{% endif %}')">
+                </div>
+                
+                <time class="font-normal text-primary-blue text-sm mb-2" datetime="{{ article.published_date|date:'Y-m-d' }}">
+                    {{ article.published_date|date:'d.m.y' }}
+                </time>
+                
+                <span class="inline-flex items-center px-3 py-1 rounded-[15px] {{ article.get_category_display_class }} text-primary-blue font-medium text-xs mb-4 w-fit">
+                    {{ article.get_category_display }}
+                </span>
+                
+                <a href="{% url 'news:news_article' slug=article.slug %}" class="block">
+                    <h3 class="font-archivo font-bold text-primary-blue text-lg leading-6 mb-3 hover:text-dark-purple transition-colors">
+                        {{ article.title }}
+                    </h3>
+                </a>
+                
+                <p class="font-normal text-primary-blue text-sm leading-5">
+                    {{ article.summary }}
+                </p>
+            </article>
+            {% empty %}
+            <!-- Fallback content if no articles exist -->
+            <div class="col-span-4 text-center py-8">
+                <p class="text-primary-blue">No articles available at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}
