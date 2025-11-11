@@ -7,13 +7,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}LEXIT | BtL Analyser{% endblock %}</title>
-    <!-- Temporarily disable favicon -->
-    <!-- <link rel="icon" type="image/png" href="{% static 'images/lexit_favicon.png' %}"> -->
-    <!-- Try multiple CSS paths -->
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Try local CSS first -->
     <link rel="stylesheet" href="{% static 'dist/styles.css' %}">
     <link rel="stylesheet" href="{% static 'src/styles.css' %}">
-    <!-- CDN Fallback CSS for immediate styling -->
+    
+    <!-- CDN Tailwind for base classes -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#05113A',
+                        'yellow': '#FFD700',
+                        'light-yellow': '#FFF5C8',
+                        'light-blue': '#A2CADD',
+                        'pink': '#E0BBFF',
+                        'purple': '#A084CA',
+                        'dark-purple': '#5A189A',
+                        'dark-pink': '#D94590',
+                        'light-grey': '#E5E3E6',
+                    },
+                    fontFamily: {
+                        'sans': ['Anek Latin', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        'archivo': ['Archivo', 'sans-serif'],
+                        'anek': ['Anek Latin', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS variables and styles -->
+    <style>
+        :root {
+            /* Custom Colors */
+            --color-primary-blue: #05113A;
+            --color-primary-blue-force: #05113A; 
+            --color-yellow: #FFD700;
+            --color-light-yellow: #FFF5C8;
+            --color-light-blue: #A2CADD;
+            --color-pink: #E0BBFF;
+            --color-purple: #A084CA;
+            --color-dark-purple: #5A189A;
+            --color-dark-pink: #D94590;
+            --color-light-grey: #E5E3E6;
+        }
+        
+        body {
+            font-family: 'Anek Latin', sans-serif;
+            color: #05113A;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Archivo', sans-serif;
+            color: #05113A;
+        }
+        
+        /* Custom Tailwind color classes */
+        .bg-primary-blue { background-color: #05113A !important; }
+        .text-primary-blue { color: #05113A !important; }
+        .bg-yellow { background-color: #FFD700 !important; }
+        .text-yellow { color: #FFD700 !important; }
+        .bg-light-yellow { background-color: #FFF5C8 !important; }
+        .bg-purple { background-color: #A084CA !important; }
+        .text-purple { color: #A084CA !important; }
+        .bg-dark-purple { background-color: #5A189A !important; }
+        .text-dark-purple { color: #5A189A !important; }
+        .bg-light-blue { background-color: #A2CADD !important; }
+        .text-light-blue { color: #A2CADD !important; }
+        .bg-pink { background-color: #E0BBFF !important; }
+        .text-pink { color: #E0BBFF !important; }
+        .bg-dark-pink { background-color: #D94590 !important; }
+        .text-dark-pink { color: #D94590 !important; }
+        .bg-light-grey { background-color: #E5E3E6 !important; }
+        .text-light-grey { color: #E5E3E6 !important; }
+    </style>
+    
     <link rel="stylesheet" href="{% static 'src/ckeditor-content.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
