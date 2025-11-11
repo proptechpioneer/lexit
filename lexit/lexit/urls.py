@@ -18,10 +18,17 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import HttpResponse
+from django.views.generic import RedirectView
 from . import views
+
+def favicon_view(request):
+    # Return a redirect to the static favicon
+    return RedirectView.as_view(url=settings.STATIC_URL + 'images/lexit_favicon.png', permanent=True)(request)
 
 urlpatterns = [
     path('centralmanagementserver/', admin.site.urls),  # Real admin interface
+    path('favicon.ico', favicon_view, name='favicon'),
     path('', views.landing_page, name='landing_page'),
     path('rrb/', views.rrb_home, name='rrb_home'),
     path('rra-guide/', include('rra_guide.urls', namespace='rra_guide')),
