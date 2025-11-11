@@ -128,6 +128,27 @@
         input, select, textarea, button {
             font-family: 'Anek Latin', sans-serif;
         }
+        
+        /* Modal centering fix */
+        #termsModal:not(.hidden),
+        #privacyModal:not(.hidden),
+        #incomeModal:not(.hidden),
+        #costsModal:not(.hidden) {
+            display: flex !important;
+        }
+        
+        /* Ensure modals are properly centered */
+        #termsModal, #privacyModal, #incomeModal, #costsModal {
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Modal container improvements */
+        .modal-container {
+            margin: auto;
+            max-width: 90vw;
+            max-height: 90vh;
+        }
     </style>
     
     <link rel="stylesheet" href="{% static 'src/ckeditor-content.css' %}">
