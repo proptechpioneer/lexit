@@ -8,7 +8,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}LEXIT | BtL Analyser{% endblock %}</title>
     <link rel="icon" type="image/png" href="{% static 'images/lexit_favicon.png' %}">
+    <!-- Local CSS (preferred) -->
     <link rel="stylesheet" href="{% static 'dist/styles.css' %}">
+    <!-- CDN Fallback CSS -->
+    <script>
+        // Check if local CSS loaded, if not, load CDN
+        setTimeout(function() {
+            var testEl = document.createElement('div');
+            testEl.className = 'bg-blue-500';
+            document.body.appendChild(testEl);
+            var computed = window.getComputedStyle(testEl);
+            if (computed.backgroundColor !== 'rgb(59, 130, 246)') {
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = 'https://cdn.tailwindcss.com';
+                document.head.appendChild(link);
+            }
+            document.body.removeChild(testEl);
+        }, 100);
+    </script>
     <link rel="stylesheet" href="{% static 'src/ckeditor-content.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

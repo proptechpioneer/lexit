@@ -26,6 +26,7 @@ urlpatterns = [
     path('rrb/', views.rrb_home, name='rrb_home'),
     path('rra-guide/', include('rra_guide.urls', namespace='rra_guide')),
     path('test-css/', views.test_css, name='test_css'),
+    path('debug-static/', views.debug_static, name='debug_static'),
     path('news/', include('news.urls', namespace='news')),
     path('users/', include('users.urls', namespace='users')),
     path('dashboard/', include('user_home.urls', namespace='user_home')),

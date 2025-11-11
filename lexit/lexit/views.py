@@ -29,3 +29,6 @@ def rrb_home(request):
 
 def test_css(request):
     return render(request, "test_css.html")
+
+def debug_static(request):
+    return render(request, "debug_static.html")

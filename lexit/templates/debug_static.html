@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Static Files Debug</title>
+</head>
+<body>
+    <h1>Static Files Debug Page</h1>
+    
+    <p><strong>STATIC_URL:</strong> {{ STATIC_URL }}</p>
+    
+    <h2>CSS Files:</h2>
+    <ul>
+        <li><a href="{% static 'dist/styles.css' %}" target="_blank">dist/styles.css</a></li>
+        <li><a href="{% static 'src/styles.css' %}" target="_blank">src/styles.css</a></li>
+        <li><a href="{% static 'src/ckeditor-content.css' %}" target="_blank">ckeditor-content.css</a></li>
+    </ul>
+    
+    <h2>Image Files:</h2>
+    <ul>
+        <li><a href="{% static 'images/lexit_favicon.png' %}" target="_blank">favicon</a></li>
+        <li><a href="{% static 'images/lexit_logo_navbar.png' %}" target="_blank">navbar logo</a></li>
+    </ul>
+    
+    <h2>Inline CSS Test:</h2>
+    <div style="background-color: red; color: white; padding: 10px;">
+        If this is red, inline CSS works
+    </div>
+    
+    <h2>Tailwind CSS Test:</h2>
+    <div class="bg-blue-500 text-white p-4">
+        If this is blue, Tailwind CSS is loading
+    </div>
+    
+    <link rel="stylesheet" href="{% static 'dist/styles.css' %}">
+</body>
+</html>
