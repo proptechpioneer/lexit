@@ -8,9 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}LEXIT | BtL Analyser{% endblock %}</title>
     
-    <!-- Favicon with fallback -->
-    <link rel="icon" type="image/png" href="{% static 'images/lexit_favicon.png' %}">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+    <!-- Favicon - multiple fallbacks -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/lexit_favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/lexit_favicon.png' %}">
+    <link rel="shortcut icon" href="{% static 'images/lexit_favicon.png' %}">
+    <link rel="icon" href="/favicon.ico">
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
