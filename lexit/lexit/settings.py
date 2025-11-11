@@ -12,11 +12,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+import dj_database_url
 
 from environ import Env
 env = Env()
-Env.read_env()
-ENVIRPONMENT = env('ENVIRONMENT', default='production')
+# Read .env file from the same directory as settings.py
+Env.read_env(os.path.join(os.path.dirname(__file__), '.env'))
+ENVIRONMENT = env('ENVIRONMENT', default='production')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if ENVIRPONMENT == 'development':
+if ENVIRONMENT == 'development':
     DEBUG = True
 else:
     DEBUG = False
@@ -88,13 +90,21 @@ WSGI_APPLICATION = 'lexit.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Automatic database switching based on environment
+if ENVIRONMENT == 'development':
+    # Use SQLite for development - fast and lightweight
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
-
+else:
+    # Use PostgreSQL for production - robust and scalable
+    DATABASES = {
+        'default': dj_database_url.parse(env('DATABASE_URL'))
+    }
+    
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
