@@ -56,9 +56,9 @@
                 <!-- Top Left Square -->
                 <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full border border-gray-200">
                     <div class="flex items-center justify-center">
-                        <h4 class="text-primary-blue mb-0 font-bold text-base sm:text-xl md:text-2xl lg:text-3xl">Estimated Value</h4>
+                        <h4 class="text-primary-blue mb-0 font-bold text-lg">Estimated Value</h4>
                         <button type="button" onclick="console.log('Button clicked'); showEstimatedValueModal();" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
-                            <i class="fas fa-info-circle text-lg sm:text-xl md:text-2xl lg:text-2xl"></i>
+                            <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
                     
@@ -67,8 +67,8 @@
                         <div class="relative w-32 h-16 sm:w-36 sm:h-18 md:w-40 md:h-20 lg:w-44 lg:h-22 xl:w-48 xl:h-24 mx-auto max-w-full gauge-container">
                             <canvas id="propertyValueGauge" class="w-full h-full"></canvas>
                             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
-                                <h5 class="text-primary-blue mb-0 font-bold text-xs md:text-sm lg:text-base xl:text-lg">£{{ property.estimated_market_value|floatformat:0|default:"0"|intcomma }}</h5>
-                                <small class="text-primary-blue block text-xs md:text-sm lg:text-base">Est. Value</small>
+                                <h5 class="text-primary-blue mb-0 font-bold text-sm">£{{ property.estimated_market_value|floatformat:0|default:"0"|intcomma }}</h5>
+                                <small class="text-primary-blue block text-xs">Est. Value</small>
                             </div>
                         </div>
                     </div>
@@ -77,7 +77,7 @@
                     <div>
                         {% if property.estimated_market_value and property.purchase_price %}
                         <div class="mb-1">
-                            <span class="{% if capital_appreciation >= 0 %}text-green-600{% else %}text-red-600{% endif %} font-bold text-xs sm:text-sm md:text-base">
+                            <span class="{% if capital_appreciation >= 0 %}text-green-600{% else %}text-red-600{% endif %} font-bold text-sm">
                             {% if capital_appreciation >= 0 %}
                                 +£{{ capital_appreciation|floatformat:0|intcomma }}
                             {% else %}
@@ -88,7 +88,7 @@
                             </span>
                         </div>
                         {% endif %}
-                        <span class="{% if property.estimated_market_value and property.purchase_price %}{% if capital_appreciation >= 0 %}bg-green-500{% else %}bg-red-500{% endif %}{% else %}bg-gray-500{% endif %} text-white px-2 py-1 rounded-full text-xs sm:text-sm md:text-base">
+                        <span class="{% if property.estimated_market_value and property.purchase_price %}{% if capital_appreciation >= 0 %}bg-green-500{% else %}bg-red-500{% endif %}{% else %}bg-gray-500{% endif %} text-white px-2 py-1 rounded-full text-sm">
                         {% if property.estimated_market_value and property.purchase_price %}
                             {% if capital_appreciation >= 0 %}Capital Gained{% else %}Capital Lost{% endif %}
                         {% else %}
@@ -102,9 +102,9 @@
                 <!-- Top Right Square -->
                 <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
                     <div class="flex items-center justify-center">
-                        <h4 class="text-primary-blue mb-0 font-bold text-base sm:text-xl md:text-2xl lg:text-3xl">Monthly Income</h4>
+                        <h4 class="text-primary-blue mb-0 font-bold text-lg">Monthly Income</h4>
                         <button type="button" onclick="console.log('Monthly Income button clicked'); showMonthlyIncomeModal();" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
-                            <i class="fas fa-info-circle text-lg sm:text-xl md:text-2xl lg:text-2xl"></i>
+                            <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
                     
@@ -113,8 +113,8 @@
                         <div class="relative w-32 h-16 sm:w-36 sm:h-18 md:w-40 md:h-20 lg:w-44 lg:h-22 xl:w-48 xl:h-24 mx-auto max-w-full gauge-container">
                             <canvas id="monthlyIncomeGaugeSmall" class="w-full h-full"></canvas>
                             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
-                                <h5 class="text-primary-blue mb-0 font-bold text-xs md:text-sm lg:text-base xl:text-lg">£{{ net_monthly_income|floatformat:0|default:"0"|intcomma }}</h5>
-                                <small class="text-primary-blue block text-xs md:text-sm lg:text-base">Net Income</small>
+                                <h5 class="text-primary-blue mb-0 font-bold text-sm">£{{ net_monthly_income|floatformat:0|default:"0"|intcomma }}</h5>
+                                <small class="text-primary-blue block text-xs">Net Income</small>
                             </div>
                         </div>
                     </div>
@@ -122,7 +122,7 @@
                     <!-- Monthly Income Status Display -->
                     <div>
                         <div class="mb-1">
-                            <span class="{% if net_monthly_income > 0 %}text-green-600{% elif net_monthly_income == 0 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-xs sm:text-sm md:text-base">
+                            <span class="{% if net_monthly_income > 0 %}text-green-600{% elif net_monthly_income == 0 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-sm">
                             {% if net_monthly_income > 0 %}
                                 +£{{ net_monthly_income|floatformat:0|intcomma }}
                             {% elif net_monthly_income == 0 %}
@@ -135,7 +135,7 @@
                             </span>
                         </div>
                         
-                        <span class="{% if net_monthly_income > 0 %}bg-green-500{% elif net_monthly_income == 0 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 rounded-full text-xs sm:text-sm md:text-base">
+                        <span class="{% if net_monthly_income > 0 %}bg-green-500{% elif net_monthly_income == 0 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 rounded-full text-sm">
                         {% if net_monthly_income > 0 %}Positive{% elif net_monthly_income == 0 %}Break Even{% else %}Negative{% endif %}
                         </span>
                     </div>
@@ -145,9 +145,9 @@
                 <!-- Bottom Left Square -->
                 <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
                     <div class="flex items-center justify-center">
-                        <h4 class="text-primary-blue mb-0 font-bold text-base sm:text-xl md:text-2xl lg:text-3xl">Gross Yield</h4>
+                        <h4 class="text-primary-blue mb-0 font-bold text-lg">Gross Yield</h4>
                         <button type="button" onclick="console.log('Gross Yield button clicked'); showGrossYieldModal();" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
-                            <i class="fas fa-info-circle text-lg sm:text-xl md:text-2xl lg:text-2xl"></i>
+                            <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
                     
@@ -156,8 +156,8 @@
                         <div class="relative w-32 h-16 sm:w-36 sm:h-18 md:w-40 md:h-20 lg:w-44 lg:h-22 xl:w-48 xl:h-24 mx-auto max-w-full gauge-container">
                             <canvas id="weeklyRentGauge" class="w-full h-full"></canvas>
                             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
-                                <h5 class="text-primary-blue mb-0 font-bold text-xs md:text-sm lg:text-base xl:text-lg">{{ gross_annual_yield|floatformat:1|default:"0" }}%</h5>
-                                <small class="text-primary-blue block text-xs md:text-sm lg:text-base">Annual return</small>
+                                <h5 class="text-primary-blue mb-0 font-bold text-sm">{{ gross_annual_yield|floatformat:1|default:"0" }}%</h5>
+                                <small class="text-primary-blue block text-xs">Annual return</small>
                             </div>
                         </div>
                     </div>
@@ -165,7 +165,7 @@
                     <!-- Yield Status Display -->
                     <div>
                         <div class="mb-1">
-                            <span class="{% if gross_annual_yield > 5 %}text-green-600{% elif gross_annual_yield > 3 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-xs sm:text-sm md:text-base">
+                            <span class="{% if gross_annual_yield > 5 %}text-green-600{% elif gross_annual_yield > 3 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-sm">
                                 {% if gross_annual_yield > 5 %}
                                     Excellent
                                 {% elif gross_annual_yield > 3 %}
@@ -176,7 +176,7 @@
                             </span>
                         </div>
                         
-                        <span class="{% if gross_annual_yield > 5 %}bg-green-500{% elif gross_annual_yield > 3 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 rounded-full text-xs sm:text-sm md:text-base">
+                        <span class="{% if gross_annual_yield > 5 %}bg-green-500{% elif gross_annual_yield > 3 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 rounded-full text-sm">
                             {% if gross_annual_yield > 5 %}High{% elif gross_annual_yield > 3 %}Moderate{% else %}Low{% endif %}
                         </span>
                     </div>
@@ -186,9 +186,9 @@
                 <!-- Bottom Right Square -->
                 <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
                     <div class="flex items-center justify-center">
-                        <h4 class="text-primary-blue mb-0 font-bold text-base sm:text-xl md:text-2xl lg:text-3xl">Net Yield</h4>
+                        <h4 class="text-primary-blue mb-0 font-bold text-lg">Net Yield</h4>
                         <button type="button" onclick="console.log('Net Yield button clicked'); showNetYieldModal();" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
-                            <i class="fas fa-info-circle text-lg sm:text-xl md:text-2xl lg:text-2xl"></i>
+                            <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
                     
@@ -197,8 +197,8 @@
                         <div class="relative w-32 h-16 sm:w-36 sm:h-18 md:w-40 md:h-20 lg:w-44 lg:h-22 xl:w-48 xl:h-24 mx-auto max-w-full gauge-container">
                             <canvas id="grossYieldGaugeSmall" class="w-full h-full"></canvas>
                             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
-                                <h5 class="text-primary-blue mb-0 font-bold text-xs md:text-sm lg:text-base xl:text-lg">{{ net_annual_yield|floatformat:1|default:"0" }}%</h5>
-                                <small class="text-primary-blue block text-xs md:text-sm lg:text-base">Net return</small>
+                                <h5 class="text-primary-blue mb-0 font-bold text-sm">{{ net_annual_yield|floatformat:1|default:"0" }}%</h5>
+                                <small class="text-primary-blue block text-xs">Net return</small>
                             </div>
                         </div>
                     </div>
@@ -206,7 +206,7 @@
                     <!-- Net Yield Status Display -->
                     <div>
                         <div class="mb-1">
-                            <span class="{% if net_annual_yield > 4 %}text-green-600{% elif net_annual_yield > 2 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-xs sm:text-sm md:text-base">
+                            <span class="{% if net_annual_yield > 4 %}text-green-600{% elif net_annual_yield > 2 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-sm">
                                 {% if net_annual_yield > 4 %}
                                     Excellent
                                 {% elif net_annual_yield > 2 %}
@@ -217,7 +217,7 @@
                             </span>
                         </div>
                         
-                        <span class="{% if net_annual_yield > 4 %}bg-green-500{% elif net_annual_yield > 2 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 rounded-full text-xs sm:text-sm md:text-base">
+                        <span class="{% if net_annual_yield > 4 %}bg-green-500{% elif net_annual_yield > 2 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 rounded-full text-sm">
                             {% if net_annual_yield > 4 %}High{% elif net_annual_yield > 2 %}Moderate{% else %}Low{% endif %}
                         </span>
                     </div>
