@@ -27,9 +27,34 @@ def favicon_view(request):
     # Return a redirect to the static favicon
     return RedirectView.as_view(url=settings.STATIC_URL + 'images/lexit_favicon.png', permanent=True)(request)
 
+def debug_media_view(request):
+    """Debug view to check media configuration"""
+    import os
+    response_data = {
+        'MEDIA_URL': settings.MEDIA_URL,
+        'MEDIA_ROOT': settings.MEDIA_ROOT,
+        'DEBUG': settings.DEBUG,
+        'media_files': []
+    }
+    
+    # List files in media directory
+    if os.path.exists(settings.MEDIA_ROOT):
+        for file in os.listdir(settings.MEDIA_ROOT):
+            file_path = os.path.join(settings.MEDIA_ROOT, file)
+            if os.path.isfile(file_path):
+                response_data['media_files'].append({
+                    'name': file,
+                    'size': os.path.getsize(file_path),
+                    'url': settings.MEDIA_URL + file
+                })
+    
+    from django.http import JsonResponse
+    return JsonResponse(response_data)
+
 urlpatterns = [
     path('centralmanagementserver/', admin.site.urls),  # Real admin interface
     path('favicon.ico', favicon_view, name='favicon'),
+    path('debug-media/', debug_media_view, name='debug_media'),  # Debug endpoint
     path('', views.landing_page, name='landing_page'),
     path('rrb/', views.rrb_home, name='rrb_home'),
     path('rra-guide/', include('rra_guide.urls', namespace='rra_guide')),
@@ -41,6 +66,9 @@ urlpatterns = [
     path("ckeditor5/", include('django_ckeditor_5.urls')),
 ]
 
-# Serve media files in development and production
-# Render.com can handle Django's static file serving
+# Serve media files in all environments
+# Use Django's static file serving for media files
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Also add explicit static file serving for completeness
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
