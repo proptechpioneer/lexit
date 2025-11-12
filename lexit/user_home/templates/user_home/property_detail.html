@@ -64,7 +64,7 @@
                     
                     <!-- Interactive Gauge -->
                     <div class="flex-1 flex flex-col justify-center items-center min-h-0">
-                        <div class="relative w-24 h-12 sm:w-28 sm:h-14 md:w-32 md:h-16 lg:w-36 lg:h-18 mx-auto max-w-full gauge-container">
+                        <div class="relative w-28 h-14 sm:w-32 sm:h-16 md:w-36 md:h-18 lg:w-40 lg:h-20 mx-auto max-w-full gauge-container">
                             <canvas id="propertyValueGauge" class="w-full h-full"></canvas>
                             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
                                 <h5 class="text-primary-blue mb-0 font-bold text-sm">£{{ property.estimated_market_value|floatformat:0|default:"0"|intcomma }}</h5>
@@ -110,7 +110,7 @@
                     
                     <!-- Interactive Gauge -->
                     <div class="flex-1 flex flex-col justify-center items-center min-h-0">
-                        <div class="relative w-24 h-12 sm:w-28 sm:h-14 md:w-32 md:h-16 lg:w-36 lg:h-18 mx-auto max-w-full gauge-container">
+                        <div class="relative w-28 h-14 sm:w-32 sm:h-16 md:w-36 md:h-18 lg:w-40 lg:h-20 mx-auto max-w-full gauge-container">
                             <canvas id="monthlyIncomeGaugeSmall" class="w-full h-full"></canvas>
                             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
                                 <h5 class="text-primary-blue mb-0 font-bold text-sm">£{{ net_monthly_income|floatformat:0|default:"0"|intcomma }}</h5>
@@ -153,7 +153,7 @@
                     
                     <!-- Interactive Gauge -->
                     <div class="flex-1 flex flex-col justify-center items-center min-h-0">
-                        <div class="relative w-24 h-12 sm:w-28 sm:h-14 md:w-32 md:h-16 lg:w-36 lg:h-18 mx-auto max-w-full gauge-container">
+                        <div class="relative w-28 h-14 sm:w-32 sm:h-16 md:w-36 md:h-18 lg:w-40 lg:h-20 mx-auto max-w-full gauge-container">
                             <canvas id="weeklyRentGauge" class="w-full h-full"></canvas>
                             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
                                 <h5 class="text-primary-blue mb-0 font-bold text-sm">{{ gross_annual_yield|floatformat:1|default:"0" }}%</h5>
@@ -194,7 +194,7 @@
                     
                     <!-- Interactive Gauge -->
                     <div class="flex-1 flex flex-col justify-center items-center min-h-0">
-                        <div class="relative w-24 h-12 sm:w-28 sm:h-14 md:w-32 md:h-16 lg:w-36 lg:h-18 mx-auto max-w-full gauge-container">
+                        <div class="relative w-28 h-14 sm:w-32 sm:h-16 md:w-36 md:h-18 lg:w-40 lg:h-20 mx-auto max-w-full gauge-container">
                             <canvas id="grossYieldGaugeSmall" class="w-full h-full"></canvas>
                             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
                                 <h5 class="text-primary-blue mb-0 font-bold text-sm">{{ net_annual_yield|floatformat:1|default:"0" }}%</h5>
@@ -1009,11 +1009,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to get constrained gauge size for 2x2 grid
     function getConstrainedGaugeSize() {
         const width = window.innerWidth;
-        if (width >= 1280) return { width: 144, height: 72 }; // xl - very constrained
-        if (width >= 1024) return { width: 128, height: 64 };  // lg - very constrained  
-        if (width >= 768) return { width: 120, height: 60 };   // md - very constrained
-        if (width >= 640) return { width: 112, height: 56 };   // sm - very constrained
-        return { width: 96, height: 48 };                     // mobile - very constrained
+        if (width >= 1280) return { width: 160, height: 80 }; // xl - balanced size
+        if (width >= 1024) return { width: 144, height: 72 };  // lg - balanced size  
+        if (width >= 768) return { width: 128, height: 64 };   // md - balanced size
+        if (width >= 640) return { width: 112, height: 56 };   // sm - balanced size
+        return { width: 96, height: 48 };                     // mobile - compact
     }
 
     // Gauge data configuration
@@ -1897,17 +1897,30 @@ document.addEventListener('DOMContentLoaded', function() {
 #monthlyIncomeGaugeSmall,
 #weeklyRentGauge,
 #grossYieldGaugeSmall {
-    max-width: 150px !important;
-    max-height: 75px !important;
+    max-width: 180px !important;
+    max-height: 90px !important;
 }
 
 /* Ensure status badges are visible in gauge containers */
 .gauge-container + div {
     margin-top: 8px;
-    min-height: 40px;
+    min-height: 50px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+}
+
+/* Specific styling for badge spans to ensure visibility */
+.gauge-container + div span {
+    display: inline-block !important;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+/* Ensure 2x2 grid cards have enough height for badges */
+.grid.grid-cols-1.md\\:grid-cols-2.gap-3 > div {
+    min-height: 200px !important;
 }
 
 /* Responsive adjustments */
@@ -1916,12 +1929,16 @@ document.addEventListener('DOMContentLoaded', function() {
     #monthlyIncomeGaugeSmall,
     #weeklyRentGauge,
     #grossYieldGaugeSmall {
-        max-width: 120px !important;
-        max-height: 60px !important;
+        max-width: 144px !important;
+        max-height: 72px !important;
     }
     
     .gauge-container + div {
-        min-height: 35px;
+        min-height: 45px;
+    }
+    
+    .grid.grid-cols-1.md\\:grid-cols-2.gap-3 > div {
+        min-height: 180px !important;
     }
 }
 
@@ -1930,12 +1947,16 @@ document.addEventListener('DOMContentLoaded', function() {
     #monthlyIncomeGaugeSmall,
     #weeklyRentGauge,
     #grossYieldGaugeSmall {
-        max-width: 96px !important;
-        max-height: 48px !important;
+        max-width: 112px !important;
+        max-height: 56px !important;
     }
     
     .gauge-container + div {
-        min-height: 30px;
+        min-height: 40px;
+    }
+    
+    .grid.grid-cols-1.md\\:grid-cols-2.gap-3 > div {
+        min-height: 160px !important;
     }
 }
 </style>
