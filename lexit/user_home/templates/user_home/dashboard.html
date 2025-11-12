@@ -385,19 +385,19 @@ LEXIT | Dashboard
         </div>
     </section>
     {% endif %}
-    <div class="figma-container">
 
     <!-- BLOG SECTION -->
-    <section class="mb-12 clear-both mt-8">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
-            <h1 class="text-blue-600 text-xl sm:text-2xl">Latest BtL Landlord News</h1>
-            <a href="{% url 'news:news_home' %}" class="figma-btn-link">
-                <span class="figma-btn-link-text text-pink-500 text-sm sm:text-base">Find Out More</span>
-                <div class="figma-btn-link-icon">
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-        </div>
+    <section class="mb-12 clear-both mt-8 w-full flex justify-center">
+        <div class="w-full max-w-screen-2xl px-6 sm:px-8 lg:px-10">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
+                <h1 class="text-blue-600 text-xl sm:text-2xl">Latest BtL Landlord News</h1>
+                <a href="{% url 'news:news_home' %}" class="figma-btn-link">
+                    <span class="figma-btn-link-text text-pink-500 text-sm sm:text-base">Find Out More</span>
+                    <div class="figma-btn-link-icon">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+            </div>
         
         <style>
         .blog-grid {
@@ -562,8 +562,9 @@ LEXIT | Dashboard
                 </div>
             {% endif %}
         </div>
-    </section>    
-</div>
-<div class="py-16"></div>
+        </div>
+    </section>
+    
+    <div class="py-16"></div>
 </div>
 {% endblock %}

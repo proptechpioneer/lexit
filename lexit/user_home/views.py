@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from decimal import Decimal
+from news.models import NewsArticle
 
 from .utils.corp_tax_calculator import corp_tax_calculator
 from .utils.offshore_tax_calculator import offshore_tax_calculator
@@ -356,11 +357,18 @@ def user_home(request):
     if total_properties > 0 and total_portfolio_value > 0:
         average_yield = (total_annual_rent / total_portfolio_value) * 100
 
+    # Get recent news articles for the dashboard
+    try:
+        recent_articles = NewsArticle.objects.all()[:4]
+    except:
+        recent_articles = []
+
     # Dashboard context data
     context = {
         'user': user,
         'profile': profile,
         'properties': properties[:5],  # Show only 5 most recent
+        'recent_articles': recent_articles,  # Add recent articles
         'total_properties': total_properties,
         'total_weekly_rent': total_weekly_rent,
         'total_net_monthly_income': total_net_monthly_income,
