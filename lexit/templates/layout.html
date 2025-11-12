@@ -178,8 +178,8 @@
       <!-- Center: Desktop nav (hidden on mobile) -->
       <div class="hidden md:flex items-center justify-center flex-1">
         <div class="flex space-x-6 bg-gray-100 px-3 py-1 rounded-full">
-          <a href="{% url 'rrb_home' %}" class="text-primary-blue hover:bg-pink-500 hover:text-white px-3 py-2 rounded font-medium transition">Renters' Rights Act</a>
-          <a href="{% url 'news:news_home' %}" class="text-primary-blue hover:bg-pink-500 hover:text-white px-3 py-2 rounded font-medium transition">News</a>
+          <a href="{% url 'rrb_home' %}" class="text-primary-blue hover:bg-dark-pink hover:text-white px-3 py-2 rounded font-medium transition">Renters' Rights Act</a>
+          <a href="{% url 'news:news_home' %}" class="text-primary-blue hover:bg-dark-pink hover:text-white px-3 py-2 rounded font-medium transition">News</a>
         </div>
       </div>
       
@@ -190,11 +190,11 @@
           {% if user.is_authenticated %}
             <form method="post" action="{% url 'users:logout' %}" style="display: inline;">
               {% csrf_token %}
-              <button type="submit" class="text-primary-blue border px-4 py-2 font-semibold hover:bg-pink-500 hover:text-white" style="border-radius: 50px;">Logout</button>
+              <button type="submit" class="text-primary-blue border px-4 py-2 font-semibold hover:bg-dark-pink hover:text-white" style="border-radius: 50px;">Logout</button>
             </form>
           {% else %}
-            <a href="{% url 'users:login' %}" class="text-primary-blue font-semibold hover:bg-pink-500 hover:text-white px-3 py-2 rounded transition">Login</a>
-            <a href="{% url 'users:register' %}" class="text-primary-blue border px-4 py-2 font-semibold hover:bg-pink-500 hover:text-white" style="border-radius: 50px;">Try it FREE</a>
+            <a href="{% url 'users:login' %}" class="text-primary-blue font-semibold hover:bg-dark-pink hover:text-white px-3 py-2 rounded transition">Login</a>
+            <a href="{% url 'users:register' %}" class="text-primary-blue border px-4 py-2 font-semibold hover:bg-dark-pink hover:text-white" style="border-radius: 50px;">Try it FREE</a>
           {% endif %}
         </div>
         
@@ -231,20 +231,20 @@
           <div class="flex-1 flex items-center justify-center">
             <div class="flex flex-col space-y-8 items-center text-center">
               <!-- Main Navigation -->
-              <a href="{% url 'rrb_home' %}" class="text-primary-blue hover:bg-pink-500 hover:text-white px-6 py-3 rounded font-medium text-xl transition">Renters' Rights Bill</a>
-              <a href="{% url 'news:news_home' %}" class="text-primary-blue hover:bg-pink-500 hover:text-white px-6 py-3 rounded font-medium text-xl transition">News</a>
+              <a href="{% url 'rrb_home' %}" class="text-primary-blue hover:bg-dark-pink hover:text-white px-6 py-3 rounded font-medium text-xl transition">Renters' Rights Bill</a>
+              <a href="{% url 'news:news_home' %}" class="text-primary-blue hover:bg-dark-pink hover:text-white px-6 py-3 rounded font-medium text-xl transition">News</a>
               
               <!-- Secondary Navigation for authenticated users on mobile -->
               {% if user.is_authenticated %}
               <div class="w-48 h-px bg-gray-300 my-4"></div>
               
-              <a href="{% url 'user_home:user_home' %}" class="text-primary-blue hover:bg-pink-500 hover:text-white px-6 py-3 rounded font-medium text-xl transition flex items-center">
+              <a href="{% url 'user_home:user_home' %}" class="text-primary-blue hover:bg-dark-pink hover:text-white px-6 py-3 rounded font-medium text-xl transition flex items-center">
                 <i class="fas fa-tachometer-alt mr-3 text-lg"></i> Dashboard
               </a>
-              <a href="{% url 'user_home:upload_property' %}" class="text-primary-blue hover:bg-pink-500 hover:text-white px-6 py-3 rounded font-medium text-xl transition flex items-center">
+              <a href="{% url 'user_home:upload_property' %}" class="text-primary-blue hover:bg-dark-pink hover:text-white px-6 py-3 rounded font-medium text-xl transition flex items-center">
                 <i class="fas fa-plus mr-3 text-lg"></i> Add Property
               </a>
-              <a href="{% url 'users:profile' %}" class="text-primary-blue hover:bg-pink-500 hover:text-white px-6 py-3 rounded font-medium text-xl transition flex items-center">
+              <a href="{% url 'users:profile' %}" class="text-primary-blue hover:bg-dark-pink hover:text-white px-6 py-3 rounded font-medium text-xl transition flex items-center">
                 <i class="fas fa-user-edit mr-3 text-lg"></i> Edit Profile
               </a>
               
@@ -256,7 +256,7 @@
                 <div class="space-y-3">
                   {% if user.properties.exists %}
                     {% for property in user.properties.all|slice:":5" %}
-                    <a href="{% url 'user_home:property_detail' property.slug %}" class="block text-primary-blue hover:bg-pink-500 hover:text-white px-4 py-2 rounded text-base transition">
+                    <a href="{% url 'user_home:property_detail' property.slug %}" class="block text-primary-blue hover:bg-dark-pink hover:text-white px-4 py-2 rounded text-base transition">
                       <i class="fas fa-building mr-2 text-sm"></i> {{ property.property_name|truncatechars:30 }}
                     </a>
                     {% endfor %}
@@ -269,7 +269,7 @@
                   <div class="text-gray-500 text-sm mb-2">
                     <i class="fas fa-info-circle mr-2"></i> No properties yet
                   </div>
-                  <a href="{% url 'user_home:upload_property' %}" class="block text-primary-blue hover:bg-pink-500 hover:text-white px-4 py-2 rounded text-base transition">
+                  <a href="{% url 'user_home:upload_property' %}" class="block text-primary-blue hover:bg-dark-pink hover:text-white px-4 py-2 rounded text-base transition">
                     <i class="fas fa-plus mr-2"></i> Add your first property
                   </a>
                   {% endif %}
@@ -283,11 +283,11 @@
               {% if user.is_authenticated %}
                 <form method="post" action="{% url 'users:logout' %}">
                   {% csrf_token %}
-                  <button type="submit" class="text-primary-blue border border-text-primary-blue px-8 py-4 font-semibold hover:bg-pink-500 hover:text-white text-xl" style="border-radius: 50px;">Logout</button>
+                  <button type="submit" class="text-primary-blue border border-text-primary-blue px-8 py-4 font-semibold hover:bg-dark-pink hover:text-white text-xl" style="border-radius: 50px;">Logout</button>
                 </form>
               {% else %}
-                <a href="{% url 'users:login' %}" class="text-primary-blue font-semibold hover:bg-pink-500 hover:text-white text-xl">Login</a>
-                <a href="{% url 'users:register' %}" class="text-primary-blue border border-text-primary-blue px-8 py-4 font-semibold hover:bg-pink-500 hover:text-white text-xl" style="border-radius: 50px;">Try it FREE</a>
+                <a href="{% url 'users:login' %}" class="text-primary-blue font-semibold hover:bg-dark-pink hover:text-white text-xl">Login</a>
+                <a href="{% url 'users:register' %}" class="text-primary-blue border border-text-primary-blue px-8 py-4 font-semibold hover:bg-dark-pink hover:text-white text-xl" style="border-radius: 50px;">Try it FREE</a>
               {% endif %}
             </div>
           </div>
@@ -371,7 +371,7 @@
       <div class="flex h-full relative">
         <!-- Close button at top right -->
         <div class="absolute top-6 right-6">
-          <button id="secondary-close-btn" class="text-white hover:bg-pink-500 hover:text-white p-2" aria-label="Close secondary menu">
+          <button id="secondary-close-btn" class="text-white hover:bg-dark-pink hover:text-white p-2" aria-label="Close secondary menu">
             <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
@@ -381,13 +381,13 @@
         <!-- Centered menu content -->
         <div class="flex-1 flex items-center justify-center">
           <div class="flex flex-col space-y-6 items-center text-center">
-            <a href="{% url 'user_home:user_home' %}" class="text-white hover:bg-pink-500 hover:text-white px-6 py-3 rounded font-medium text-xl transition flex items-center">
+            <a href="{% url 'user_home:user_home' %}" class="text-white hover:bg-dark-pink hover:text-white px-6 py-3 rounded font-medium text-xl transition flex items-center">
               <i class="fas fa-tachometer-alt mr-3 text-lg"></i> Dashboard
             </a>
-            <a href="{% url 'user_home:upload_property' %}" class="text-white hover:bg-pink-500 hover:text-white px-6 py-3 rounded font-medium text-xl transition flex items-center">
+            <a href="{% url 'user_home:upload_property' %}" class="text-white hover:bg-dark-pink hover:text-white px-6 py-3 rounded font-medium text-xl transition flex items-center">
               <i class="fas fa-plus mr-3 text-lg"></i> Add Property
             </a>
-            <a href="{% url 'users:profile' %}" class="text-white hover:bg-pink-500 hover:text-white px-6 py-3 rounded font-medium text-xl transition flex items-center">
+            <a href="{% url 'users:profile' %}" class="text-white hover:bg-dark-pink hover:text-white px-6 py-3 rounded font-medium text-xl transition flex items-center">
               <i class="fas fa-user-edit mr-3 text-lg"></i> Edit Profile
             </a>
             
@@ -399,12 +399,12 @@
               <div class="space-y-3">
                 {% if user.properties.exists %}
                   {% for property in user.properties.all|slice:":5" %}
-                  <a href="{% url 'user_home:property_detail' property.slug %}" class="block text-white hover:bg-pink-500 hover:text-white px-4 py-2 rounded text-base transition">
+                  <a href="{% url 'user_home:property_detail' property.slug %}" class="block text-white hover:bg-dark-pink hover:text-white px-4 py-2 rounded text-base transition">
                     <i class="fas fa-building mr-2 text-sm"></i> {{ property.property_name|truncatechars:30 }}
                   </a>
                   {% endfor %}
                   {% if user.properties.count > 5 %}
-                  <a href="{% url 'user_home:user_home' %}" class="block text-gray-200 hover:bg-pink-500 hover:text-white px-4 py-2 rounded text-sm transition">
+                  <a href="{% url 'user_home:user_home' %}" class="block text-gray-200 hover:bg-dark-pink hover:text-white px-4 py-2 rounded text-sm transition">
                     <i class="fas fa-ellipsis-h mr-2"></i> View all {{ user.properties.count }} properties
                   </a>
                   {% endif %}
@@ -412,7 +412,7 @@
                 <div class="text-gray-200 text-sm mb-2">
                   <i class="fas fa-info-circle mr-2"></i> No properties yet
                 </div>
-                <a href="{% url 'user_home:upload_property' %}" class="block text-white hover:bg-pink-500 hover:text-white px-4 py-2 rounded text-base transition">
+                <a href="{% url 'user_home:upload_property' %}" class="block text-white hover:bg-dark-pink hover:text-white px-4 py-2 rounded text-base transition">
                   <i class="fas fa-plus mr-2"></i> Add your first property
                 </a>
                 {% endif %}
