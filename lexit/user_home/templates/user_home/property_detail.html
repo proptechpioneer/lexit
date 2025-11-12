@@ -74,7 +74,7 @@
                     </div>
                     
                     <!-- Status Display -->
-                    <div>
+                    <div class="mt-4 shrink-0 badge-container">
                         {% if property.estimated_market_value and property.purchase_price %}
                         <div class="mb-1">
                             <span class="{% if capital_appreciation >= 0 %}text-green-600{% else %}text-red-600{% endif %} font-bold text-sm">
@@ -88,7 +88,7 @@
                             </span>
                         </div>
                         {% endif %}
-                        <span class="{% if property.estimated_market_value and property.purchase_price %}{% if capital_appreciation >= 0 %}bg-green-500{% else %}bg-red-500{% endif %}{% else %}bg-gray-500{% endif %} text-white px-2 py-1 rounded-full text-sm">
+                        <span class="{% if property.estimated_market_value and property.purchase_price %}{% if capital_appreciation >= 0 %}bg-green-500{% else %}bg-red-500{% endif %}{% else %}bg-gray-500{% endif %} text-white px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important;">
                         {% if property.estimated_market_value and property.purchase_price %}
                             {% if capital_appreciation >= 0 %}Capital Gained{% else %}Capital Lost{% endif %}
                         {% else %}
@@ -120,7 +120,7 @@
                     </div>
                     
                     <!-- Monthly Income Status Display -->
-                    <div>
+                    <div class="mt-4 shrink-0 badge-container">
                         <div class="mb-1">
                             <span class="{% if net_monthly_income > 0 %}text-green-600{% elif net_monthly_income == 0 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-sm">
                             {% if net_monthly_income > 0 %}
@@ -135,7 +135,7 @@
                             </span>
                         </div>
                         
-                        <span class="{% if net_monthly_income > 0 %}bg-green-500{% elif net_monthly_income == 0 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 rounded-full text-sm">
+                        <span class="{% if net_monthly_income > 0 %}bg-green-500{% elif net_monthly_income == 0 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important;">
                         {% if net_monthly_income > 0 %}Positive{% elif net_monthly_income == 0 %}Break Even{% else %}Negative{% endif %}
                         </span>
                     </div>
@@ -302,9 +302,11 @@
                         </span>
                     </div>
                     
-                    <span class="{% if dscr >= 1.25 %}bg-green-500{% elif dscr >= 1.0 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-3 py-2 rounded-full text-sm">
-                        {% if dscr >= 1.25 %}Healthy Coverage{% elif dscr >= 1.0 %}Marginal Coverage{% else %}Insufficient Coverage{% endif %}
-                    </span>
+                    <div class="badge-container">
+                        <span class="{% if dscr >= 1.25 %}bg-green-500{% elif dscr >= 1.0 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-3 py-2 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important;">
+                            {% if dscr >= 1.25 %}Healthy Coverage{% elif dscr >= 1.0 %}Marginal Coverage{% else %}Insufficient Coverage{% endif %}
+                        </span>
+                    </div>
                 </div>
                 <!-- End Debt Service Coverage Ratio -->    
 
@@ -341,9 +343,11 @@
                         </span>
                     </div>
                     
-                    <span class="{% if opex_load <= 20 %}bg-green-500{% elif opex_load <= 30 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-3 py-2 rounded-full text-sm">
-                        {% if opex_load <= 20 %}Highly Efficient{% elif opex_load <= 30 %}Efficient{% else %}Inefficient{% endif %}
-                    </span>
+                    <div class="badge-container">
+                        <span class="{% if opex_load <= 20 %}bg-green-500{% elif opex_load <= 30 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-3 py-2 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important;">
+                            {% if opex_load <= 20 %}Highly Efficient{% elif opex_load <= 30 %}Efficient{% else %}Inefficient{% endif %}
+                        </span>
+                    </div>
                 </div>
                 <!-- End Operating Expense Load -->
 
@@ -380,9 +384,11 @@
                         </span>
                     </div>
                     
-                    <span class="{% if nrat_percentage >= 8 %}bg-green-500{% elif nrat_percentage >= 5 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-3 py-2 rounded-full text-sm">
-                        {% if nrat_percentage >= 8 %}Excellent ROI{% elif nrat_percentage >= 5 %}Good ROI{% else %}Poor ROI{% endif %}
-                    </span>
+                    <div class="badge-container">
+                        <span class="{% if nrat_percentage >= 8 %}bg-green-500{% elif nrat_percentage >= 5 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-3 py-2 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important;">
+                            {% if nrat_percentage >= 8 %}Excellent ROI{% elif nrat_percentage >= 5 %}Good ROI{% else %}Poor ROI{% endif %}
+                        </span>
+                    </div>
                 </div>
                 <!-- End Net Return After Tax -->
 
