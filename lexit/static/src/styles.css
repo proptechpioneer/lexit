@@ -382,6 +382,57 @@ h5:not([class*="text-"]) {
   object-fit: cover;
 }
 
+/* Responsive testimonials layout */
+@media (max-width: 1024px) {
+  .figma-testimonials-container {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    min-height: auto !important;
+    padding: 20px 15px !important;
+  }
+  
+  .figma-testimonial-content-area {
+    padding-left: 0 !important;
+    max-width: 100% !important;
+    text-align: center !important;
+  }
+  
+  .figma-testimonial-image {
+    width: 200px !important;
+    height: 200px !important;
+    order: 2 !important;
+    margin: 15px auto 0 auto !important;
+  }
+  
+  .testimonial-carousel {
+    order: 1 !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .figma-bullet-points {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .figma-testimonials-container {
+    padding: 15px 10px !important;
+    gap: 15px !important;
+  }
+  
+  .figma-testimonial-image {
+    width: 150px !important;
+    height: 150px !important;
+  }
+  
+  .figma-testimonials-section {
+    padding: 40px 15px !important;
+  }
+}
+
 /* Secondary Navigation Enhancements */
 .secondary-nav-dropdown:hover .opacity-0 {
   opacity: 1 !important;

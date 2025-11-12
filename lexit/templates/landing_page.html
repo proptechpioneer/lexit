@@ -1058,6 +1058,57 @@
                 gap: 30px !important;
             }
         }
+        
+        /* CRITICAL: Force stacked layout on all mobile/tablet devices */
+        @media (max-width: 1024px) {
+            .figma-testimonials-container {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 20px !important;
+                min-height: auto !important;
+                padding: 20px 15px !important;
+            }
+            
+            /* Override ANY inline styles that might interfere */
+            .figma-testimonials-container[style] {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            
+            .testimonial-carousel {
+                order: 1 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                flex: none !important;
+                max-width: 100% !important;
+            }
+            
+            .figma-testimonial-image {
+                order: 2 !important;
+                width: 200px !important;
+                height: 200px !important;
+                margin: 15px auto 0 auto !important;
+                flex: none !important;
+                align-self: center !important;
+            }
+        }
+        
+        /* Extra mobile constraints */
+        @media (max-width: 768px) {
+            .figma-testimonials-container {
+                padding: 15px 10px !important;
+                gap: 15px !important;
+            }
+            
+            .figma-testimonial-image {
+                width: 150px !important;
+                height: 150px !important;
+            }
+        }
     </style>
     
     <section class="figma-testimonials-section" style="position: relative; width: 100%; max-width: 1440px; margin: 0 auto; padding: 80px 20px; background-color: white;">
