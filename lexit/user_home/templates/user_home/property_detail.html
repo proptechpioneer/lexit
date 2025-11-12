@@ -266,18 +266,6 @@
                     </div>
                     
                     <!-- DSCR Status Display -->
-                    <div class="mb-2">
-                        <span class="{% if dscr >= 1.25 %}text-green-600{% elif dscr >= 1.0 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-sm">
-                            {% if dscr >= 1.25 %}
-                                Healthy debt service coverage
-                            {% elif dscr >= 1.0 %}
-                                Marginal debt service coverage
-                            {% else %}
-                                Insufficient debt service coverage
-                            {% endif %}
-                        </span>
-                    </div>
-                    
                     <div class="badge-container">
                         <span class="{% if dscr >= 1.25 %}bg-green-600 text-white{% elif dscr >= 1.0 %}bg-yellow text-primary-blue{% else %}bg-red-600 text-white{% endif %} px-3 py-2 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: {% if dscr >= 1.25 %}#16a34a{% elif dscr >= 1.0 %}#FFD700{% else %}#dc2626{% endif %} !important;">
                             {% if dscr >= 1.25 %}Healthy Coverage{% elif dscr >= 1.0 %}Marginal Coverage{% else %}Insufficient Coverage{% endif %}
@@ -307,18 +295,6 @@
                     </div>
                     
                     <!-- OPEX Status Display -->
-                    <div class="mb-2">
-                        <span class="{% if opex_load <= 20 %}text-green-600{% elif opex_load <= 30 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-sm">
-                            {% if opex_load <= 20 %}
-                                Highly efficient operations
-                            {% elif opex_load <= 30 %}
-                                Efficient expense management
-                            {% else %}
-                                High operating expenses
-                            {% endif %}
-                        </span>
-                    </div>
-                    
                     <div class="badge-container">
                         <span class="{% if opex_load <= 20 %}bg-green-600 text-white{% elif opex_load <= 30 %}bg-yellow text-primary-blue{% else %}bg-red-600 text-white{% endif %} px-3 py-2 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: {% if opex_load <= 20 %}#16a34a{% elif opex_load <= 30 %}#FFD700{% else %}#dc2626{% endif %} !important;">
                             {% if opex_load <= 20 %}Highly Efficient{% elif opex_load <= 30 %}Efficient{% else %}Inefficient{% endif %}
@@ -348,18 +324,6 @@
                     </div>
                     
                     <!-- NRAT Status Display -->
-                    <div class="mb-2">
-                        <span class="{% if nrat_percentage >= 8 %}text-green-600{% elif nrat_percentage >= 5 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-sm">
-                            {% if nrat_percentage >= 8 %}
-                                Excellent return on investment
-                            {% elif nrat_percentage >= 5 %}
-                                Good return on investment
-                            {% else %}
-                                Below average returns
-                            {% endif %}
-                        </span>
-                    </div>
-                    
                     <div class="badge-container">
                         <span class="{% if nrat_percentage >= 8 %}bg-green-600 text-white{% elif nrat_percentage >= 5 %}bg-yellow text-primary-blue{% else %}bg-red-600 text-white{% endif %} px-3 py-2 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: {% if nrat_percentage >= 8 %}#16a34a{% elif nrat_percentage >= 5 %}#FFD700{% else %}#dc2626{% endif %} !important;">
                             {% if nrat_percentage >= 8 %}Excellent ROI{% elif nrat_percentage >= 5 %}Good ROI{% else %}Poor ROI{% endif %}
