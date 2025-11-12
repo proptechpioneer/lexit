@@ -20,8 +20,16 @@
         /* Mobile styles */
         @media (max-width: 768px) {
             .footer-cta-section {
-                min-height: 600px !important;
-                margin-top: 80px !important;
+                min-height: 700px !important;
+                margin-top: 100px !important;
+            }
+        }
+        
+        /* Extra small mobile devices */
+        @media (max-width: 375px) {
+            .footer-cta-section {
+                min-height: 750px !important;
+                margin-top: 120px !important;
             }
         }
         
@@ -101,12 +109,19 @@
         </div>
 
         <!-- BOTTOM SECTION: Footer Info -->
-        <div class="absolute left-0 w-full px-6 sm:px-12 lg:px-[200px] xl:px-[200px] pb-10" style="bottom: 80px;">
+        <div class="absolute left-0 w-full px-6 sm:px-12 lg:px-[200px] xl:px-[200px] pb-10" style="bottom: 100px;">
             <style>
                 /* Ensure adequate spacing on small viewports */
                 @media (max-width: 768px) {
                     .footer-bottom-section {
                         margin-bottom: 20px !important;
+                    }
+                }
+                
+                /* Extra spacing for very small viewports */
+                @media (max-width: 375px) {
+                    .footer-bottom-section {
+                        margin-bottom: 30px !important;
                     }
                 }
             </style>

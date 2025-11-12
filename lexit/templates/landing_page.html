@@ -1628,7 +1628,7 @@
         /* Add responsive bottom margin to prevent footer overlap */
         @media (max-width: 768px) {
             .blog-section {
-                margin-bottom: 120px !important;
+                margin-bottom: 160px !important;
             }
             
             /* Make news section heading mobile responsive */
@@ -1647,6 +1647,13 @@
             
             .news-more-link {
                 font-size: 14px !important;
+            }
+        }
+        
+        /* Extra spacing for very small viewports */
+        @media (max-width: 375px) {
+            .blog-section {
+                margin-bottom: 200px !important;
             }
         }
         

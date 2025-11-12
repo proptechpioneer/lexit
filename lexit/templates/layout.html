@@ -244,7 +244,7 @@
         @media (max-width: 768px) {
             /* Ensure main content has enough bottom spacing to prevent footer overlap */
             main {
-                padding-bottom: 40px !important;
+                padding-bottom: 60px !important;
             }
             
             #close-btn, #secondary-close-btn {
@@ -260,6 +260,13 @@
             #close-btn svg, #secondary-close-btn svg {
                 width: 24px !important;
                 height: 24px !important;
+            }
+        }
+        
+        /* Extra small mobile devices (320px and below) */
+        @media (max-width: 375px) {
+            main {
+                padding-bottom: 80px !important;
             }
         }
     </style>
