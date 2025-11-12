@@ -64,7 +64,7 @@
                     
                     <!-- Interactive Gauge -->
                     <div class="flex-1 flex flex-col justify-center items-center min-h-0">
-                        <div class="relative w-40 h-20 md:w-48 md:h-24 lg:w-56 lg:h-28 xl:w-64 xl:h-32 2xl:w-72 2xl:h-36 mx-auto">
+                        <div class="relative w-32 h-16 sm:w-36 sm:h-18 md:w-40 md:h-20 lg:w-44 lg:h-22 xl:w-48 xl:h-24 mx-auto max-w-full gauge-container">
                             <canvas id="propertyValueGauge" class="w-full h-full"></canvas>
                             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
                                 <h5 class="text-primary-blue mb-0 font-bold text-xs md:text-sm lg:text-base xl:text-lg">£{{ property.estimated_market_value|floatformat:0|default:"0"|intcomma }}</h5>
@@ -110,7 +110,7 @@
                     
                     <!-- Interactive Gauge -->
                     <div class="flex-1 flex flex-col justify-center items-center min-h-0">
-                        <div class="relative w-40 h-20 md:w-48 md:h-24 lg:w-56 lg:h-28 xl:w-64 xl:h-32 2xl:w-72 2xl:h-36 mx-auto">
+                        <div class="relative w-32 h-16 sm:w-36 sm:h-18 md:w-40 md:h-20 lg:w-44 lg:h-22 xl:w-48 xl:h-24 mx-auto max-w-full gauge-container">
                             <canvas id="monthlyIncomeGaugeSmall" class="w-full h-full"></canvas>
                             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
                                 <h5 class="text-primary-blue mb-0 font-bold text-xs md:text-sm lg:text-base xl:text-lg">£{{ net_monthly_income|floatformat:0|default:"0"|intcomma }}</h5>
@@ -153,7 +153,7 @@
                     
                     <!-- Interactive Gauge -->
                     <div class="flex-1 flex flex-col justify-center items-center min-h-0">
-                        <div class="relative w-40 h-20 md:w-48 md:h-24 lg:w-56 lg:h-28 xl:w-64 xl:h-32 2xl:w-72 2xl:h-36 mx-auto">
+                        <div class="relative w-32 h-16 sm:w-36 sm:h-18 md:w-40 md:h-20 lg:w-44 lg:h-22 xl:w-48 xl:h-24 mx-auto max-w-full gauge-container">
                             <canvas id="weeklyRentGauge" class="w-full h-full"></canvas>
                             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
                                 <h5 class="text-primary-blue mb-0 font-bold text-xs md:text-sm lg:text-base xl:text-lg">{{ gross_annual_yield|floatformat:1|default:"0" }}%</h5>
@@ -194,7 +194,7 @@
                     
                     <!-- Interactive Gauge -->
                     <div class="flex-1 flex flex-col justify-center items-center min-h-0">
-                        <div class="relative w-40 h-20 md:w-48 md:h-24 lg:w-56 lg:h-28 xl:w-64 xl:h-32 2xl:w-72 2xl:h-36 mx-auto">
+                        <div class="relative w-32 h-16 sm:w-36 sm:h-18 md:w-40 md:h-20 lg:w-44 lg:h-22 xl:w-48 xl:h-24 mx-auto max-w-full gauge-container">
                             <canvas id="grossYieldGaugeSmall" class="w-full h-full"></canvas>
                             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
                                 <h5 class="text-primary-blue mb-0 font-bold text-xs md:text-sm lg:text-base xl:text-lg">{{ net_annual_yield|floatformat:1|default:"0" }}%</h5>
@@ -1006,6 +1006,16 @@ document.addEventListener('DOMContentLoaded', function() {
         return { width: 120, height: 80 }; // mobile
     }
 
+    // Function to get constrained gauge size for 2x2 grid
+    function getConstrainedGaugeSize() {
+        const width = window.innerWidth;
+        if (width >= 1280) return { width: 200, height: 100 }; // xl - constrained
+        if (width >= 1024) return { width: 180, height: 90 };  // lg - constrained  
+        if (width >= 768) return { width: 160, height: 80 };   // md - constrained
+        if (width >= 640) return { width: 150, height: 75 };   // sm - constrained
+        return { width: 120, height: 60 };                     // mobile - constrained
+    }
+
     // Gauge data configuration
     var data = {
         value: {{ property.estimated_market_value|default:0 }},
@@ -1163,6 +1173,9 @@ document.addEventListener('DOMContentLoaded', function() {
             cutout: '85%',
             rotation: -90,
             circumference: 180,
+            layout: {
+                padding: 0
+            },
             plugins: {
                 tooltip: { enabled: false },
                 legend: { display: false }
@@ -1171,6 +1184,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 animateRotate: true,
                 animateScale: false,
                 duration: 2000
+            },
+            onResize: function(chart, size) {
+                const constrainedSize = getConstrainedGaugeSize();
+                if (chart.canvas.parentNode) {
+                    chart.canvas.parentNode.style.maxWidth = constrainedSize.width + 'px';
+                    chart.canvas.parentNode.style.maxHeight = constrainedSize.height + 'px';
+                }
             }
         }
     };
@@ -1179,6 +1199,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (propertyValueSmallCtx) {
         var propertyValueSmallChart = new Chart(propertyValueSmallCtx.getContext('2d'), propertyValueSmallConfig);
         chartInstances.push(propertyValueSmallChart);
+        
+        // Apply initial container constraints
+        const constrainedSize = getConstrainedGaugeSize();
+        propertyValueSmallCtx.parentNode.style.maxWidth = constrainedSize.width + 'px';
+        propertyValueSmallCtx.parentNode.style.maxHeight = constrainedSize.height + 'px';
     }
 
     // Small Monthly Income Gauge (Top Right Square)
@@ -1209,6 +1234,9 @@ document.addEventListener('DOMContentLoaded', function() {
             cutout: '85%',
             rotation: -90,
             circumference: 180,
+            layout: {
+                padding: 0
+            },
             plugins: {
                 tooltip: { enabled: false },
                 legend: { display: false }
@@ -1217,6 +1245,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 animateRotate: true,
                 animateScale: false,
                 duration: 2000
+            },
+            onResize: function(chart, size) {
+                const constrainedSize = getConstrainedGaugeSize();
+                if (chart.canvas.parentNode) {
+                    chart.canvas.parentNode.style.maxWidth = constrainedSize.width + 'px';
+                    chart.canvas.parentNode.style.maxHeight = constrainedSize.height + 'px';
+                }
             }
         }
     };
@@ -1225,6 +1260,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (monthlyIncomeSmallCtx) {
         var monthlyIncomeSmallChart = new Chart(monthlyIncomeSmallCtx.getContext('2d'), monthlyIncomeSmallConfig);
         chartInstances.push(monthlyIncomeSmallChart);
+        
+        // Apply initial container constraints
+        const constrainedSize = getConstrainedGaugeSize();
+        monthlyIncomeSmallCtx.parentNode.style.maxWidth = constrainedSize.width + 'px';
+        monthlyIncomeSmallCtx.parentNode.style.maxHeight = constrainedSize.height + 'px';
     }
 
     // Weekly Rent Gauge (Bottom Left Square)
@@ -1250,6 +1290,9 @@ document.addEventListener('DOMContentLoaded', function() {
             cutout: '85%',
             rotation: -90,
             circumference: 180,
+            layout: {
+                padding: 0
+            },
             plugins: {
                 tooltip: { enabled: false },
                 legend: { display: false }
@@ -1258,6 +1301,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 animateRotate: true,
                 animateScale: false,
                 duration: 2000
+            },
+            onResize: function(chart, size) {
+                const constrainedSize = getConstrainedGaugeSize();
+                if (chart.canvas.parentNode) {
+                    chart.canvas.parentNode.style.maxWidth = constrainedSize.width + 'px';
+                    chart.canvas.parentNode.style.maxHeight = constrainedSize.height + 'px';
+                }
             }
         }
     };
@@ -1266,6 +1316,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (weeklyRentCtx) {
         var weeklyRentChart = new Chart(weeklyRentCtx.getContext('2d'), weeklyRentConfig);
         chartInstances.push(weeklyRentChart);
+        
+        // Apply initial container constraints
+        const constrainedSize = getConstrainedGaugeSize();
+        weeklyRentCtx.parentNode.style.maxWidth = constrainedSize.width + 'px';
+        weeklyRentCtx.parentNode.style.maxHeight = constrainedSize.height + 'px';
     }
 
     // Small Gross Yield Gauge (Bottom Right Square)
@@ -1296,6 +1351,9 @@ document.addEventListener('DOMContentLoaded', function() {
             cutout: '85%',
             rotation: -90,
             circumference: 180,
+            layout: {
+                padding: 0
+            },
             plugins: {
                 tooltip: { enabled: false },
                 legend: { display: false }
@@ -1304,6 +1362,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 animateRotate: true,
                 animateScale: false,
                 duration: 2000
+            },
+            onResize: function(chart, size) {
+                const constrainedSize = getConstrainedGaugeSize();
+                if (chart.canvas.parentNode) {
+                    chart.canvas.parentNode.style.maxWidth = constrainedSize.width + 'px';
+                    chart.canvas.parentNode.style.maxHeight = constrainedSize.height + 'px';
+                }
             }
         }
     };
@@ -1312,6 +1377,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (grossYieldSmallCtx) {
         var grossYieldSmallChart = new Chart(grossYieldSmallCtx.getContext('2d'), grossYieldSmallConfig);
         chartInstances.push(grossYieldSmallChart);
+        
+        // Apply initial container constraints
+        const constrainedSize = getConstrainedGaugeSize();
+        grossYieldSmallCtx.parentNode.style.maxWidth = constrainedSize.width + 'px';
+        grossYieldSmallCtx.parentNode.style.maxHeight = constrainedSize.height + 'px';
     }
 
     // DSCR Gauge
@@ -1742,6 +1812,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 chart.resize();
             }
         });
+        
+        // Update 2x2 grid gauge container constraints
+        const constrainedSize = getConstrainedGaugeSize();
+        const gridGaugeIds = ['propertyValueGauge', 'monthlyIncomeGaugeSmall', 'weeklyRentGauge', 'grossYieldGaugeSmall'];
+        
+        gridGaugeIds.forEach(function(id) {
+            const element = document.getElementById(id);
+            if (element && element.parentNode) {
+                element.parentNode.style.maxWidth = constrainedSize.width + 'px';
+                element.parentNode.style.maxHeight = constrainedSize.height + 'px';
+            }
+        });
     });
 });
 </script>
@@ -1794,6 +1876,50 @@ document.addEventListener('DOMContentLoaded', function() {
 /* Chart.js responsive container heights */
 #cashFlowChart .min-w-\[600px\] {
     max-height: 500px; /* Cap maximum height */
+}
+
+/* Ensure gauges stay within their containers in the 2x2 grid */
+.gauge-container {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden;
+}
+
+.gauge-container canvas {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+/* Specific constraints for 2x2 grid gauges */
+#propertyValueGauge,
+#monthlyIncomeGaugeSmall,
+#weeklyRentGauge,
+#grossYieldGaugeSmall {
+    max-width: 200px !important;
+    max-height: 100px !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #propertyValueGauge,
+    #monthlyIncomeGaugeSmall,
+    #weeklyRentGauge,
+    #grossYieldGaugeSmall {
+        max-width: 150px !important;
+        max-height: 75px !important;
+    }
+}
+
+@media (max-width: 640px) {
+    #propertyValueGauge,
+    #monthlyIncomeGaugeSmall,
+    #weeklyRentGauge,
+    #grossYieldGaugeSmall {
+        max-width: 120px !important;
+        max-height: 60px !important;
+    }
 }
 </style>
 {% endblock %}
