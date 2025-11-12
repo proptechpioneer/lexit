@@ -1,1 +1,42 @@
 @import "tailwindcss";
+
+/* Essential custom styles for the application */
+.bg-primary-blue { background-color: #05113A !important; }
+.text-primary-blue { color: #05113A !important; }
+.bg-dark-pink { background-color: #D94590 !important; }
+.text-dark-pink { color: #D94590 !important; }
+.bg-pink { background-color: #E0BBFF !important; }
+.text-pink { color: #E0BBFF !important; }
+.border-primary-blue { border-color: #05113A !important; }
+.bg-yellow { background-color: #FFD700 !important; }
+.text-yellow { color: #FFD700 !important; }
+.bg-light-yellow { background-color: #FFF5C8 !important; }
+.bg-purple { background-color: #A084CA !important; }
+.text-purple { color: #A084CA !important; }
+.bg-dark-purple { background-color: #5A189A !important; }
+.text-dark-purple { color: #5A189A !important; }
+.bg-light-blue { background-color: #A2CADD !important; }
+.text-light-blue { color: #A2CADD !important; }
+.bg-light-grey { background-color: #E5E3E6 !important; }
+.text-light-grey { color: #E5E3E6 !important; }
+
+/* Hover states - proper syntax */
+.hover\:bg-dark-pink:hover { background-color: #D94590 !important; }
+.hover\:bg-pink:hover { background-color: #E0BBFF !important; }
+.hover\:text-white:hover { color: white !important; }
+.hover\:bg-primary-blue:hover { background-color: #05113A !important; }
+.hover\:text-pink:hover { color: #E0BBFF !important; }
+
+/* Badge styling to ensure it works */
+.badge-container {
+    display: block !important;
+    visibility: visible !important;
+    margin-top: 1rem !important;
+    flex-shrink: 0 !important;
+}
+
+.gauge-badge {
+    display: inline-block !important;
+    visibility: visible !important;
+    min-height: 1.5rem !important;
+}
