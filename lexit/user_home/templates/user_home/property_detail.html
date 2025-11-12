@@ -88,7 +88,7 @@
                             </span>
                         </div>
                         {% endif %}
-                        <span class="{% if property.estimated_market_value and property.purchase_price %}{% if capital_appreciation >= 0 %}bg-green-500{% else %}bg-red-500{% endif %}{% else %}bg-gray-500{% endif %} text-white px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important;">
+                        <span class="{% if property.estimated_market_value and property.purchase_price %}{% if capital_appreciation >= 0 %}bg-green-600 text-white{% else %}bg-red-600 text-white{% endif %}{% else %}bg-gray-600 text-white{% endif %} px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: {% if property.estimated_market_value and property.purchase_price %}{% if capital_appreciation >= 0 %}#16a34a{% else %}#dc2626{% endif %}{% else %}#6b7280{% endif %} !important;">
                         {% if property.estimated_market_value and property.purchase_price %}
                             {% if capital_appreciation >= 0 %}Capital Gained{% else %}Capital Lost{% endif %}
                         {% else %}
@@ -135,7 +135,7 @@
                             </span>
                         </div>
                         
-                        <span class="{% if net_monthly_income > 0 %}bg-green-500{% elif net_monthly_income == 0 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important;">
+                        <span class="{% if net_monthly_income > 0 %}bg-green-600 text-white{% elif net_monthly_income == 0 %}bg-yellow text-primary-blue{% else %}bg-red-600 text-white{% endif %} px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: {% if net_monthly_income > 0 %}#16a34a{% elif net_monthly_income == 0 %}#FFD700{% else %}#dc2626{% endif %} !important;">
                         {% if net_monthly_income > 0 %}Positive{% elif net_monthly_income == 0 %}Break Even{% else %}Negative{% endif %}
                         </span>
                     </div>
@@ -176,7 +176,7 @@
                             </span>
                         </div>
                         
-                        <span class="{% if gross_annual_yield > 5 %}bg-green-500{% elif gross_annual_yield > 3 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important;">
+                        <span class="{% if gross_annual_yield > 5 %}bg-green-600 text-white{% elif gross_annual_yield > 3 %}bg-yellow text-primary-blue{% else %}bg-red-600 text-white{% endif %} px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: {% if gross_annual_yield > 5 %}#16a34a{% elif gross_annual_yield > 3 %}#FFD700{% else %}#dc2626{% endif %} !important;">
                             {% if gross_annual_yield > 5 %}High{% elif gross_annual_yield > 3 %}Moderate{% else %}Low{% endif %}
                         </span>
                     </div>
@@ -217,7 +217,7 @@
                             </span>
                         </div>
                         
-                        <span class="{% if net_annual_yield > 4 %}bg-green-500{% elif net_annual_yield > 2 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important;">
+                        <span class="{% if net_annual_yield > 4 %}bg-green-600 text-white{% elif net_annual_yield > 2 %}bg-yellow text-primary-blue{% else %}bg-red-600 text-white{% endif %} px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: {% if net_annual_yield > 4 %}#16a34a{% elif net_annual_yield > 2 %}#FFD700{% else %}#dc2626{% endif %} !important;">
                             {% if net_annual_yield > 4 %}High{% elif net_annual_yield > 2 %}Moderate{% else %}Low{% endif %}
                         </span>
                     </div>
