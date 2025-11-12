@@ -3,6 +3,11 @@
 <html>
 <head>
     <title>Static Files Debug</title>
+    <!-- Production Tailwind CSS with custom configuration -->
+    <link rel="stylesheet" href="{% static 'dist/output.css' %}?v=1.2">
+    
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="{% static 'src/styles.css' %}?v=1.2">
 </head>
 <body>
     <h1>Static Files Debug Page</h1>
@@ -11,8 +16,8 @@
     
     <h2>CSS Files:</h2>
     <ul>
-        <li><a href="{% static 'dist/styles.css' %}" target="_blank">dist/styles.css</a></li>
-        <li><a href="{% static 'src/styles.css' %}" target="_blank">src/styles.css</a></li>
+        <li><a href="{% static 'dist/output.css' %}" target="_blank">dist/output.css</a> (Production Tailwind)</li>
+        <li><a href="{% static 'src/styles.css' %}" target="_blank">src/styles.css</a> (Local CSS)</li>
         <li><a href="{% static 'src/ckeditor-content.css' %}" target="_blank">ckeditor-content.css</a></li>
     </ul>
     
@@ -29,9 +34,25 @@
     
     <h2>Tailwind CSS Test:</h2>
     <div class="bg-blue-500 text-white p-4">
-        If this is blue, Tailwind CSS is loading
+        If this is blue, standard Tailwind CSS is loading
     </div>
     
-    <link rel="stylesheet" href="{% static 'dist/styles.css' %}">
+    <h2>Custom Colors Test:</h2>
+    <div class="bg-primary-blue text-white p-4">
+        If this is dark blue (#05113A), custom primary-blue is working
+    </div>
+    <div class="bg-dark-pink text-white p-4">
+        If this is dark pink (#D94590), custom dark-pink is working
+    </div>
+    <div class="bg-pink text-primary-blue p-4">
+        If this is light pink (#E0BBFF), custom pink is working
+    </div>
+    
+    <h2>Badge Test:</h2>
+    <div class="badge-container">
+        <span class="gauge-badge bg-yellow text-primary-blue">
+            If this is visible with yellow background, badges are working
+        </span>
+    </div>
 </body>
 </html>
