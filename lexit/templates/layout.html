@@ -213,7 +213,7 @@
             -webkit-text-size-adjust: 100%;
         }
         
-        /* Mobile menu close button positioning fixes */
+        /* Mobile menu close button positioning fixes - Simple approach */
         #mobile-menu, #secondary-mobile-menu {
             z-index: 9999 !important;
             position: fixed !important;
@@ -226,7 +226,7 @@
         #close-btn, #secondary-close-btn {
             z-index: 10000 !important;
             position: fixed !important;
-            top: 1.5rem !important;
+            top: 5rem !important; /* Below navbar height */
             right: 1.5rem !important;
             background-color: white !important;
             border-radius: 50% !important;
@@ -240,10 +240,10 @@
             color: white !important;
         }
         
-        /* Ensure close buttons are always visible and clickable */
+        /* Responsive adjustments for mobile */
         @media (max-width: 768px) {
             #close-btn, #secondary-close-btn {
-                top: 1rem !important;
+                top: 4.5rem !important; /* Slightly closer on mobile */
                 right: 1rem !important;
                 width: 48px !important;
                 height: 48px !important;
@@ -315,8 +315,8 @@
         
         <!-- Menu content container -->
         <div class="flex-1 flex flex-col">
-          <!-- Close button at top right -->
-          <div class="fixed top-6 right-6" style="z-index: 10000;">
+          <!-- Close button at top right, below navbar -->
+          <div class="fixed" style="top: 5rem; right: 1.5rem; z-index: 10000;">
             <button id="close-btn" class="text-primary-blue hover:bg-pink-500 hover:text-white p-2 rounded-full bg-white shadow-lg" aria-label="Close menu">
               <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -471,8 +471,8 @@
     <!-- Mobile secondary menu (full screen overlay) -->
     <div id="secondary-mobile-menu" class="hidden fixed inset-0 bg-primary-blue z-50 md:hidden" style="z-index: 60;">
       <div class="flex h-full relative">
-        <!-- Close button at top right -->
-        <div class="fixed top-6 right-6" style="z-index: 10000;">
+        <!-- Close button at top right, below navbar -->
+        <div class="fixed" style="top: 5rem; right: 1.5rem; z-index: 10000;">
           <button id="secondary-close-btn" class="text-white hover:bg-dark-pink hover:text-white p-2 rounded-full bg-primary-blue shadow-lg border border-white" aria-label="Close secondary menu">
             <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
