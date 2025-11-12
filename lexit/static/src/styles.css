@@ -52,6 +52,30 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
 }
 
+/* Badge rendering fixes for cross-browser compatibility */
+.badge-container {
+  display: block !important;
+  visibility: visible !important;
+  margin-top: 1rem !important;
+  flex-shrink: 0 !important;
+}
+
+.gauge-badge {
+  display: inline-block !important;
+  visibility: visible !important;
+  min-height: 1.5rem !important;
+  line-height: 1.2 !important;
+}
+
+/* Windows font rendering fix */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .gauge-badge {
+    font-smoothing: antialiased !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+  }
+}
+
 /* Default heading sizes - can be overridden by utility classes */
 h1:not([class*="text-"]) {
   font-size: 96px;
