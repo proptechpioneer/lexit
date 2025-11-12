@@ -212,6 +212,34 @@
             position: relative;
             -webkit-text-size-adjust: 100%;
         }
+        
+        /* Mobile menu close button positioning fixes */
+        #mobile-menu, #secondary-mobile-menu {
+            z-index: 60 !important;
+        }
+        
+        #close-btn, #secondary-close-btn {
+            z-index: 70 !important;
+            position: absolute !important;
+            top: 1.5rem !important;
+            right: 1.5rem !important;
+        }
+        
+        /* Ensure close buttons are always visible and clickable */
+        @media (max-width: 768px) {
+            #close-btn, #secondary-close-btn {
+                top: 1rem !important;
+                right: 1rem !important;
+                background-color: rgba(255, 255, 255, 0.9) !important;
+                border-radius: 50% !important;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            }
+            
+            #secondary-close-btn {
+                background-color: rgba(5, 17, 58, 0.9) !important;
+                border: 1px solid white !important;
+            }
+        }
     </style>
     
     <link rel="stylesheet" href="{% static 'src/ckeditor-content.css' %}">
@@ -263,7 +291,7 @@
     </div>
 
     <!-- Mobile menu (full screen overlay) -->
-    <div id="mobile-menu" class="hidden fixed inset-0 bg-white z-50 md:hidden">
+    <div id="mobile-menu" class="hidden fixed inset-0 bg-white z-50 md:hidden" style="z-index: 60;">
       <div class="flex h-full relative">
         <!-- Blue side bar - full height -->
         <div class="w-5 bg-primary-blue h-full"></div>
@@ -271,8 +299,8 @@
         <!-- Menu content container -->
         <div class="flex-1 flex flex-col">
           <!-- Close button at top right -->
-          <div class="absolute top-6 right-6">
-            <button id="close-btn" class="text-primary-blue hover:bg-pink-500 hover:text-white p-2" aria-label="Close menu">
+          <div class="absolute top-6 right-6" style="z-index: 70;">
+            <button id="close-btn" class="text-primary-blue hover:bg-pink-500 hover:text-white p-2 rounded-full bg-white shadow-lg" aria-label="Close menu">
               <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
@@ -424,11 +452,11 @@
     </div>
 
     <!-- Mobile secondary menu (full screen overlay) -->
-    <div id="secondary-mobile-menu" class="hidden fixed inset-0 bg-primary-blue z-50 md:hidden">
+    <div id="secondary-mobile-menu" class="hidden fixed inset-0 bg-primary-blue z-50 md:hidden" style="z-index: 60;">
       <div class="flex h-full relative">
         <!-- Close button at top right -->
-        <div class="absolute top-6 right-6">
-          <button id="secondary-close-btn" class="text-white hover:bg-dark-pink hover:text-white p-2" aria-label="Close secondary menu">
+        <div class="absolute top-6 right-6" style="z-index: 70;">
+          <button id="secondary-close-btn" class="text-white hover:bg-dark-pink hover:text-white p-2 rounded-full bg-primary-blue shadow-lg border border-white" aria-label="Close secondary menu">
             <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
