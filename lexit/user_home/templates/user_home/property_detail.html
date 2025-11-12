@@ -164,18 +164,6 @@
                     
                     <!-- Yield Status Display -->
                     <div class="mt-4 shrink-0 badge-container">
-                        <div class="mb-1">
-                            <span class="{% if gross_annual_yield > 5 %}text-green-600{% elif gross_annual_yield > 3 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-sm">
-                                {% if gross_annual_yield > 5 %}
-                                    Excellent
-                                {% elif gross_annual_yield > 3 %}
-                                    Good
-                                {% else %}
-                                    Below average
-                                {% endif %}
-                            </span>
-                        </div>
-                        
                         <span class="{% if gross_annual_yield > 5 %}bg-green-600 text-white{% elif gross_annual_yield > 3 %}bg-yellow text-primary-blue{% else %}bg-red-600 text-white{% endif %} px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: {% if gross_annual_yield > 5 %}#16a34a{% elif gross_annual_yield > 3 %}#FFD700{% else %}#dc2626{% endif %} !important;">
                             {% if gross_annual_yield > 5 %}High{% elif gross_annual_yield > 3 %}Moderate{% else %}Low{% endif %}
                         </span>
@@ -205,18 +193,6 @@
                     
                     <!-- Net Yield Status Display -->
                     <div class="mt-4 shrink-0 badge-container">
-                        <div class="mb-1">
-                            <span class="{% if net_annual_yield > 4 %}text-green-600{% elif net_annual_yield > 2 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-sm">
-                                {% if net_annual_yield > 4 %}
-                                    Excellent
-                                {% elif net_annual_yield > 2 %}
-                                    Good
-                                {% else %}
-                                    Below average
-                                {% endif %}
-                            </span>
-                        </div>
-                        
                         <span class="{% if net_annual_yield > 4 %}bg-green-600 text-white{% elif net_annual_yield > 2 %}bg-yellow text-primary-blue{% else %}bg-red-600 text-white{% endif %} px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: {% if net_annual_yield > 4 %}#16a34a{% elif net_annual_yield > 2 %}#FFD700{% else %}#dc2626{% endif %} !important;">
                             {% if net_annual_yield > 4 %}High{% elif net_annual_yield > 2 %}Moderate{% else %}Low{% endif %}
                         </span>
