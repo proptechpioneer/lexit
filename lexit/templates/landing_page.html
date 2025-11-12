@@ -5,6 +5,32 @@
 
 {% block content %}
 
+<style>
+  /* Fix text wrapping for very narrow viewports (320px) */
+  @media (max-width: 375px) {
+    .subtitle-text {
+      white-space: normal !important;
+      line-height: 1.3 !important;
+    }
+    
+    /* Also ensure the badge/subtitle container stacks properly on narrow screens */
+    .badge-subtitle-container {
+      flex-direction: column !important;
+      align-items: center !important;
+      space-y: 2 !important;
+    }
+    
+    .badge-subtitle-container > * {
+      margin-right: 0 !important;
+      margin-bottom: 0.5rem !important;
+    }
+    
+    .badge-subtitle-container > *:last-child {
+      margin-bottom: 0 !important;
+    }
+  }
+</style>
+
 <!-- Hero Section with smaller image and properly aligned text -->
 <div class="relative w-full pt-12 -mt-8" style="background: radial-gradient(ellipse 1040.94px 845.56px at center, rgba(160, 132, 202, 0.3) 0%, rgba(255, 255, 255, 0.8) 60%, #FFFFFF 100%);">
   <div class="max-w-[1440px] mx-auto px-6">
@@ -14,14 +40,14 @@
       <!-- Left Content - Text with badge -->
       <div class="space-y-6 lg:pl-30 text-center lg:text-left w-full">
         <!-- Badge and subtitle side by side -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 justify-center lg:justify-start lg:items-start items-center">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 justify-center lg:justify-start lg:items-start items-center badge-subtitle-container">
           <!-- Yellow Badge -->
           <span class="inline-block bg-[#ffd700] text-[#05113a] px-4 py-2 rounded-full font-bold text-sm shrink-0">
             Landlords
           </span>
           
           <!-- Subtitle -->
-          <h2 class="text-primary-blue-force text-xl font-semibold whitespace-nowrap">
+          <h2 class="text-primary-blue-force text-xl font-semibold whitespace-nowrap subtitle-text">
             Beware of the coming financial storm
           </h2>
         </div>
