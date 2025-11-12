@@ -76,20 +76,78 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Default heading sizes - can be overridden by utility classes */
+/* Default heading sizes - responsive and can be overridden by utility classes */
 h1:not([class*="text-"]) {
-  font-size: 96px;
-  line-height: 88px;
+  font-size: 36px;
+  line-height: 1.1;
+}
+
+@media (min-width: 480px) {
+  h1:not([class*="text-"]) {
+    font-size: 48px;
+  }
+}
+
+@media (min-width: 768px) {
+  h1:not([class*="text-"]) {
+    font-size: 64px;
+    line-height: 1.2;
+  }
+}
+
+@media (min-width: 1024px) {
+  h1:not([class*="text-"]) {
+    font-size: 96px;
+    line-height: 88px;
+  }
 }
 
 h2:not([class*="text-"]) {
-  font-size: 64px;
-  line-height: 64px;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+@media (min-width: 480px) {
+  h2:not([class*="text-"]) {
+    font-size: 32px;
+  }
+}
+
+@media (min-width: 768px) {
+  h2:not([class*="text-"]) {
+    font-size: 48px;
+  }
+}
+
+@media (min-width: 1024px) {
+  h2:not([class*="text-"]) {
+    font-size: 64px;
+    line-height: 64px;
+  }
 }
 
 h3:not([class*="text-"]) {
-  font-size: 40px;
-  line-height: 100%;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+@media (min-width: 480px) {
+  h3:not([class*="text-"]) {
+    font-size: 24px;
+  }
+}
+
+@media (min-width: 768px) {
+  h3:not([class*="text-"]) {
+    font-size: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  h3:not([class*="text-"]) {
+    font-size: 40px;
+    line-height: 100%;
+  }
 }
 
 h4:not([class*="text-"]) {
@@ -102,23 +160,81 @@ h5:not([class*="text-"]) {
   line-height: 24px;
 }
 
-/* Custom utility classes */
+/* Custom utility classes - responsive */
 .text-h1-custom {
-  font-size: 96px;
-  line-height: 88px;
+  font-size: 36px;
+  line-height: 1.1;
   font-weight: 500;
+}
+
+@media (min-width: 480px) {
+  .text-h1-custom {
+    font-size: 48px;
+  }
+}
+
+@media (min-width: 768px) {
+  .text-h1-custom {
+    font-size: 64px;
+    line-height: 1.2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-h1-custom {
+    font-size: 96px;
+    line-height: 88px;
+  }
 }
 
 .text-h2-custom {
-  font-size: 64px;
-  line-height: 64px;
+  font-size: 24px;
+  line-height: 1.2;
   font-weight: 500;
 }
 
+@media (min-width: 480px) {
+  .text-h2-custom {
+    font-size: 32px;
+  }
+}
+
+@media (min-width: 768px) {
+  .text-h2-custom {
+    font-size: 48px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-h2-custom {
+    font-size: 64px;
+    line-height: 64px;
+  }
+}
+
 .text-h3-custom {
-  font-size: 40px;
-  line-height: 100%;
+  font-size: 20px;
+  line-height: 1.2;
   font-weight: 500;
+}
+
+@media (min-width: 480px) {
+  .text-h3-custom {
+    font-size: 24px;
+  }
+}
+
+@media (min-width: 768px) {
+  .text-h3-custom {
+    font-size: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-h3-custom {
+    font-size: 40px;
+    line-height: 100%;
+  }
 }
 
 .text-h4-custom {
@@ -468,11 +584,24 @@ h5:not([class*="text-"]) {
   font-family: 'Archivo', sans-serif;
   font-weight: 500;
   color: #05113A;
-  font-size: 32px;
+  font-size: 24px;
   line-height: 1.2;
   margin-bottom: 32px;
   text-align: center;
   padding: 0 16px;
+}
+
+@media (min-width: 480px) {
+  .figma-advantages-title {
+    font-size: 28px;
+  }
+}
+
+@media (min-width: 768px) {
+  .figma-advantages-title {
+    font-size: 36px;
+    margin-bottom: 40px;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -630,11 +759,24 @@ h3.figma-challenge-title {
   font-family: 'Archivo', sans-serif;
   font-weight: 500;
   color: #05113A;
-  font-size: 32px;
+  font-size: 24px;
   line-height: 1.2;
   margin-bottom: 48px;
   text-align: center;
   padding: 0 32px;
+}
+
+@media (min-width: 480px) {
+  .figma-advantage-title {
+    font-size: 28px;
+  }
+}
+
+@media (min-width: 768px) {
+  .figma-advantage-title {
+    font-size: 36px;
+    margin-bottom: 56px;
+  }
 }
 
 @media (min-width: 1024px) {
