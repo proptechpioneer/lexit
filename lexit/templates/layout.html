@@ -242,6 +242,11 @@
         
         /* Responsive adjustments for mobile */
         @media (max-width: 768px) {
+            /* Ensure main content has enough bottom spacing to prevent footer overlap */
+            main {
+                padding-bottom: 40px !important;
+            }
+            
             #close-btn, #secondary-close-btn {
                 top: 6rem !important; /* More clearance on mobile */
                 right: 1rem !important;

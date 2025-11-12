@@ -20,7 +20,8 @@
         /* Mobile styles */
         @media (max-width: 768px) {
             .footer-cta-section {
-                min-height: 500px !important;
+                min-height: 600px !important;
+                margin-top: 80px !important;
             }
         }
         
@@ -100,7 +101,15 @@
         </div>
 
         <!-- BOTTOM SECTION: Footer Info -->
-        <div class="absolute left-0 w-full px-6 sm:px-12 lg:px-[200px] xl:px-[200px] pb-10" style="bottom: 50px;">
+        <div class="absolute left-0 w-full px-6 sm:px-12 lg:px-[200px] xl:px-[200px] pb-10" style="bottom: 80px;">
+            <style>
+                /* Ensure adequate spacing on small viewports */
+                @media (max-width: 768px) {
+                    .footer-bottom-section {
+                        margin-bottom: 20px !important;
+                    }
+                }
+            </style>
             <div class="footer-bottom-section flex justify-between items-start w-full max-w-[1240px] mx-auto">
                 <!-- Left Side -->
                 <div class="flex flex-col items-start gap-4">
