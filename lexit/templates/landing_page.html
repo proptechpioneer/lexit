@@ -801,6 +801,12 @@
                 padding: 20px 15px !important;
                 gap: 20px !important;
                 align-items: center !important;
+                justify-content: center !important;
+            }
+            
+            /* Force override inline justify-content styles */
+            .figma-testimonials-container[style*="justify-content"] {
+                justify-content: center !important;
             }
             
             .testimonial-carousel {
@@ -810,6 +816,7 @@
                 padding: 0 10px !important;
                 max-width: 100% !important;
                 overflow: hidden !important;
+                flex-shrink: 0 !important;
             }
             
             .figma-testimonial-image {
@@ -818,6 +825,7 @@
                 height: 200px !important;
                 margin: 20px auto 0 auto !important;
                 flex-shrink: 0 !important;
+                align-self: center !important;
             }
             
             /* Reposition navigation arrows for mobile */
@@ -870,6 +878,10 @@
                 padding: 5px !important;
                 max-width: 100% !important;
             }
+            
+            .figma-testimonials-section {
+                padding: 40px 10px !important;
+            }
         }
         
         /* Mobile responsive text sizing */
@@ -906,6 +918,10 @@
                 width: 35px !important;
                 height: 35px !important;
                 font-size: 14px !important;
+            }
+            
+            .figma-testimonials-section {
+                padding: 40px 15px !important;
             }
         }
         

@@ -5,7 +5,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>{% block title %}LEXIT | BtL Analyser{% endblock %}</title>
     
     <!-- Prevent favicon caching -->
@@ -186,6 +186,31 @@
             margin: auto;
             max-width: 90vw;
             max-height: 90vh;
+        }
+        
+        /* iOS Safari zoom fixes */
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Allow text selection for inputs and content areas */
+        input, textarea, [contenteditable], .selectable-text {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        
+        /* Prevent double-tap zoom */
+        button, a, [role="button"] {
+            touch-action: manipulation;
+        }
+        
+        /* Ensure body doesn't overflow or allow zoom */
+        html, body {
+            overflow-x: hidden;
+            position: relative;
+            -webkit-text-size-adjust: 100%;
         }
     </style>
     
@@ -503,6 +528,54 @@
           secondaryMobileMenu.classList.add('hidden');
         });
       }
+      
+      // iOS Safari zoom prevention and fixes
+      let lastTouchEnd = 0;
+      
+      // Prevent double-tap zoom
+      document.addEventListener('touchend', function (event) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, false);
+      
+      // Prevent pinch zoom
+      document.addEventListener('touchstart', function (event) {
+        if (event.touches.length > 1) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+      
+      document.addEventListener('touchmove', function (event) {
+        if (event.touches.length > 1) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+      
+      // Prevent zoom via keyboard
+      document.addEventListener('keydown', function (event) {
+        if ((event.ctrlKey || event.metaKey) && (event.keyCode === 61 || event.keyCode === 107 || event.keyCode === 173 || event.keyCode === 109 || event.keyCode === 187 || event.keyCode === 189)) {
+          event.preventDefault();
+        }
+      });
+      
+      // Additional viewport fix for iOS
+      function fixViewport() {
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+        }
+      }
+      
+      // Run viewport fix
+      fixViewport();
+      
+      // Re-apply viewport fix on orientation change
+      window.addEventListener('orientationchange', function() {
+        setTimeout(fixViewport, 500);
+      });
     });
   </script>
 
