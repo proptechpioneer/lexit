@@ -22,7 +22,7 @@
                 </p>
             </div>
             <div class="flex gap-2">
-                <a href="{% url 'user_home:edit_property' property.slug %}" class="bg-pink-500 hover:bg-pink-700 text-white px-4 py-2 rounded-lg inline-flex items-center transition-colors">
+                <a href="{% url 'user_home:edit_property' property.slug %}" class="bg-dark-pink hover:bg-pink text-white px-4 py-2 rounded-lg inline-flex items-center transition-colors">
                 <i class="fas fa-edit mr-2"></i> <span class="hidden sm:inline">Edit Property</span>
                 </a>
                 <a href="{% url 'user_home:user_home' %}" class="border border-primary-blue hover:bg-primary-blue hover:text-white text-primary-blue px-4 py-2 rounded-lg inline-flex items-center transition-colors">
@@ -57,7 +57,7 @@
                 <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full border border-gray-200">
                     <div class="flex items-center justify-center">
                         <h4 class="text-primary-blue mb-0 font-bold text-lg">Estimated Value</h4>
-                        <button type="button" onclick="console.log('Button clicked'); showEstimatedValueModal();" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
+                        <button type="button" onclick="console.log('Button clicked'); showEstimatedValueModal();" class="ml-2 text-dark-pink hover:text-pink focus:outline-none">
                             <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
@@ -103,7 +103,7 @@
                 <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
                     <div class="flex items-center justify-center">
                         <h4 class="text-primary-blue mb-0 font-bold text-lg">Monthly Income</h4>
-                        <button type="button" onclick="console.log('Monthly Income button clicked'); showMonthlyIncomeModal();" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
+                        <button type="button" onclick="console.log('Monthly Income button clicked'); showMonthlyIncomeModal();" class="ml-2 text-dark-pink hover:text-pink focus:outline-none">
                             <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
@@ -146,7 +146,7 @@
                 <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
                     <div class="flex items-center justify-center">
                         <h4 class="text-primary-blue mb-0 font-bold text-lg">Gross Yield</h4>
-                        <button type="button" onclick="console.log('Gross Yield button clicked'); showGrossYieldModal();" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
+                        <button type="button" onclick="console.log('Gross Yield button clicked'); showGrossYieldModal();" class="ml-2 text-dark-pink hover:text-pink focus:outline-none">
                             <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
@@ -187,7 +187,7 @@
                 <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
                     <div class="flex items-center justify-center">
                         <h4 class="text-primary-blue mb-0 font-bold text-lg">Net Yield</h4>
-                        <button type="button" onclick="console.log('Net Yield button clicked'); showNetYieldModal();" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
+                        <button type="button" onclick="console.log('Net Yield button clicked'); showNetYieldModal();" class="ml-2 text-dark-pink hover:text-pink focus:outline-none">
                             <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
@@ -275,7 +275,7 @@
                 <div class="bg-white rounded-lg shadow-lg flex flex-col justify-center items-center p-6 text-center h-full">
                     <div class="flex items-center mb-3">
                         <h4 class="text-primary-blue mb-0 font-bold text-lg">Debt Service Coverage Ratio (DSCR)</h4>
-                        <button type="button" onclick="console.log('DSCR button clicked'); showDscrModal();" class="ml-2 text-pink-500 hover:text-pink-700 transition-colors" title="What is DSCR?">
+                        <button type="button" onclick="console.log('DSCR button clicked'); showDscrModal();" class="ml-2 text-dark-pink hover:text-pink transition-colors" title="What is DSCR?">
                             <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
@@ -314,7 +314,7 @@
                 <div class="bg-white rounded-lg shadow-lg flex flex-col justify-center items-center p-6 text-center h-full">
                     <div class="flex items-center mb-3">
                         <h4 class="text-primary-blue mb-0 font-bold text-lg">OPEX Load<br>(% of Rental Income)</h4>
-                        <button type="button" onclick="console.log('OPEX Load button clicked'); showOpexModal();" class="ml-2 text-pink-500 hover:text-pink-700 transition-colors" title="What is OPEX Load?">
+                        <button type="button" onclick="console.log('OPEX Load button clicked'); showOpexModal();" class="ml-2 text-dark-pink hover:text-pink transition-colors" title="What is OPEX Load?">
                             <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
@@ -353,7 +353,7 @@
                 <div class="bg-white rounded-lg shadow-lg flex flex-col justify-center items-center p-6 text-center h-full">
                     <div class="flex items-center mb-3">
                         <h4 class="text-primary-blue mb-0 font-bold text-lg">Net Return (after tax)<br>(% of Capital Employed)</h4>
-                        <button type="button" onclick="console.log('NRAT button clicked'); showNratModal();" class="ml-2 text-pink-500 hover:text-pink-700 transition-colors" title="What is NRAT?">
+                        <button type="button" onclick="console.log('NRAT button clicked'); showNratModal();" class="ml-2 text-dark-pink hover:text-pink transition-colors" title="What is NRAT?">
                             <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
@@ -459,7 +459,7 @@
             <!-- Additional Cash Flow Details (Collapsible) -->
             <div class="mt-6">
                 <div class="flex flex-col sm:flex-row gap-3 sm:gap-2 max-w-2xl">
-                    <button onclick="toggleDetailedCashFlow()" class="bg-pink-500 hover:bg-pink-700 text-white px-4 py-2 rounded-lg transition-colors max-w-xs" type="button">
+                    <button onclick="toggleDetailedCashFlow()" class="bg-dark-pink hover:bg-pink text-white px-4 py-2 rounded-lg transition-colors max-w-xs" type="button">
                         <i class="fas fa-chart-line mr-2"></i>View Detailed Cash Flow Breakdown
                     </button>
                     
