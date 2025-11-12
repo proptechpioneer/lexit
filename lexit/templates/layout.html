@@ -27,6 +27,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Tailwind CSS CDN as fallback -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#05113A',
+                        'dark-pink': '#D94590',
+                        'pink': '#E0BBFF',
+                        'yellow': '#FFD700',
+                        'light-yellow': '#FFF5C8',
+                        'light-blue': '#A2CADD',
+                        'purple': '#A084CA',
+                        'dark-purple': '#5A189A',
+                        'light-grey': '#E5E3E6'
+                    }
+                }
+            }
+        }
+    </script>
+    
     <!-- Production Tailwind CSS with custom configuration -->
     <link rel="stylesheet" href="{% static 'dist/output.css' %}?v=1.2">
     
@@ -77,6 +99,32 @@
         .text-dark-pink { color: #D94590 !important; }
         .bg-light-grey { background-color: #E5E3E6 !important; }
         .text-light-grey { color: #E5E3E6 !important; }
+        
+        /* Badge styling - Critical for Windows compatibility */
+        .badge-container {
+            visibility: visible !important;
+            display: block !important;
+            flex-shrink: 0 !important;
+            margin-top: 1rem !important;
+        }
+        
+        .gauge-badge {
+            visibility: visible !important;
+            display: inline-block !important;
+            min-height: 1.5rem !important;
+            padding: 0.25rem 0.5rem !important;
+            border-radius: 0.25rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            line-height: 1.25rem !important;
+        }
+        
+        /* Hover effects */
+        .hover\:bg-dark-pink:hover { background-color: #D94590 !important; }
+        .hover\:bg-pink:hover { background-color: #E0BBFF !important; }
+        .hover\:text-white:hover { color: #ffffff !important; }
+        .hover\:bg-primary-blue:hover { background-color: #05113A !important; }
+        .hover\:text-pink:hover { color: #E0BBFF !important; }
         
         /* Form and input styling */
         .form-input, .form-select, .form-textarea {
