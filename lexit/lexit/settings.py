@@ -38,10 +38,13 @@ else:
     DEBUG = False
     ALLOWED_HOSTS = [
         'lexit.tech',
-        'www.lexit.tech',
+        'www.lexit.tech', 
         '*.up.railway.app',  # Railway domain
+        '*.railway.app',     # Railway domain alternative
+        '.railway.app',      # Railway subdomain
         'localhost',
         '127.0.0.1',
+        '*',  # Temporary - allow all hosts for testing
     ]
 
 # Application definition
