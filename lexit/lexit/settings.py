@@ -227,12 +227,13 @@ else:
     EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
     EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
     
-    # Office 365 SSL/TLS configuration - fallback for certificate issues
+    # Office 365 SSL/TLS configuration - comprehensive fix for Railway containers
     import ssl
     EMAIL_SSL_CONTEXT = ssl.create_default_context()
-    # Office 365 support recommendation: relax SSL verification if CA certificates are outdated
+    # Railway container CA certificate workaround as recommended by Office 365 support
     EMAIL_SSL_CONTEXT.check_hostname = False
     EMAIL_SSL_CONTEXT.verify_mode = ssl.CERT_NONE
+    EMAIL_SSL_CONTEXT.set_ciphers('DEFAULT:@SECLEVEL=1')  # Lower security level for compatibility
     EMAIL_TIMEOUT = 60
 
 # Default email settings
