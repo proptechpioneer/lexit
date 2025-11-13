@@ -47,6 +47,14 @@ else:
         '*',  # Temporary - allow all hosts for testing
     ]
 
+# CSRF Configuration for Railway
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.up.railway.app',
+    'https://*.railway.app',
+    'https://lexit.tech',
+    'https://www.lexit.tech',
+]
+
 # Application definition
 
 INSTALLED_APPS = [
