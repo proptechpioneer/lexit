@@ -33,10 +33,16 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONMENT == 'development':
     DEBUG = True
+    ALLOWED_HOSTS = ['*']
 else:
     DEBUG = False
-
-ALLOWED_HOSTS = ['*']
+    ALLOWED_HOSTS = [
+        'lexit.tech',
+        'www.lexit.tech',
+        '*.up.railway.app',  # Railway domain
+        'localhost',
+        '127.0.0.1',
+    ]
 
 # Application definition
 
@@ -154,10 +160,11 @@ if ENVIRONMENT == 'production':
 else:
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Cloudinary Configuration (optional for now)
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': env('CLOUDINARY_API_KEY'),
-    'API_SECRET': env('CLOUDINARY_API_SECRET')
+    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME', default='dummy'),
+    'API_KEY': env('CLOUDINARY_API_KEY', default='dummy'),
+    'API_SECRET': env('CLOUDINARY_API_SECRET', default='dummy')
 }
 
 # WhiteNoise Configuration
@@ -194,6 +201,24 @@ USERNAME_BLACKLIST = [
 # Honeypot Configuration
 HONEYPOT_FIELD_NAME = 'email_address'  # Hidden field name (should be different from real fields)
 HONEYPOT_VALUE = ''  # Expected value (usually empty)
+
+# Email Configuration
+if ENVIRONMENT == 'development':
+    # Development: Print emails to console
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    # Production: Use SMTP
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
+    EMAIL_PORT = env('EMAIL_PORT', default=587)
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+
+# Default email settings
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='info@lexit.tech')
+SERVER_EMAIL = env('SERVER_EMAIL', default='info@lexit.tech')
+EMAIL_TIMEOUT = 30  # Timeout in seconds
 
 # Logging Configuration
 if ENVIRONMENT == 'production':
