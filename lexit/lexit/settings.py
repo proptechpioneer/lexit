@@ -218,22 +218,20 @@ if ENVIRONMENT == 'development':
     # Development: Print emails to console
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
-    # Production: Use SMTP
+    # Production: Use SMTP with Office 365
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
+    EMAIL_HOST = env('EMAIL_HOST', default='smtp.office365.com')
     EMAIL_PORT = env('EMAIL_PORT', default=587, cast=int)
     EMAIL_USE_TLS = env('EMAIL_USE_TLS', default=True, cast=bool)
     EMAIL_USE_SSL = env('EMAIL_USE_SSL', default=False, cast=bool)
     EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
     EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-    # Office 365 specific settings - disable SSL verification temporarily
-    EMAIL_SSL_CERTFILE = None
-    EMAIL_SSL_KEYFILE = None
-    # Temporarily disable SSL verification for testing
+    
+    # Office 365 SSL/TLS configuration
     import ssl
     EMAIL_SSL_CONTEXT = ssl.create_default_context()
-    EMAIL_SSL_CONTEXT.check_hostname = False
-    EMAIL_SSL_CONTEXT.verify_mode = ssl.CERT_NONE
+    # Try with proper certificate validation first
+    EMAIL_TIMEOUT = 60
 
 # Default email settings
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='info@lexit.tech')
