@@ -221,10 +221,14 @@ else:
     # Production: Use SMTP
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
-    EMAIL_PORT = env('EMAIL_PORT', default=587)
-    EMAIL_USE_TLS = True
+    EMAIL_PORT = env('EMAIL_PORT', default=587, cast=int)
+    EMAIL_USE_TLS = env('EMAIL_USE_TLS', default=True, cast=bool)
+    EMAIL_USE_SSL = env('EMAIL_USE_SSL', default=False, cast=bool)
     EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
     EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+    # Office 365 specific settings
+    EMAIL_SSL_CERTFILE = None
+    EMAIL_SSL_KEYFILE = None
 
 # Default email settings
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='info@lexit.tech')
