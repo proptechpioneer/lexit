@@ -43,8 +43,8 @@ class Property(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='properties')
     unit_number = models.CharField(max_length=200, blank=True)
     street_number = models.CharField(max_length=200, blank=True)
-    street_name = models.CharField(max_length=200, default="Your Property Street", blank=True)
-    city = models.CharField(max_length=100, default="City", blank=True)
+    street_name = models.CharField(max_length=200, blank=True)
+    city = models.CharField(max_length=100, blank=True)
     postcode = models.CharField(max_length=8, blank=False)
 
     # Basic Property Information
