@@ -226,9 +226,14 @@ else:
     EMAIL_USE_SSL = env('EMAIL_USE_SSL', default=False, cast=bool)
     EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
     EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-    # Office 365 specific settings
+    # Office 365 specific settings - disable SSL verification temporarily
     EMAIL_SSL_CERTFILE = None
     EMAIL_SSL_KEYFILE = None
+    # Temporarily disable SSL verification for testing
+    import ssl
+    EMAIL_SSL_CONTEXT = ssl.create_default_context()
+    EMAIL_SSL_CONTEXT.check_hostname = False
+    EMAIL_SSL_CONTEXT.verify_mode = ssl.CERT_NONE
 
 # Default email settings
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='info@lexit.tech')
