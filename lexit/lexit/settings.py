@@ -218,10 +218,12 @@ if ENVIRONMENT == 'development':
     # Development: Print emails to console
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
-    # Production: Use SMTP with Office 365
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    # Production: Use SendGrid API (more reliable than SMTP on Railway)
+    EMAIL_BACKEND = 'lexit.sendgrid_backend.SendGridBackend'
+    SENDGRID_API_KEY = env('SENDGRID_API_KEY', default='')
+    
+    # Fallback SMTP settings (keep for compatibility)
     EMAIL_HOST = env('EMAIL_HOST', default='smtp.office365.com')
-    # Try port 465 with SSL instead of 587 with TLS for Railway compatibility
     EMAIL_PORT = env('EMAIL_PORT', default=465, cast=int)
     EMAIL_USE_TLS = env('EMAIL_USE_TLS', default=False, cast=bool)
     EMAIL_USE_SSL = env('EMAIL_USE_SSL', default=True, cast=bool)
