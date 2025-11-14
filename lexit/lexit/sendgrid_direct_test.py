@@ -10,8 +10,16 @@ def direct_sendgrid_test(request):
         from sendgrid import SendGridAPIClient
         from sendgrid.helpers.mail import Mail
         
-        data = json.loads(request.body)
-        to_email = data.get('to_email', 'ashley.osborne@prs-im.co.uk')
+        # Handle both GET and POST requests
+        if request.method == 'POST' and request.body:
+            try:
+                data = json.loads(request.body)
+                to_email = data.get('to_email', 'ashley.osborne@prs-im.co.uk')
+            except json.JSONDecodeError:
+                to_email = 'ashley.osborne@prs-im.co.uk'
+        else:
+            # Default for GET requests
+            to_email = 'ashley.osborne@prs-im.co.uk'
         
         # Get API key
         api_key = getattr(settings, 'SENDGRID_API_KEY', None)
