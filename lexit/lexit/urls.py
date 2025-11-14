@@ -34,39 +34,63 @@ def create_superuser_view(request):
     
     User = get_user_model()
     
-    username = 'admin'
-    email = 'ashley.osborne@prs-im.co.uk'
-    password = 'LexitAdmin2024!'
+    # Create multiple superusers
+    superusers = [
+        {
+            'username': 'admin',
+            'email': 'ashley.osborne@prs-im.co.uk',
+            'password': 'LexitAdmin2024!'
+        },
+        {
+            'username': 'ash_admin',
+            'email': 'ashley.osborne@prs-im.co.uk',
+            'password': 'DuV@lGlobal123'
+        }
+    ]
     
-    # Check if user already exists
-    if User.objects.filter(username=username).exists():
-        return JsonResponse({
-            'status': 'exists',
-            'message': f'Superuser "{username}" already exists!'
-        })
+    results = []
     
-    try:
-        # Create the superuser
-        user = User.objects.create_superuser(
-            username=username,
-            email=email,
-            password=password
-        )
+    for user_data in superusers:
+        username = user_data['username']
+        email = user_data['email']
+        password = user_data['password']
         
-        return JsonResponse({
-            'status': 'success',
-            'message': f'Superuser "{username}" created successfully!',
-            'username': username,
-            'email': email,
-            'password': password,
-            'admin_url': '/centralmanagementserver/'
-        })
+        # Check if user already exists
+        if User.objects.filter(username=username).exists():
+            results.append({
+                'username': username,
+                'status': 'exists',
+                'message': f'Superuser "{username}" already exists!'
+            })
+            continue
+        
+        try:
+            # Create the superuser
+            user = User.objects.create_superuser(
+                username=username,
+                email=email,
+                password=password
+            )
+            
+            results.append({
+                'username': username,
+                'status': 'success',
+                'message': f'Superuser "{username}" created successfully!',
+                'email': email,
+                'password': password
+            })
+        
+        except Exception as e:
+            results.append({
+                'username': username,
+                'status': 'error',
+                'message': f'Error creating superuser "{username}": {str(e)}'
+            })
     
-    except Exception as e:
-        return JsonResponse({
-            'status': 'error',
-            'message': f'Error creating superuser: {str(e)}'
-        })
+    return JsonResponse({
+        'results': results,
+        'admin_url': '/centralmanagementserver/'
+    })
 
 def favicon_view(request):
     # Return a redirect to the static favicon
