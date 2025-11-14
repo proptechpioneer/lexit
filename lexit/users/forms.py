@@ -25,10 +25,19 @@ class SimpleUserCreationForm(UserCreationForm):
             'placeholder': 'Your last name (optional)'
         })
     )
+    
+    email = forms.EmailField(
+        max_length=254,
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors',
+            'placeholder': 'your.email@example.com'
+        })
+    )
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'password1', 'password2')
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -64,6 +73,7 @@ class SimpleUserCreationForm(UserCreationForm):
         user = super().save(commit=False)
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
+        user.email = self.cleaned_data['email']
         if commit:
             user.save()
             # UserProfile will be created automatically by the post_save signal

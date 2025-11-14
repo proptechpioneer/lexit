@@ -1,0 +1,30 @@
+Welcome to LEXIT!
+
+Hi {{ user.first_name|default:user.username }},
+
+Thank you for joining LEXIT! We're excited to help you navigate your property investment journey with confidence and success.
+
+What You Can Do With LEXIT:
+✓ Track and manage your property portfolio
+✓ Access property market insights and analytics
+✓ Connect with other property investors
+✓ Get expert advice and guidance
+✓ Stay updated with the latest property news
+✓ Use our investment calculation tools
+
+Get started now by visiting: https://lexit.tech/user_home/
+
+Need help getting started? Check out our guides or contact our support team at info@lexit.tech.
+
+Best regards,
+The LEXIT Team
+
+---
+LEXIT - Empowering Property Investors
+This email was sent to {{ user.email }} because you created a LEXIT account.
+
+© {{ current_year }} LEXIT. All rights reserved.
+If you didn't create this account, please ignore this email.
+
+Visit us: https://lexit.tech
+Contact: info@lexit.tech

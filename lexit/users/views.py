@@ -7,10 +7,13 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmVie
 from django.urls import reverse_lazy
 from django.core.mail import send_mail
 from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from honeypot.decorators import check_honeypot
 from .security_utils import check_honeypot_with_logging
 from .forms import SimpleUserCreationForm, UserProfileForm, ExtendedUserProfileForm
 from .models import UserProfile
+import datetime
 
 # Create your views here.
 
@@ -51,6 +54,36 @@ def register_view(request):
         form = SimpleUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()  # This will create both User and basic UserProfile
+            
+            # Send welcome email
+            try:
+                context = {
+                    'user': user,
+                    'current_year': datetime.datetime.now().year,
+                }
+                
+                # Render HTML email
+                html_message = render_to_string('users/welcome_email.html', context)
+                # Render plain text version
+                plain_message = render_to_string('users/welcome_email.txt', context)
+                
+                send_mail(
+                    subject='Welcome to LEXIT! 🎉',
+                    message=plain_message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    html_message=html_message,
+                    fail_silently=False,
+                )
+                
+                # Log successful email send (optional)
+                print(f"Welcome email sent successfully to {user.email}")
+                
+            except Exception as e:
+                # Log the error but don't prevent registration
+                print(f"Failed to send welcome email to {user.email}: {str(e)}")
+                messages.warning(request, 'Account created successfully! However, there was an issue sending the welcome email.')
+            
             login(request, user)  # Automatically log in the new user
             messages.success(request, 'Welcome to LEXIT! Your account has been created successfully.')
             return redirect('user_home:user_home')  # Redirect to user dashboard
