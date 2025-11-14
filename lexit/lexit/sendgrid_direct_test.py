@@ -29,24 +29,57 @@ def direct_sendgrid_test(request):
         # Create SendGrid client
         sg = SendGridAPIClient(api_key=api_key)
         
-        # Create simple email - try with a basic from email first
-        message = Mail(
-            from_email='test@mg.lexit.tech',  # Simple test from email
-            to_emails=to_email,
-            subject='Direct SendGrid Test - LEXIT',
-            plain_text_content='This is a direct SendGrid API test from LEXIT platform!'
-        )
+        # Try different verified sender addresses
+        # 1. First try with noreply@lexit.tech (what we configured in DNS)
+        # 2. If that fails, try with a generic SendGrid sender
+        from_emails_to_try = [
+            'noreply@lexit.tech',          # Our authenticated domain
+            'test@example.com',            # Generic test address
+            'noreply@sendgrid.com'         # SendGrid default
+        ]
         
-        # Send email
-        response = sg.send(message)
+        last_error = None
         
+        for from_email in from_emails_to_try:
+            try:
+                # Create simple email
+                message = Mail(
+                    from_email=from_email,
+                    to_emails=to_email,
+                    subject=f'Direct SendGrid Test - LEXIT (from {from_email})',
+                    plain_text_content=f'This is a direct SendGrid API test from LEXIT platform using {from_email}!'
+                )
+                
+                # Send email
+                response = sg.send(message)
+                
+                # If we get here, it worked!
+                return JsonResponse({
+                    'success': True,
+                    'status_code': response.status_code,
+                    'message': 'Direct SendGrid test completed successfully',
+                    'from_email': from_email,
+                    'to_email': to_email,
+                    'api_key_status': 'Configured and working',
+                    'response_headers': dict(response.headers) if hasattr(response, 'headers') else None
+                })
+                
+            except Exception as email_error:
+                last_error = {
+                    'from_email': from_email,
+                    'error': str(email_error),
+                    'error_type': type(email_error).__name__
+                }
+                continue  # Try next from_email
+        
+        # If we get here, all from_emails failed
         return JsonResponse({
-            'success': True,
-            'status_code': response.status_code,
-            'message': 'Direct SendGrid test completed',
-            'from_email': 'test@mg.lexit.tech',
+            'success': False,
+            'error': 'All sender addresses failed',
+            'last_error': last_error,
+            'tried_addresses': from_emails_to_try,
             'to_email': to_email,
-            'api_key_status': 'Configured' if api_key else 'Missing'
+            'api_key_status': 'Configured but sender verification failed'
         })
         
     except Exception as e:
