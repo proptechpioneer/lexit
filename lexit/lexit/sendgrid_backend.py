@@ -43,6 +43,11 @@ class SendGridBackend(BaseEmailBackend):
     def _send_message(self, email_message):
         """Send a single EmailMessage using SendGrid API"""
         try:
+            print(f"DEBUG: Attempting to send email to {email_message.to}")
+            print(f"DEBUG: From email: {email_message.from_email}")
+            print(f"DEBUG: Subject: {email_message.subject}")
+            print(f"DEBUG: API Key configured: {bool(self.api_key)}")
+            
             # Create the SendGrid Mail object - fix for plain text content
             mail = Mail(
                 from_email=email_message.from_email,
@@ -51,17 +56,27 @@ class SendGridBackend(BaseEmailBackend):
                 plain_text_content=email_message.body  # Always use plain text content
             )
             
+            print(f"DEBUG: Mail object created successfully")
+            
             # Send the email
             response = self.client.send(mail)
+            print(f"DEBUG: SendGrid response status: {response.status_code}")
+            print(f"DEBUG: SendGrid response body: {response.body}")
             
             # Check if successful (status code 202 indicates accepted)
             if response.status_code == 202:
                 logger.info(f"Email sent successfully to {email_message.to}")
+                print(f"DEBUG: Email sent successfully!")
                 return True
             else:
                 logger.error(f"SendGrid API error: {response.status_code}, Response: {response.body}")
+                print(f"DEBUG: SendGrid error - Status: {response.status_code}, Body: {response.body}")
                 return False
                 
         except Exception as e:
             logger.error(f"Failed to send email via SendGrid: {str(e)}")
+            print(f"DEBUG: Exception in _send_message: {str(e)}")
+            print(f"DEBUG: Exception type: {type(e).__name__}")
+            import traceback
+            traceback.print_exc()
             return False
