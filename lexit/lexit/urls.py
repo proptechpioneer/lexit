@@ -25,73 +25,6 @@ from .media_views import serve_media
 from .email_test_views import test_email
 from .sendgrid_direct_test import direct_sendgrid_test
 
-def create_superuser_view(request):
-    """Temporary view to create superuser - REMOVE AFTER USE"""
-    from django.contrib.auth import get_user_model
-    from django.http import JsonResponse
-    from django.views.decorators.csrf import csrf_exempt
-    import json
-    
-    User = get_user_model()
-    
-    # Create multiple superusers
-    superusers = [
-        {
-            'username': 'admin',
-            'email': 'ashley.osborne@prs-im.co.uk',
-            'password': 'LexitAdmin2024!'
-        },
-        {
-            'username': 'ash_admin',
-            'email': 'ashley.osborne@prs-im.co.uk',
-            'password': 'DuV@lGlobal123'
-        }
-    ]
-    
-    results = []
-    
-    for user_data in superusers:
-        username = user_data['username']
-        email = user_data['email']
-        password = user_data['password']
-        
-        # Check if user already exists
-        if User.objects.filter(username=username).exists():
-            results.append({
-                'username': username,
-                'status': 'exists',
-                'message': f'Superuser "{username}" already exists!'
-            })
-            continue
-        
-        try:
-            # Create the superuser
-            user = User.objects.create_superuser(
-                username=username,
-                email=email,
-                password=password
-            )
-            
-            results.append({
-                'username': username,
-                'status': 'success',
-                'message': f'Superuser "{username}" created successfully!',
-                'email': email,
-                'password': password
-            })
-        
-        except Exception as e:
-            results.append({
-                'username': username,
-                'status': 'error',
-                'message': f'Error creating superuser "{username}": {str(e)}'
-            })
-    
-    return JsonResponse({
-        'results': results,
-        'admin_url': '/centralmanagementserver/'
-    })
-
 def favicon_view(request):
     # Return a redirect to the static favicon
     return RedirectView.as_view(url=settings.STATIC_URL + 'images/lexit_favicon.png', permanent=True)(request)
@@ -122,7 +55,6 @@ def debug_media_view(request):
 
 urlpatterns = [
     path('centralmanagementserver/', admin.site.urls),  # Real admin interface
-    path('create-superuser-temp/', create_superuser_view, name='create_superuser_temp'),  # Temporary superuser creation
     path('favicon.ico', favicon_view, name='favicon'),
     path('debug-media/', debug_media_view, name='debug_media'),  # Debug endpoint
     path('test-email/', test_email, name='test_email'),  # Email test endpoint
