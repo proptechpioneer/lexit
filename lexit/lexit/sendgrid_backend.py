@@ -43,13 +43,12 @@ class SendGridBackend(BaseEmailBackend):
     def _send_message(self, email_message):
         """Send a single EmailMessage using SendGrid API"""
         try:
-            # Create the SendGrid Mail object
+            # Create the SendGrid Mail object - fix for plain text content
             mail = Mail(
                 from_email=email_message.from_email,
-                to_emails=email_message.to,
+                to_emails=email_message.to[0] if email_message.to else email_message.to,  # SendGrid expects single email or list
                 subject=email_message.subject,
-                html_content=email_message.body if email_message.content_subtype == 'html' else None,
-                plain_text_content=email_message.body if email_message.content_subtype == 'plain' else None
+                plain_text_content=email_message.body  # Always use plain text content
             )
             
             # Send the email
@@ -60,7 +59,7 @@ class SendGridBackend(BaseEmailBackend):
                 logger.info(f"Email sent successfully to {email_message.to}")
                 return True
             else:
-                logger.error(f"SendGrid API error: {response.status_code}")
+                logger.error(f"SendGrid API error: {response.status_code}, Response: {response.body}")
                 return False
                 
         except Exception as e:

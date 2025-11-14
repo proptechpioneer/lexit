@@ -42,26 +42,34 @@ def test_email(request):
                 fail_silently=False,
             )
             
+            # Debug: Check if SendGrid API key is configured
+            sendgrid_key_status = "Configured" if getattr(settings, 'SENDGRID_API_KEY', None) else "Missing"
+            
             if result:
                 return JsonResponse({
                     'success': True, 
                     'message': f'Email sent successfully to {to_email}!',
                     'backend': settings.EMAIL_BACKEND,
-                    'from_email': settings.DEFAULT_FROM_EMAIL
+                    'from_email': settings.DEFAULT_FROM_EMAIL,
+                    'sendgrid_api_key': sendgrid_key_status,
+                    'result_count': result
                 })
             else:
                 return JsonResponse({
                     'success': False, 
-                    'error': 'Email sending failed - no error details',
-                    'backend': settings.EMAIL_BACKEND
+                    'error': 'Email sending returned 0 - check SendGrid configuration',
+                    'backend': settings.EMAIL_BACKEND,
+                    'sendgrid_api_key': sendgrid_key_status,
+                    'from_email': settings.DEFAULT_FROM_EMAIL
                 })
                 
         except Exception as e:
             return JsonResponse({
                 'success': False, 
-                'error': f'Email sending failed: {str(e)}',
+                'error': f'Email sending exception: {str(e)}',
                 'backend': settings.EMAIL_BACKEND,
-                'error_type': type(e).__name__
+                'error_type': type(e).__name__,
+                'sendgrid_api_key': "Configured" if getattr(settings, 'SENDGRID_API_KEY', None) else "Missing"
             })
             
     except json.JSONDecodeError:
