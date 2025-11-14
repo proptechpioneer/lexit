@@ -68,7 +68,7 @@ def register_view(request):
                 plain_message = render_to_string('users/welcome_email.txt', context)
                 
                 send_mail(
-                    subject='Welcome to LEXIT! 🎉',
+                    subject='Welcome to LEXIT | Buy-to-Let Investment Analyzer!',
                     message=plain_message,
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[user.email],

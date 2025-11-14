@@ -5,7 +5,7 @@ This custom backend uses SendGrid's API instead of SMTP, which works better with
 
 from django.core.mail.backends.base import BaseEmailBackend
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+from sendgrid.helpers.mail import Mail, ClickTracking, OpenTracking, TrackingSettings
 from django.conf import settings
 import logging
 
@@ -69,15 +69,11 @@ class SendGridBackend(BaseEmailBackend):
                 mail.add_content(email_message.body, 'text/plain')
             
             # Disable click tracking to prevent SendGrid link wrapping
-            mail.tracking_settings = {
-                "click_tracking": {
-                    "enable": False,
-                    "enable_text": False
-                },
-                "open_tracking": {
-                    "enable": False
-                }
-            }
+            click_tracking = ClickTracking(enable=False, enable_text=False)
+            open_tracking = OpenTracking(enable=False)
+            tracking_settings = TrackingSettings(click_tracking=click_tracking, open_tracking=open_tracking)
+            
+            mail.tracking_settings = tracking_settings
             
             print(f"DEBUG: Mail object created successfully with click tracking disabled")
             
