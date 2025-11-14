@@ -48,15 +48,38 @@ class SendGridBackend(BaseEmailBackend):
             print(f"DEBUG: Subject: {email_message.subject}")
             print(f"DEBUG: API Key configured: {bool(self.api_key)}")
             
-            # Create the SendGrid Mail object - fix for plain text content
+            # Create the SendGrid Mail object with proper HTML/text content
             mail = Mail(
                 from_email=email_message.from_email,
                 to_emails=email_message.to[0] if email_message.to else email_message.to,  # SendGrid expects single email or list
-                subject=email_message.subject,
-                plain_text_content=email_message.body  # Always use plain text content
+                subject=email_message.subject
             )
             
-            print(f"DEBUG: Mail object created successfully")
+            # Add content based on what's available
+            if hasattr(email_message, 'alternatives') and email_message.alternatives:
+                # HTML content is available
+                for content, content_type in email_message.alternatives:
+                    if content_type == 'text/html':
+                        mail.add_content(content, 'text/html')
+                        break
+                # Always add plain text content
+                mail.add_content(email_message.body, 'text/plain')
+            else:
+                # Only plain text content
+                mail.add_content(email_message.body, 'text/plain')
+            
+            # Disable click tracking to prevent SendGrid link wrapping
+            mail.tracking_settings = {
+                "click_tracking": {
+                    "enable": False,
+                    "enable_text": False
+                },
+                "open_tracking": {
+                    "enable": False
+                }
+            }
+            
+            print(f"DEBUG: Mail object created successfully with click tracking disabled")
             
             # Send the email
             response = self.client.send(mail)
