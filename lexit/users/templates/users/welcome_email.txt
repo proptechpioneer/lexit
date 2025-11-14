@@ -1,16 +1,19 @@
-Welcome to LEXIT!
+Welcome to LEXIT | Buy-to-Let Investment Analyzer!
 
-Hi {{ user.first_name|default:user.username }},
+Dear {{ user.first_name|default:user.username }},
 
-Thank you for joining LEXIT! We're excited to help you navigate your property investment journey with confidence and success.
+Welcome to LEXIT! We're excited to have you join us as you navigate the rapidly evolving landscape of the buy-to-let market in England.
 
-What You Can Do With LEXIT:
-✓ Track and manage your property portfolio
-✓ Access property market insights and analytics
-✓ Connect with other property investors
-✓ Get expert advice and guidance
-✓ Stay updated with the latest property news
-✓ Use our investment calculation tools
+With the upcoming implementation of the Renters' Rights Act (RRA) on 1 May 2026, the financial environment for buy-to-let landlords is set to change dramatically. Alongside this, the removal of mortgage interest rate relief (Section 24), new EPC regulations, and the Decent Homes Standards will increase costs for landlords and make rent increases more challenging.
+
+LEXIT is designed to empower you to assess your property portfolio effectively, helping you understand whether your investments are likely to deliver solid returns in light of these new risks and regulations.
+
+As we continue to improve our platform, we will be integrating advanced Artificial Intelligence features that will offer tailored recommendations to optimize the financial performance of your investments.
+
+Thank you for choosing LEXIT. We look forward to supporting your success in this changing market.
+
+Best regards,
+The LEXIT Team
 
 Get started now by visiting: https://lexit.tech/user_home/
 

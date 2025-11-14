@@ -136,25 +136,37 @@
         
         <!-- Content -->
         <div class="content">
-            <h1 class="welcome-title">Welcome to LEXIT, {{ user.first_name|default:user.username }}!</h1>
+            <h1 class="welcome-title">Welcome to LEXIT | Buy-to-Let Investment Analyzer!</h1>
             
             <p class="welcome-text">
-                Thank you for joining LEXIT! We're excited to help you navigate your property investment journey with confidence and success.
+                <strong>Dear {{ user.first_name|default:user.username }},</strong>
             </p>
             
-            <!-- Features -->
-            <div class="features">
-                <h3>What You Can Do With LEXIT:</h3>
-                <ul class="feature-list">
-                    <li>Track and manage your property portfolio</li>
-                    <li>Access property market insights and analytics</li>
-                    <li>Connect with other property investors</li>
-                    <li>Get expert advice and guidance</li>
-                    <li>Stay updated with the latest property news</li>
-                    <li>Use our investment calculation tools</li>
-                </ul>
-            </div>
+            <p class="welcome-text">
+                Welcome to LEXIT! We're excited to have you join us as you navigate the rapidly evolving landscape of the buy-to-let market in England.
+            </p>
             
+            <p class="welcome-text">
+                With the upcoming implementation of the Renters' Rights Act (RRA) on 1 May 2026, the financial environment for buy-to-let landlords is set to change dramatically. Alongside this, the removal of mortgage interest rate relief (Section 24), new EPC regulations, and the Decent Homes Standards will increase costs for landlords and make rent increases more challenging.
+            </p>
+            
+            <p class="welcome-text">
+                LEXIT is designed to empower you to assess your property portfolio effectively, helping you understand whether your investments are likely to deliver solid returns in light of these new risks and regulations.
+            </p>
+            
+            <p class="welcome-text">
+                As we continue to improve our platform, we will be integrating advanced Artificial Intelligence features that will offer tailored recommendations to optimize the financial performance of your investments.
+            </p>
+            
+            <p class="welcome-text">
+                Thank you for choosing LEXIT. We look forward to supporting your success in this changing market.
+            </p>
+            
+            <p class="welcome-text">
+                <strong>Best regards,<br>
+                The LEXIT Team</strong>
+            </p>
+
             <a href="https://lexit.tech/user_home/" class="cta-button">
                 Get Started Now →
             </a>
