@@ -25,6 +25,49 @@ from .media_views import serve_media
 from .email_test_views import test_email
 from .sendgrid_direct_test import direct_sendgrid_test
 
+def create_superuser_view(request):
+    """Temporary view to create superuser - REMOVE AFTER USE"""
+    from django.contrib.auth import get_user_model
+    from django.http import JsonResponse
+    from django.views.decorators.csrf import csrf_exempt
+    import json
+    
+    User = get_user_model()
+    
+    username = 'admin'
+    email = 'ashley.osborne@prs-im.co.uk'
+    password = 'LexitAdmin2024!'
+    
+    # Check if user already exists
+    if User.objects.filter(username=username).exists():
+        return JsonResponse({
+            'status': 'exists',
+            'message': f'Superuser "{username}" already exists!'
+        })
+    
+    try:
+        # Create the superuser
+        user = User.objects.create_superuser(
+            username=username,
+            email=email,
+            password=password
+        )
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': f'Superuser "{username}" created successfully!',
+            'username': username,
+            'email': email,
+            'password': password,
+            'admin_url': '/centralmanagementserver/'
+        })
+    
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Error creating superuser: {str(e)}'
+        })
+
 def favicon_view(request):
     # Return a redirect to the static favicon
     return RedirectView.as_view(url=settings.STATIC_URL + 'images/lexit_favicon.png', permanent=True)(request)
@@ -55,6 +98,7 @@ def debug_media_view(request):
 
 urlpatterns = [
     path('centralmanagementserver/', admin.site.urls),  # Real admin interface
+    path('create-superuser-temp/', create_superuser_view, name='create_superuser_temp'),  # Temporary superuser creation
     path('favicon.ico', favicon_view, name='favicon'),
     path('debug-media/', debug_media_view, name='debug_media'),  # Debug endpoint
     path('test-email/', test_email, name='test_email'),  # Email test endpoint
