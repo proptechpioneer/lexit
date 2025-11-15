@@ -109,10 +109,31 @@ def debug_media_view(request):
     from django.http import JsonResponse
     return JsonResponse(response_data)
 
+def preview_welcome_email(request):
+    """Preview the welcome email template"""
+    from django.shortcuts import render
+    from django.contrib.auth.models import User
+    from datetime import datetime
+    
+    # Create a mock user for preview
+    mock_user = type('MockUser', (), {
+        'first_name': 'Ashley',
+        'username': 'ashley.osborne',
+        'email': 'ashley.osborne@example.com'
+    })()
+    
+    context = {
+        'user': mock_user,
+        'current_year': datetime.now().year
+    }
+    
+    return render(request, 'users/welcome_email.html', context)
+
 urlpatterns = [
     path('centralmanagementserver/', admin.site.urls),  # Real admin interface
     path('favicon.ico', favicon_view, name='favicon'),
     path('debug-media/', debug_media_view, name='debug_media'),  # Debug endpoint
+    path('preview-welcome-email/', preview_welcome_email, name='preview_welcome_email'),  # Email preview
     path('test-email/', test_email, name='test_email'),  # Email test endpoint
     path('test-sendgrid-direct/', direct_sendgrid_test, name='test_sendgrid_direct'),  # Direct SendGrid API test
     path('', views.landing_page, name='landing_page'),
