@@ -167,10 +167,11 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Cloudinary Configuration for Production Media Storage
+import os
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME', default=''),
-    'API_KEY': env('CLOUDINARY_API_KEY', default=''),
-    'API_SECRET': env('CLOUDINARY_API_SECRET', default='')
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', '')
 }
 
 # Storage Configuration - Use Cloudinary in production, local in development

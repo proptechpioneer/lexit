@@ -43,6 +43,13 @@ def debug_media_view(request):
     }
     
     # Check Cloudinary configuration
+    import os
+    response_data['environment_vars'] = {
+        'CLOUDINARY_CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'NOT_SET'),
+        'CLOUDINARY_API_KEY_SET': bool(os.environ.get('CLOUDINARY_API_KEY')),
+        'CLOUDINARY_API_SECRET_SET': bool(os.environ.get('CLOUDINARY_API_SECRET')),
+    }
+    
     if hasattr(settings, 'CLOUDINARY_STORAGE'):
         response_data['cloudinary_config'] = {
             'cloud_name_set': bool(settings.CLOUDINARY_STORAGE.get('CLOUD_NAME')),
