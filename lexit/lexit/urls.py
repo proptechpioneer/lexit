@@ -30,7 +30,7 @@ def favicon_view(request):
     return RedirectView.as_view(url=settings.STATIC_URL + 'images/lexit_favicon.png', permanent=True)(request)
 
 def debug_media_view(request):
-    """Debug view to check media configuration"""
+    """Debug view to check media configuration - Updated"""
     import os
     response_data = {
         'MEDIA_URL': settings.MEDIA_URL,
