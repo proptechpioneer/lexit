@@ -36,19 +36,31 @@ def debug_media_view(request):
         'MEDIA_URL': settings.MEDIA_URL,
         'MEDIA_ROOT': settings.MEDIA_ROOT,
         'DEBUG': settings.DEBUG,
-        'media_files': []
+        'media_files': [],
+        'testimonials': []
     }
     
     # List files in media directory
     if os.path.exists(settings.MEDIA_ROOT):
-        for file in os.listdir(settings.MEDIA_ROOT):
-            file_path = os.path.join(settings.MEDIA_ROOT, file)
-            if os.path.isfile(file_path):
+        for root, dirs, files in os.walk(settings.MEDIA_ROOT):
+            for file in files:
+                file_path = os.path.join(root, file)
+                relative_path = os.path.relpath(file_path, settings.MEDIA_ROOT)
                 response_data['media_files'].append({
-                    'name': file,
+                    'name': relative_path,
                     'size': os.path.getsize(file_path),
-                    'url': settings.MEDIA_URL + file
+                    'url': settings.MEDIA_URL + relative_path.replace('\\', '/')
                 })
+    
+    # Check testimonial data
+    from user_home.models import Testimonial
+    for testimonial in Testimonial.objects.filter(is_active=True):
+        response_data['testimonials'].append({
+            'author_name': testimonial.author_name,
+            'has_image': bool(testimonial.author_image),
+            'image_name': testimonial.author_image.name if testimonial.author_image else None,
+            'get_author_image_url': testimonial.get_author_image_url,
+        })
     
     from django.http import JsonResponse
     return JsonResponse(response_data)

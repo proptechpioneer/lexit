@@ -223,7 +223,17 @@ class Testimonial(models.Model):
     def get_author_image_url(self):
         """Return the author image URL or default image if none uploaded"""
         if self.author_image and hasattr(self.author_image, 'url'):
-            return self.author_image.url
+            # For production, ensure full domain is included
+            from django.conf import settings
+            image_url = self.author_image.url
+            
+            # If URL is relative, make it absolute for production
+            if not image_url.startswith('http') and hasattr(settings, 'ALLOWED_HOSTS'):
+                if settings.ENVIRONMENT == 'production':
+                    # Use the production domain
+                    return f"https://www.lexit.tech{image_url}"
+            
+            return image_url
         else:
             # Return default testimonial image from static folder
             from django.conf import settings
