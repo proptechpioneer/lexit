@@ -36,9 +36,27 @@ def debug_media_view(request):
         'MEDIA_URL': settings.MEDIA_URL,
         'MEDIA_ROOT': settings.MEDIA_ROOT,
         'DEBUG': settings.DEBUG,
+        'ENVIRONMENT': getattr(settings, 'ENVIRONMENT', 'unknown'),
         'media_files': [],
-        'testimonials': []
+        'testimonials': [],
+        'cloudinary_config': {}
     }
+    
+    # Check Cloudinary configuration
+    if hasattr(settings, 'CLOUDINARY_STORAGE'):
+        response_data['cloudinary_config'] = {
+            'cloud_name_set': bool(settings.CLOUDINARY_STORAGE.get('CLOUD_NAME')),
+            'api_key_set': bool(settings.CLOUDINARY_STORAGE.get('API_KEY')),
+            'api_secret_set': bool(settings.CLOUDINARY_STORAGE.get('API_SECRET')),
+            'cloud_name': settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', '')[:10] + '...' if settings.CLOUDINARY_STORAGE.get('CLOUD_NAME') else ''
+        }
+    
+    # Check storage backend
+    try:
+        from django.core.files.storage import default_storage
+        response_data['storage_backend'] = str(type(default_storage).__name__)
+    except Exception as e:
+        response_data['storage_backend'] = f"Error: {str(e)}"
     
     # List files in media directory
     if os.path.exists(settings.MEDIA_ROOT):
@@ -54,13 +72,22 @@ def debug_media_view(request):
     
     # Check testimonial data
     from user_home.models import Testimonial
-    for testimonial in Testimonial.objects.filter(is_active=True):
-        response_data['testimonials'].append({
+    for testimonial in Testimonial.objects.all():
+        testimonial_data = {
             'author_name': testimonial.author_name,
+            'is_active': testimonial.is_active,
             'has_image': bool(testimonial.author_image),
             'image_name': testimonial.author_image.name if testimonial.author_image else None,
             'get_author_image_url': testimonial.get_author_image_url,
-        })
+        }
+        
+        if testimonial.author_image:
+            try:
+                testimonial_data['image_url_raw'] = testimonial.author_image.url
+            except Exception as e:
+                testimonial_data['image_url_error'] = str(e)
+        
+        response_data['testimonials'].append(testimonial_data)
     
     from django.http import JsonResponse
     return JsonResponse(response_data)
