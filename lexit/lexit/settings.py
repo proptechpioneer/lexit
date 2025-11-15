@@ -64,8 +64,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cloudinary_storage',
-    'cloudinary',
     'django.contrib.humanize',
     'django_ckeditor_5',
     'honeypot',
@@ -166,22 +164,10 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-if ENVIRONMENT == 'production':
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-else:
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Cloudinary Configuration (optional for now)
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME', default='dummy'),
-    'API_KEY': env('CLOUDINARY_API_KEY', default='dummy'),
-    'API_SECRET': env('CLOUDINARY_API_SECRET', default='dummy')
-}
-
-# WhiteNoise Configuration
+# Storage Configuration - Use local file storage for now
 STORAGES = {
     "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
