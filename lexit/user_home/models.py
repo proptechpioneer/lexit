@@ -222,21 +222,9 @@ class Testimonial(models.Model):
     @property
     def get_author_image_url(self):
         """Return the author image URL or default image if none uploaded"""
-        # First, try to use uploaded image if it exists and file is accessible
+        # Use uploaded image if available
         if self.author_image and hasattr(self.author_image, 'url') and self.author_image.name:
-            try:
-                import os
-                from django.conf import settings
-                
-                file_path = os.path.join(settings.MEDIA_ROOT, self.author_image.name)
-                if os.path.exists(file_path):
-                    image_url = self.author_image.url
-                    # For production, ensure full domain is included
-                    if not image_url.startswith('http') and getattr(settings, 'ENVIRONMENT', '') == 'production':
-                        return f"https://www.lexit.tech{image_url}"
-                    return image_url
-            except Exception:
-                pass
+            return self.author_image.url
         
         # Fallback: Try to use a specific static image based on author name
         from django.conf import settings
