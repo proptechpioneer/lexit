@@ -42,12 +42,22 @@ def debug_media_view(request):
         'cloudinary_config': {}
     }
     
+    # Check ALL environment variables containing 'CLOUDINARY'
+    cloudinary_env_vars = {key: value for key, value in os.environ.items() if 'CLOUDINARY' in key}
+    response_data['all_cloudinary_env_vars'] = cloudinary_env_vars
+    
     # Check Cloudinary configuration
-    import os
     response_data['environment_vars'] = {
         'CLOUDINARY_CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'NOT_SET'),
         'CLOUDINARY_API_KEY_SET': bool(os.environ.get('CLOUDINARY_API_KEY')),
         'CLOUDINARY_API_SECRET_SET': bool(os.environ.get('CLOUDINARY_API_SECRET')),
+    }
+    
+    # Show first few chars of actual values for debugging
+    response_data['environment_vars_partial'] = {
+        'CLOUDINARY_CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'NOT_SET')[:5] + '...' if os.environ.get('CLOUDINARY_CLOUD_NAME') else 'NOT_SET',
+        'CLOUDINARY_API_KEY': os.environ.get('CLOUDINARY_API_KEY', 'NOT_SET')[:5] + '...' if os.environ.get('CLOUDINARY_API_KEY') else 'NOT_SET',
+        'CLOUDINARY_API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', 'NOT_SET')[:5] + '...' if os.environ.get('CLOUDINARY_API_SECRET') else 'NOT_SET',
     }
     
     if hasattr(settings, 'CLOUDINARY_STORAGE'):
