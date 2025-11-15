@@ -129,11 +129,36 @@ def preview_welcome_email(request):
     
     return render(request, 'users/welcome_email.html', context)
 
+def preview_welcome_email_txt(request):
+    """Preview the plain text welcome email template"""
+    from django.shortcuts import render
+    from django.contrib.auth.models import User
+    from datetime import datetime
+    from django.http import HttpResponse
+    
+    # Create a mock user for preview
+    mock_user = type('MockUser', (), {
+        'first_name': 'Ashley',
+        'username': 'ashley.osborne',
+        'email': 'ashley.osborne@example.com'
+    })()
+    
+    context = {
+        'user': mock_user,
+        'current_year': datetime.now().year
+    }
+    
+    # Render the text template and return as plain text
+    from django.template.loader import render_to_string
+    text_content = render_to_string('users/welcome_email.txt', context)
+    return HttpResponse(text_content, content_type='text/plain')
+
 urlpatterns = [
     path('centralmanagementserver/', admin.site.urls),  # Real admin interface
     path('favicon.ico', favicon_view, name='favicon'),
     path('debug-media/', debug_media_view, name='debug_media'),  # Debug endpoint
     path('preview-welcome-email/', preview_welcome_email, name='preview_welcome_email'),  # Email preview
+    path('preview-welcome-email-txt/', preview_welcome_email_txt, name='preview_welcome_email_txt'),  # Text email preview
     path('test-email/', test_email, name='test_email'),  # Email test endpoint
     path('test-sendgrid-direct/', direct_sendgrid_test, name='test_sendgrid_direct'),  # Direct SendGrid API test
     path('', views.landing_page, name='landing_page'),

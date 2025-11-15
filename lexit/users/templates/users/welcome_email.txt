@@ -15,19 +15,15 @@ Thank you for choosing LEXIT. We look forward to supporting your success in this
 Best regards,
 The LEXIT Team
 
-Get started now by visiting: https://lexit.tech/user_home/
-
 Need help getting started? Check out our guides or contact our support team at info@lexit.tech.
-
-Best regards,
-The LEXIT Team
 
 ---
 LEXIT - Empowering Property Investors
 This email was sent to {{ user.email }} because you created a LEXIT account.
 
+Follow Us: https://x.com/LEXIT_Tech
+Contact: info@lexit.tech
+Visit us: https://lexit.tech
+
 © {{ current_year }} LEXIT. All rights reserved.
 If you didn't create this account, please ignore this email.
-
-Visit us: https://lexit.tech
-Contact: info@lexit.tech
