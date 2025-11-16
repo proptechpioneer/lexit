@@ -141,8 +141,13 @@ class Property(models.Model):
     @property
     def get_property_image_url(self):
         """Return the property image URL or default image if none uploaded"""
-        if self.property_image and hasattr(self.property_image, 'url'):
-            return self.property_image.url
+        if self.property_image and hasattr(self.property_image, 'url') and self.property_image.name:
+            try:
+                return self.property_image.url
+            except Exception:
+                # If there's any error accessing the image URL, return default
+                from django.conf import settings
+                return f"{settings.STATIC_URL}images/lexit_image.png"
         else:
             # Return default image from static folder
             from django.conf import settings
@@ -159,6 +164,18 @@ class PropertyImage(models.Model):
     caption = models.CharField(max_length=200, blank=True)
     is_main_image = models.BooleanField(default=False, help_text="Is this the main property image?")
     date_uploaded = models.DateTimeField(auto_now_add=True)
+    
+    def get_image_url(self):
+        """Return the image URL with error handling"""
+        if self.image and hasattr(self.image, 'url') and self.image.name:
+            try:
+                return self.image.url
+            except Exception:
+                from django.conf import settings
+                return f"{settings.STATIC_URL}images/lexit_image.png"
+        else:
+            from django.conf import settings
+            return f"{settings.STATIC_URL}images/lexit_image.png"
     
     class Meta:
         ordering = ['-is_main_image', 'date_uploaded']
@@ -224,7 +241,11 @@ class Testimonial(models.Model):
         """Return the author image URL or default image if none uploaded"""
         # Use uploaded image if available
         if self.author_image and hasattr(self.author_image, 'url') and self.author_image.name:
-            return self.author_image.url
+            try:
+                return self.author_image.url
+            except Exception:
+                # If there's any error accessing the image URL, continue to fallback
+                pass
         
         # Fallback: Try to use a specific static image based on author name
         from django.conf import settings
@@ -236,8 +257,14 @@ class Testimonial(models.Model):
             'Sarah Mitchell': 'testimonial_3.png'
         }
         
-        if self.author_name in author_image_map:
-            return f"{settings.STATIC_URL}images/{author_image_map[self.author_name]}"
+        try:
+            if self.author_name in author_image_map:
+                return f"{settings.STATIC_URL}images/{author_image_map[self.author_name]}"
+        except Exception:
+            pass
         
         # Final fallback to default image
-        return f"{settings.STATIC_URL}images/tesitimonial_girl.png"
+        try:
+            return f"{settings.STATIC_URL}images/tesitimonial_girl.png"
+        except Exception:
+            return "/static/images/tesitimonial_girl.png"
