@@ -11,7 +11,7 @@
         
         <!-- Header Section -->
         <div class="mb-8 bg-primary-blue p-6 rounded-lg">
-            <h1 class="text-base font-bold mb-4" style="font-size: 40px !important; font-family: 'Archivo', sans-serif !important; color: #ec4899 !important;">{{ page_title }}</h1>
+            <h1 class="text-base font-bold mb-4" style="font-size: 40px !important; font-family: 'Archivo', sans-serif !important; color: white !important;">{{ page_title }}</h1>
             <p class="text-lg" style="color: white !important;">Update the details about your property below.</p>
         </div>
 
@@ -408,7 +408,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                         <div>
                             <label for="{{ form.annual_income.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-chart-line mr-2 text-gray-400"></i>Total Annual Income
+                                <i class="fas fa-chart-line mr-2 text-gray-400"></i>Total Annual Income <strong>(Excluding Income from this Property)</strong>
                                 <button type="button" onclick="showIncomeModal()" class="ml-2 text-pink-500 hover:text-pink-700 focus:outline-none">
                                     <i class="fas fa-info-circle text-sm"></i>
                                 </button>
