@@ -7,8 +7,8 @@ class PropertyAdmin(admin.ModelAdmin):
                    'purchase_price', 'weekly_rent', 'created_at']
     list_filter = ['property_type', 'ownership_status', 'epc_rating', 'has_mortgage', 'uk_resident', 'city', 'created_at']
     search_fields = ['property_name', 'city', 'postcode', 'owner__username', 'owner__email', 'street_name']
-    readonly_fields = ['slug', 'created_at', 'updated_at']
-    prepopulated_fields = {'slug': ('property_name', 'city')}
+    readonly_fields = ['created_at', 'updated_at']
+    # prepopulated_fields = {'slug': ('property_name', 'city')}
     
     fieldsets = (
         ('Basic Information', {
@@ -36,7 +36,7 @@ class PropertyAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
         ('Management', {
-            'fields': ('slug', 'created_at', 'updated_at'),
+            'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
