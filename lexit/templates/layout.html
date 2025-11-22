@@ -397,11 +397,11 @@
               {% if user.is_authenticated %}
                 <form method="post" action="{% url 'users:logout' %}">
                   {% csrf_token %}
-                  <button type="submit" class="text-primary-blue border border-text-primary-blue px-8 py-4 font-semibold hover:bg-dark-pink hover:text-white text-xl" style="border-radius: 50px;">Logout</button>
+                  <button type="submit" class="text-primary-blue border border-primary-blue px-8 py-4 font-semibold hover:bg-dark-pink hover:text-white text-xl" style="border-radius: 50px;">Logout</button>
                 </form>
               {% else %}
                 <a href="{% url 'users:login' %}" class="text-primary-blue font-semibold hover:bg-dark-pink hover:text-white text-xl">Login</a>
-                <a href="{% url 'users:register' %}" class="text-primary-blue border border-text-primary-blue px-8 py-4 font-semibold hover:bg-dark-pink hover:text-white text-xl" style="border-radius: 50px;">Try it FREE</a>
+                <a href="{% url 'users:register' %}" class="text-primary-blue border border-primary-blue px-8 py-4 font-semibold hover:bg-dark-pink hover:text-white text-xl" style="border-radius: 50px;">Try it FREE</a>
               {% endif %}
             </div>
           </div>
