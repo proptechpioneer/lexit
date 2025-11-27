@@ -396,6 +396,7 @@ def user_home(request):
         return render(request, 'user_home/dashboard_welcome.html', context)
 
 @login_required
+@login_required
 def upload_property(request):
     """View for uploading a new property"""
     if request.method == 'POST':
@@ -409,6 +410,9 @@ def upload_property(request):
             # FIXED CUSTOMER JOURNEY: Always redirect to property detail page after upload
             # This allows users to review their property details before returning to dashboard
             return redirect('user_home:property_detail', slug=property_obj.slug)
+        else:
+            # Display form errors to the user
+            messages.error(request, 'Please correct the errors below.')
     else:
         form = PropertyForm()
     

@@ -17,7 +17,24 @@
 
         <!-- Form Container -->
         <div class="bg-white rounded-lg shadow-md p-8">
-            <form method="post" enctype="multipart/form-data">
+            <!-- Display form-level errors -->
+            {% if form.non_field_errors %}
+                <div class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-circle text-red-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800">Form Errors</h3>
+                            <div class="mt-2 text-sm text-red-700">
+                                {{ form.non_field_errors }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <form method="post" enctype="multipart/form-data" id="propertyForm">
                 {% csrf_token %}
                 
                 <!-- Basic Information Section -->
@@ -420,10 +437,11 @@
                 <!-- Submit Button -->
                 <div class="flex justify-end mt-8">
                     <button type="submit" 
+                            id="analysePropertyBtn"
                             style="background-color: #ec4899 !important; color: white !important; padding: 12px 24px !important; border-radius: 8px !important; font-weight: 600 !important; transition: background-color 0.2s !important; border: none !important; cursor: pointer !important; font-size: 16px !important;"
                             onmouseover="this.style.backgroundColor='#db2777'" 
                             onmouseout="this.style.backgroundColor='#ec4899'">
-                        Analyse Property
+                        <i class="fas fa-chart-line mr-2"></i>Analyse Property
                     </button>
                 </div>
 
@@ -493,6 +511,29 @@
 </div>
 
 <script>
+// Form submission debugging
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('propertyForm');
+    const submitBtn = document.getElementById('analysePropertyBtn');
+    
+    if (form && submitBtn) {
+        console.log('Form and button found');
+        
+        submitBtn.addEventListener('click', function(e) {
+            console.log('Analyse Property button clicked');
+        });
+        
+        form.addEventListener('submit', function(e) {
+            console.log('Form submitting...');
+            console.log('Form action:', form.action);
+            console.log('Form method:', form.method);
+            console.log('Form enctype:', form.enctype);
+        });
+    } else {
+        console.error('Form or button not found!');
+    }
+});
+
 function showIncomeModal() {
     document.getElementById('incomeModal').classList.remove('hidden');
 }
