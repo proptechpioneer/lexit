@@ -1,0 +1,505 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    LEXIT | Analyse a Potential Investment
+{% endblock %}
+
+{% block content %}
+<!-- Main Container -->
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header Section -->
+        <div class="mb-8 bg-primary-blue p-6 rounded-lg">
+            <h1 class="text-base font-bold mb-4" style="font-size: 40px !important; font-family: 'Archivo', sans-serif !important; color: white !important;">Analyse a Potential Investment</h1>
+            <p class="text-lg" style="color: white !important;">Evaluate a new buy-to-let opportunity before making your investment decision.</p>
+        </div>
+
+        <!-- Form Container -->
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <form method="post" id="dealAnalysisForm">
+                {% csrf_token %}
+                
+                <!-- Basic Information Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-info-circle mr-2"></i>Basic Information
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-home mr-2 text-primary-blue"></i>Deal Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="deal_name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" placeholder="Enter deal name" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-building mr-2 text-gray-400"></i>Property Type <span class="text-red-500">*</span>
+                            </label>
+                            <select name="property_type" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" required>
+                                <option value="">---------</option>
+                                <option value="detached">Detached House</option>
+                                <option value="apartment">Apartment</option>
+                                <option value="semi">Semi-Detached House</option>
+                                <option value="terrace">Terraced House</option>
+                                <option value="end">End of Terrace</option>
+                                <option value="bungalow">Bungalow</option>
+                                <option value="cottage">Cottage</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-bed mr-2 text-gray-400"></i>Bedrooms <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" name="number_bedrooms" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" min="0" max="20" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-bath mr-2 text-gray-400"></i>Bathrooms <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" name="number_bathrooms" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" min="1" max="10" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-car mr-2 text-gray-400"></i>Parking Spaces
+                            </label>
+                            <input type="number" name="car_parking_spaces" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" min="0" max="10">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-leaf mr-2 text-gray-400"></i>EPC Rating
+                            </label>
+                            <select name="epc_rating" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors">
+                                <option value="">---------</option>
+                                <option value="A">A (Most Efficient)</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                                <option value="E">E</option>
+                                <option value="F">F</option>
+                                <option value="G">G (Least Efficient)</option>
+                            </select>
+                        </div>
+                        
+                        <input type="hidden" name="purchase_date" value="{{ today }}">
+                    </div>
+                </div>
+
+                <!-- Acquisition Costs Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-file-contract mr-2"></i>Acquisition Costs
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-gavel mr-2 text-gray-400"></i>Conveyancing Fees (£)
+                            </label>
+                            <input type="number" name="conveyancing_fees" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-university mr-2 text-gray-400"></i>Mortgage Arrangement Fees (£)
+                            </label>
+                            <input type="number" name="mortgage_arrangement_fees" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-clipboard-check mr-2 text-gray-400"></i>Survey Costs (£)
+                            </label>
+                            <input type="number" name="survey_costs" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Information Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-pound-sign mr-2"></i>Financial Information
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-pound-sign mr-2 text-gray-400"></i>Purchase Price <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" id="purchase_price" name="purchase_price" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-piggy-bank mr-2 text-gray-400"></i>Deposit
+                            </label>
+                            <input type="number" name="deposit_paid" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-chart-line mr-2 text-gray-400"></i>Current Market Value (£)
+                            </label>
+                            <input type="number" id="current_market_value" name="current_market_value" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-money-bill-wave mr-2 text-gray-400"></i>Expected Weekly Rent
+                            </label>
+                            <input type="number" name="weekly_rent" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ownership Information Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-key mr-2"></i>Ownership Information
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user mr-2 text-gray-400"></i>Ownership Status <span class="text-red-500">*</span>
+                            </label>
+                            <select name="ownership_status" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" required>
+                                <option value="">---------</option>
+                                <option value="individual">Individual</option>
+                                <option value="company">Limited Company</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mortgage Information Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-university mr-2"></i>Mortgage Information
+                        </h2>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="has_mortgage" name="has_mortgage" class="h-4 w-4 text-primary-blue focus:ring-primary-blue border-gray-300 rounded">
+                            <span class="ml-2 text-sm font-medium text-gray-700">This deal will involve a mortgage</span>
+                        </label>
+                    </div>
+                    
+                    <div id="mortgageFields" class="grid grid-cols-1 md:grid-cols-2 gap-4" style="display: none;">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-file-signature mr-2 text-gray-400"></i>Mortgage Type
+                            </label>
+                            <select name="mortgage_type" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors">
+                                <option value="">---------</option>
+                                <option value="repayment">Principal & Interest</option>
+                                <option value="interest_only">Interest Only</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-pound-sign mr-2 text-gray-400"></i>Mortgage Amount (£)
+                            </label>
+                            <input type="number" name="outstanding_mortgage_balance" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-percent mr-2 text-gray-400"></i>Interest Rate (%)
+                            </label>
+                            <input type="number" name="mortgage_interest_rate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" min="0" max="100" placeholder="0.00">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-calendar-alt mr-2 text-gray-400"></i>Term Length (years)
+                            </label>
+                            <input type="number" name="mortgage_years_remaining" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" min="0" placeholder="25">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Annual Property Expenses Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-receipt mr-2"></i>Annual Property Expenses
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user-tie mr-2 text-gray-400"></i>Annual Management Fees (%)
+                            </label>
+                            <input type="number" name="management_fees" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00" min="0" max="100">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-tools mr-2 text-gray-400"></i>Annual Service Charge (£)
+                            </label>
+                            <input type="number" name="service_charge" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-seedling mr-2 text-gray-400"></i>Annual Ground Rent (£)
+                            </label>
+                            <input type="number" name="ground_rent" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-file-invoice mr-2 text-gray-400"></i>Selective License Fee (£)
+                            </label>
+                            <input type="number" name="selective_license_fee" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-calculator mr-2 text-gray-400"></i>Annual Accounting Costs (£)
+                            </label>
+                            <input type="number" name="accounting_costs" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-bolt mr-2 text-gray-400"></i>Gas & Electrical Testing (£)
+                            </label>
+                            <input type="number" name="gas_electrical_testing" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-shield-alt mr-2 text-gray-400"></i>Landlord Insurance (£)
+                            </label>
+                            <input type="number" name="landlord_insurance" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                        
+                        <div>
+                            <label class="flex text-sm font-medium text-gray-700 mb-2 items-center">
+                                <i class="fas fa-coins mr-2 text-gray-400"></i>Other Annual Costs (£)
+                                <button type="button" onclick="showCostsModal()" class="ml-2 text-primary-blue hover:text-blue-700">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </label>
+                            <input type="number" name="other_costs" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Income & Tax Information Section -->
+                <div class="mb-8">
+                    <div class="bg-primary-blue p-4 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold mb-0" style="color: white !important;">
+                            <i class="fas fa-calculator mr-2"></i>Income & Tax Information
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="flex text-sm font-medium text-gray-700 mb-2 items-center">
+                                <i class="fas fa-wallet mr-2 text-gray-400"></i>Annual Income (£)
+                                <button type="button" onclick="showIncomeModal()" class="ml-2 text-primary-blue hover:text-blue-700">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </label>
+                            <p class="text-xs text-gray-500 mb-2">Enter your total annual income <strong>excluding income from this property</strong></p>
+                             <p class="text-xs text-gray-500 mb-2"><strong>If the property is being purchased in a company make the income 0</strong></p>
+                            <input type="number" name="annual_income" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
+                        </div>
+                        
+                        <div class="flex flex-col justify-center space-y-3">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="is_uk_resident" class="h-4 w-4 text-primary-blue focus:ring-primary-blue border-gray-300 rounded">
+                                <span class="ml-2 text-sm font-medium text-gray-700">UK Resident for Tax Purposes</span>
+                            </label>
+                            
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="has_personal_allowance" class="h-4 w-4 text-primary-blue focus:ring-primary-blue border-gray-300 rounded">
+                                <span class="ml-2 text-sm font-medium text-gray-700">Has Personal Tax Allowance Remaining</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end mt-8">
+                    <button type="submit" 
+                            id="analyseDealBtn"
+                            style="background-color: #ec4899 !important; color: white !important; padding: 12px 24px !important; border-radius: 8px !important; font-weight: 600 !important; transition: background-color 0.2s !important; border: none !important; cursor: pointer !important; font-size: 16px !important;"
+                            onmouseover="this.style.backgroundColor='#db2777'" 
+                            onmouseout="this.style.backgroundColor='#ec4899'">
+                        <i class="fas fa-chart-line mr-2"></i>Analyse This Deal
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Income Information Modal -->
+<div id="incomeModal" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Income Information</h3>
+                    <button type="button" onclick="hideIncomeModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="mt-2 px-1 py-3">
+                    <p class="text-sm text-gray-700 mb-3">
+                        Your annual income is used to calculate your tax liability on rental income.
+                    </p>
+                    <p class="text-sm text-gray-700 mb-3">
+                        This should be your total annual income from all sources (employment, self-employment, pensions, etc.) EXCLUDING rental income from this property.
+                    </p>
+                    <p class="text-sm text-gray-700">
+                        This helps determine which tax band your rental income will fall into.
+                    </p>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" onclick="hideIncomeModal()" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-blue text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Other Costs Information Modal -->
+<div id="costsModal" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Other Annual Costs</h3>
+                    <button type="button" onclick="hideCostsModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="mt-2 px-1 py-3">
+                    <p class="text-sm text-gray-700 mb-3">
+                        These are other costs associated with your potential Buy-to-Let, such as gas & electrical safety certificates, insurances, landlord registration schemes, gardening, etc.
+                    </p>
+                    <p class="text-sm text-gray-700 mb-3">
+                        Please use the total annual cost.
+                    </p>
+                    <p class="text-sm text-red-600 font-medium">
+                        Do not include maintenance costs - these are already accounted for in the assumptions.
+                    </p>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" onclick="hideCostsModal()" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-blue text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Show/hide mortgage fields based on checkbox
+    document.getElementById('has_mortgage').addEventListener('change', function() {
+        const mortgageFields = document.getElementById('mortgageFields');
+        if (this.checked) {
+            mortgageFields.style.display = 'grid';
+            calculateMortgageAmount();
+        } else {
+            mortgageFields.style.display = 'none';
+        }
+    });
+
+    // Auto-populate current market value with purchase price
+    document.getElementById('purchase_price').addEventListener('input', function() {
+        const purchasePrice = this.value;
+        const marketValueField = document.getElementById('current_market_value');
+        
+        // Always set market value to match purchase price
+        marketValueField.value = purchasePrice;
+        
+        // Also update mortgage calculation if mortgage is checked
+        if (document.getElementById('has_mortgage').checked) {
+            calculateMortgageAmount();
+        }
+    });
+
+    // Auto-calculate mortgage amount as purchase price - deposit
+    function calculateMortgageAmount() {
+        const purchasePrice = parseFloat(document.querySelector('input[name="purchase_price"]').value) || 0;
+        const deposit = parseFloat(document.querySelector('input[name="deposit_paid"]').value) || 0;
+        const mortgageAmount = purchasePrice - deposit;
+        
+        const mortgageAmountField = document.querySelector('input[name="outstanding_mortgage_balance"]');
+        if (mortgageAmountField && mortgageAmount > 0) {
+            mortgageAmountField.value = mortgageAmount.toFixed(2);
+        }
+    }
+
+    // Update mortgage amount when purchase price or deposit changes
+    document.querySelector('input[name="purchase_price"]').addEventListener('input', function() {
+        if (document.getElementById('has_mortgage').checked) {
+            calculateMortgageAmount();
+        }
+    });
+
+    document.querySelector('input[name="deposit_paid"]').addEventListener('input', function() {
+        if (document.getElementById('has_mortgage').checked) {
+            calculateMortgageAmount();
+        }
+    });
+});
+
+function showIncomeModal() {
+    document.getElementById('incomeModal').classList.remove('hidden');
+}
+
+function hideIncomeModal() {
+    document.getElementById('incomeModal').classList.add('hidden');
+}
+
+function showCostsModal() {
+    document.getElementById('costsModal').classList.remove('hidden');
+}
+
+function hideCostsModal() {
+    document.getElementById('costsModal').classList.add('hidden');
+}
+
+// Close modals when clicking outside of them
+document.getElementById('incomeModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        hideIncomeModal();
+    }
+});
+
+document.getElementById('costsModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        hideCostsModal();
+    }
+});
+</script>
+
+{% endblock %}

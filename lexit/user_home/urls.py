@@ -14,4 +14,8 @@ urlpatterns = [
     path('properties/<slug:slug>/', views.property_detail, name='property_detail'),
     path('properties/<slug:slug>/edit/', views.edit_property, name='edit_property'),
     # path('properties/<int:pk>/delete/', views.PropertyDeleteView.as_view(), name='delete_property'),
+    
+    # Deal analysis
+    path('analyse-deal/', views.analyse_deal, name='analyse_deal'),
+    path('email-deal-analysis-pdf/', views.email_deal_analysis_pdf, name='email_deal_analysis_pdf'),
 ]

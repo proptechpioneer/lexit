@@ -2,8 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.http import JsonResponse
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.conf import settings
 from decimal import Decimal
 from news.models import NewsArticle
+from datetime import date
+import json
 
 from .utils.corp_tax_calculator import corp_tax_calculator
 from .utils.offshore_tax_calculator import offshore_tax_calculator
@@ -421,6 +427,563 @@ def upload_property(request):
         'title': 'Add New Property',
     }
     return render(request, 'user_home/property_form.html', context)
+
+@login_required
+def analyse_deal(request):
+    """View for analysing a potential investment deal"""
+    if request.method == 'POST':
+        # Get form data
+        deal_data = {
+            'deal_name': request.POST.get('deal_name'),
+            'property_type': request.POST.get('property_type'),
+            'number_bedrooms': int(request.POST.get('number_bedrooms') or 0),
+            'number_bathrooms': int(request.POST.get('number_bathrooms') or 0),
+            'car_parking_spaces': int(request.POST.get('car_parking_spaces') or 0),
+            'epc_rating': request.POST.get('epc_rating'),
+            'purchase_price': Decimal(request.POST.get('purchase_price') or 0),
+            'deposit_paid': Decimal(request.POST.get('deposit_paid') or 0),
+            'current_market_value': Decimal(request.POST.get('current_market_value') or 0),
+            'weekly_rent': Decimal(request.POST.get('weekly_rent') or 0),
+            'ownership_status': request.POST.get('ownership_status'),
+            'has_mortgage': request.POST.get('has_mortgage') == 'on',
+            'mortgage_type': request.POST.get('mortgage_type'),
+            'outstanding_mortgage_balance': Decimal(request.POST.get('outstanding_mortgage_balance') or 0) or (Decimal(request.POST.get('purchase_price') or 0) - Decimal(request.POST.get('deposit_paid') or 0)),
+            'mortgage_interest_rate': Decimal(request.POST.get('mortgage_interest_rate') or 0),
+            'mortgage_years_remaining': int(request.POST.get('mortgage_years_remaining') or 0),
+            'conveyancing_fees': Decimal(request.POST.get('conveyancing_fees') or 0),
+            'mortgage_arrangement_fees': Decimal(request.POST.get('mortgage_arrangement_fees') or 0),
+            'survey_costs': Decimal(request.POST.get('survey_costs') or 0),
+            'management_fees': Decimal(request.POST.get('management_fees') or 0),
+            'service_charge': Decimal(request.POST.get('service_charge') or 0),
+            'ground_rent': Decimal(request.POST.get('ground_rent') or 0),
+            'selective_license_fee': Decimal(request.POST.get('selective_license_fee') or 0),
+            'accounting_costs': Decimal(request.POST.get('accounting_costs') or 0),
+            'gas_electrical_testing': Decimal(request.POST.get('gas_electrical_testing') or 0),
+            'landlord_insurance': Decimal(request.POST.get('landlord_insurance') or 0),
+            'other_costs': Decimal(request.POST.get('other_costs') or 0),
+            'annual_income': Decimal(request.POST.get('annual_income') or 0),
+            'is_uk_resident': request.POST.get('is_uk_resident') == 'on',
+            'has_personal_allowance': request.POST.get('has_personal_allowance') == 'on',
+        }
+        
+        # STANDARD METRICS
+        vacancy_rate = Decimal('0.0385')  # 3.85%
+        maintenance_rate = Decimal('0.035')  # 3.5%
+        
+        # Calculate rental income
+        annual_rent = deal_data['weekly_rent'] * 52
+        annual_vacancy_loss = annual_rent * vacancy_rate
+        annual_gross_rent = annual_rent - annual_vacancy_loss
+        monthly_gross_income = annual_gross_rent / 12
+        
+        # Calculate expenses
+        monthly_management = (annual_gross_rent * deal_data['management_fees'] / 100) / 12
+        monthly_service_charge = deal_data['service_charge'] / 12
+        monthly_ground_rent = deal_data['ground_rent'] / 12
+        monthly_selective_license = deal_data['selective_license_fee'] / 12
+        monthly_accounting = deal_data['accounting_costs'] / 12
+        monthly_gas_electrical = deal_data['gas_electrical_testing'] / 12
+        monthly_insurance = deal_data['landlord_insurance'] / 12
+        monthly_other = deal_data['other_costs'] / 12
+        monthly_maintenance = (annual_gross_rent * maintenance_rate) / 12
+        
+        total_monthly_expenses = (monthly_management + monthly_service_charge + 
+                                 monthly_ground_rent + monthly_selective_license +
+                                 monthly_accounting + monthly_gas_electrical +
+                                 monthly_insurance + monthly_other + monthly_maintenance)
+        
+        # Calculate mortgage payments
+        monthly_mortgage_payment = Decimal('0')
+        if deal_data['has_mortgage'] and deal_data['outstanding_mortgage_balance']:
+            monthly_rate = deal_data['mortgage_interest_rate'] / 100 / 12
+            num_payments = deal_data['mortgage_years_remaining'] * 12
+            
+            if deal_data['mortgage_type'] == 'repayment' and monthly_rate > 0:
+                monthly_mortgage_payment = (
+                    deal_data['outstanding_mortgage_balance'] * 
+                    (monthly_rate * (1 + monthly_rate) ** num_payments) / 
+                    ((1 + monthly_rate) ** num_payments - 1)
+                )
+            elif deal_data['mortgage_type'] == 'interest_only':
+                monthly_mortgage_payment = deal_data['outstanding_mortgage_balance'] * monthly_rate
+        
+        # Calculate net income
+        monthly_net_income = monthly_gross_income - total_monthly_expenses - monthly_mortgage_payment
+        annual_net_income = monthly_net_income * 12
+        
+        # Calculate total cash invested
+        acquisition_costs = (deal_data['conveyancing_fees'] + 
+                           deal_data['mortgage_arrangement_fees'] + 
+                           deal_data['survey_costs'])
+        total_cash_invested = deal_data['deposit_paid'] + acquisition_costs
+        
+        # Calculate ROI
+        roi = (annual_net_income / total_cash_invested * 100) if total_cash_invested > 0 else 0
+        
+        # ============================================
+        # ADVANCED METRICS (matching property_detail)
+        # ============================================
+        
+        # Constants for analysis
+        rental_growth_rate = Decimal('0.0371')  # 3.71% annual rental growth
+        inflation_rate = Decimal('0.028')  # 2.8% annual inflation
+        
+        # Calculate Gross Annual Yield
+        current_market_value = deal_data['current_market_value']
+        if current_market_value > 0:
+            gross_annual_yield = (annual_gross_rent / current_market_value) * 100
+        else:
+            gross_annual_yield = Decimal('0')
+        
+        # Calculate Net Annual Yield
+        monthly_operating_income = monthly_gross_income - total_monthly_expenses
+        if current_market_value > 0:
+            net_annual_yield = ((monthly_operating_income * 12) / current_market_value) * 100
+        else:
+            net_annual_yield = Decimal('0')
+        
+        # Calculate DSCR (Debt Service Coverage Ratio)
+        annual_operating_income = monthly_operating_income * 12
+        total_annual_mortgage_payments = monthly_mortgage_payment * 12
+        
+        if deal_data['has_mortgage'] and total_annual_mortgage_payments > 0:
+            dscr = annual_operating_income / total_annual_mortgage_payments
+        else:
+            dscr = Decimal('0')  # No mortgage = N/A
+        
+        # Calculate Opex Load (Operating Expense Load)
+        if annual_gross_rent > 0:
+            opex_load = ((total_monthly_expenses * 12) / annual_gross_rent) * 100
+        else:
+            opex_load = Decimal('0')
+        
+        # ============================================
+        # 10-YEAR CASHFLOW PROJECTION
+        # ============================================
+        
+        cashflow_projection = []
+        tax_loss_carryforward = Decimal('0')
+        
+        # Calculate fixed monthly payment for Principal & Interest mortgages
+        if deal_data['has_mortgage'] and deal_data['mortgage_type'] == 'repayment':
+            monthly_rate = deal_data['mortgage_interest_rate'] / 100 / 12
+            num_payments = deal_data['mortgage_years_remaining'] * 12
+            if monthly_rate > 0:
+                fixed_monthly_payment = (deal_data['outstanding_mortgage_balance'] * monthly_rate * ((1 + monthly_rate) ** num_payments)) / \
+                                      (((1 + monthly_rate) ** num_payments) - 1)
+            else:
+                fixed_monthly_payment = deal_data['outstanding_mortgage_balance'] / num_payments if num_payments > 0 else Decimal('0')
+        else:
+            fixed_monthly_payment = Decimal('0')
+        
+        remaining_balance = deal_data['outstanding_mortgage_balance'] if deal_data['has_mortgage'] else Decimal('0')
+        
+        for year in range(1, 11):  # Years 1-10
+            # Project rental income with growth
+            projected_annual_rent = annual_rent * ((1 + rental_growth_rate) ** (year - 1))
+            projected_vacancy_loss = projected_annual_rent * vacancy_rate
+            projected_gross_rent = projected_annual_rent - projected_vacancy_loss
+            
+            # Project expenses with inflation
+            projected_management = (projected_gross_rent * deal_data['management_fees'] / 100)
+            projected_service_charge = (deal_data['service_charge']) * ((1 + inflation_rate) ** (year - 1))
+            projected_ground_rent = (deal_data['ground_rent']) * ((1 + inflation_rate) ** (year - 1))
+            projected_selective_license = (deal_data['selective_license_fee']) * ((1 + inflation_rate) ** (year - 1))
+            projected_accounting = (deal_data['accounting_costs']) * ((1 + inflation_rate) ** (year - 1))
+            projected_gas_electrical = (deal_data['gas_electrical_testing']) * ((1 + inflation_rate) ** (year - 1))
+            projected_insurance = (deal_data['landlord_insurance']) * ((1 + inflation_rate) ** (year - 1))
+            projected_other = (deal_data['other_costs']) * ((1 + inflation_rate) ** (year - 1))
+            projected_maintenance = (projected_gross_rent * maintenance_rate)
+            
+            projected_total_expenses = (projected_management + projected_service_charge + 
+                                       projected_ground_rent + projected_selective_license +
+                                       projected_accounting + projected_gas_electrical +
+                                       projected_insurance + projected_other + projected_maintenance)
+            
+            # Calculate mortgage payments
+            if deal_data['has_mortgage']:
+                if deal_data['mortgage_type'] == 'repayment':
+                    # Calculate interest on current balance
+                    annual_interest = remaining_balance * (deal_data['mortgage_interest_rate'] / 100)
+                    annual_interest_payment = annual_interest
+                    
+                    # Total annual payment
+                    annual_total_mortgage_payment = fixed_monthly_payment * 12
+                    
+                    # Principal payment is total - interest
+                    annual_principal_payment = annual_total_mortgage_payment - annual_interest_payment
+                    
+                    # Update remaining balance
+                    remaining_balance = max(Decimal('0'), remaining_balance - annual_principal_payment)
+                else:  # interest_only
+                    annual_interest_payment = deal_data['outstanding_mortgage_balance'] * (deal_data['mortgage_interest_rate'] / 100)
+                    annual_principal_payment = Decimal('0')
+                    annual_total_mortgage_payment = annual_interest_payment
+            else:
+                annual_interest_payment = Decimal('0')
+                annual_principal_payment = Decimal('0')
+                annual_total_mortgage_payment = Decimal('0')
+            
+            # Net Operating Income
+            net_operating_income = projected_gross_rent - projected_total_expenses
+            net_cash_flow_before_tax = net_operating_income - annual_total_mortgage_payment
+            
+            # ============================================
+            # TAX CALCULATIONS
+            # ============================================
+            
+            # Taxable profit for company (interest is deductible, principal is not)
+            company_taxable_profit = net_operating_income - annual_interest_payment
+            corporate_tax = corp_tax_calculator.calculate_corporation_tax(company_taxable_profit)
+            
+            # Tax payable if owned individually (onshore)
+            # Apply inflation growth to personal income
+            if year == 1:
+                personal_income = deal_data['annual_income']
+            else:
+                personal_income = deal_data['annual_income'] * ((1 + inflation_rate) ** (year - 1))
+            
+            rental_profit = net_operating_income  # Gross rental income - total operating expenses
+            
+            # Tax without property
+            tax_result_without = tax_calculator.calculate_income_tax(personal_income)
+            notional_income_tax_without_property = tax_result_without['tax_payable']
+            
+            # Tax with property (personal income + rental profit)
+            total_income_with_property = personal_income + rental_profit
+            tax_result_with = tax_calculator.calculate_income_tax(total_income_with_property)
+            tax_with_property_before_relief = tax_result_with['tax_payable']
+            
+            # Apply 20% mortgage interest relief
+            interest_rate_relief = annual_interest_payment * Decimal('0.20')
+            tax_with_property_after_relief = max(0, tax_with_property_before_relief - interest_rate_relief)
+            
+            # Final tax payable = tax with property - tax without property
+            tax_payable_on_shore_individual = tax_with_property_after_relief - notional_income_tax_without_property
+            
+            # Debug output for Year 1
+            if year == 1:
+                print(f"\n=== TAX CALCULATION DEBUG Year {year} ===")
+                print(f"Deal: {deal_data['deal_name']}")
+                print(f"Ownership status: {deal_data['ownership_status']}")
+                print(f"Personal income: £{personal_income:,.2f}")
+                print(f"Net operating income (rental profit): £{net_operating_income:,.2f}")
+                print(f"Annual interest payment: £{annual_interest_payment:,.2f}")
+                print(f"\nTax calculation:")
+                print(f"  Tax without property: £{notional_income_tax_without_property:,.2f}")
+                print(f"  Total income with property: £{total_income_with_property:,.2f}")
+                print(f"  Tax with property before relief: £{tax_with_property_before_relief:,.2f}")
+                print(f"  Interest rate relief (20%): £{interest_rate_relief:,.2f}")
+                print(f"  Tax with property after relief: £{tax_with_property_after_relief:,.2f}")
+                print(f"  Tax payable onshore individual: £{tax_payable_on_shore_individual:,.2f}")
+                print(f"=== END TAX DEBUG ===\n")
+            
+            # Tax payable if owned by foreign individual (offshore)
+            if year == 1:
+                personal_income_offshore = deal_data['annual_income']
+            else:
+                personal_income_offshore = deal_data['annual_income'] * ((1 + inflation_rate) ** (year - 1))
+            
+            rental_profit_offshore = net_operating_income
+            
+            # Tax without property (offshore rates)
+            notional_income_tax_without_property_offshore = offshore_tax_calculator.calculate_offshore_tax(personal_income_offshore)['tax_payable']
+            
+            # Tax with property (personal income + rental profit)
+            total_income_with_property_offshore = personal_income_offshore + rental_profit_offshore
+            tax_with_property_before_relief_offshore = offshore_tax_calculator.calculate_offshore_tax(total_income_with_property_offshore)['tax_payable']
+            
+            # Apply 20% mortgage interest relief
+            interest_rate_relief_offshore = annual_interest_payment * Decimal('0.20')
+            tax_with_property_after_relief_offshore = max(0, tax_with_property_before_relief_offshore - interest_rate_relief_offshore)
+            
+            # Final tax payable = tax with property - tax without property
+            tax_payable_offshore_individual = tax_with_property_after_relief_offshore - notional_income_tax_without_property_offshore
+            
+            # Determine applicable tax before carryforward adjustments
+            if deal_data['ownership_status'] == 'company':
+                gross_applicable_tax = corporate_tax
+            elif deal_data['ownership_status'] == 'individual':
+                gross_applicable_tax = tax_payable_on_shore_individual
+            elif deal_data['ownership_status'] == 'individual_offshore':
+                gross_applicable_tax = tax_payable_offshore_individual
+            else:
+                gross_applicable_tax = Decimal('0')
+            
+            # Debug output for Year 1
+            if year == 1:
+                print(f"\n=== APPLICABLE TAX DETERMINATION Year {year} ===")
+                print(f"Ownership status: {deal_data['ownership_status']}")
+                print(f"Corporate tax: £{corporate_tax:,.2f}")
+                print(f"Tax payable onshore individual: £{tax_payable_on_shore_individual:,.2f}")
+                print(f"Tax payable offshore individual: £{tax_payable_offshore_individual:,.2f}")
+                print(f"Gross applicable tax (selected): £{gross_applicable_tax:,.2f}")
+                print(f"=== END APPLICABLE TAX DEBUG ===\n")
+            
+            # Apply tax corkscrew logic (loss carryforward)
+            if gross_applicable_tax < 0:
+                # Tax loss - add to carryforward balance and set current tax to 0
+                tax_loss_carryforward += abs(gross_applicable_tax)
+                applicable_tax = Decimal('0')
+                tax_loss_utilized = Decimal('0')
+            elif gross_applicable_tax > 0 and tax_loss_carryforward > 0:
+                # Positive tax - use carryforward to offset
+                if tax_loss_carryforward >= gross_applicable_tax:
+                    # Sufficient carryforward to cover all tax
+                    tax_loss_utilized = gross_applicable_tax
+                    applicable_tax = Decimal('0')
+                    tax_loss_carryforward -= gross_applicable_tax
+                else:
+                    # Partial offset - use all remaining carryforward
+                    tax_loss_utilized = tax_loss_carryforward
+                    applicable_tax = gross_applicable_tax - tax_loss_carryforward
+                    tax_loss_carryforward = Decimal('0')
+            else:
+                # Positive tax with no carryforward
+                applicable_tax = gross_applicable_tax
+                tax_loss_utilized = Decimal('0')
+            
+            # Calculate net cash flow after tax
+            net_cash_flow_after_tax = net_cash_flow_before_tax - applicable_tax
+            
+            # Net income for tax purposes (excluding principal payments)
+            net_income_for_tax = net_operating_income - annual_interest_payment
+            
+            cashflow_projection.append({
+                'year': year,
+                'gross_rent': projected_gross_rent,
+                'total_expenses': projected_total_expenses,
+                'net_operating_income': net_operating_income,
+                'annual_interest_payment': annual_interest_payment,
+                'annual_principal_payment': annual_principal_payment,
+                'annual_total_mortgage_payment': annual_total_mortgage_payment,
+                'net_cash_flow': net_cash_flow_before_tax,
+                'net_income_for_tax': net_income_for_tax,
+                'remaining_mortgage_balance': remaining_balance,
+                'corporate_tax': corporate_tax,
+                'tax_payable_on_shore_individual': tax_payable_on_shore_individual,
+                'tax_payable_offshore_individual': tax_payable_offshore_individual,
+                'gross_applicable_tax': gross_applicable_tax,
+                'tax_loss_carryforward_beginning': tax_loss_carryforward + tax_loss_utilized - (abs(gross_applicable_tax) if gross_applicable_tax < 0 else 0),
+                'tax_loss_generated': abs(gross_applicable_tax) if gross_applicable_tax < 0 else Decimal('0'),
+                'tax_loss_utilized': tax_loss_utilized,
+                'tax_loss_carryforward_ending': tax_loss_carryforward,
+                'applicable_tax': applicable_tax,
+                'net_cash_flow_after_tax': net_cash_flow_after_tax,
+            })
+        
+        # ============================================
+        # NRAT CALCULATION
+        # ============================================
+        
+        # Get Year 1 Net Cash Flow After Tax
+        if len(cashflow_projection) > 0:
+            year_1_net_return_after_tax = cashflow_projection[0]['net_cash_flow_after_tax']
+            
+            # Determine buyer type for SDLT calculation
+            if deal_data['ownership_status'] == 'uk_limited_company':
+                buyer_type = 'uk_company'
+            elif deal_data['ownership_status'] in ['individual_onshore', 'individual_onshore_notaxfree']:
+                buyer_type = 'uk_individual'
+            elif deal_data['ownership_status'] == 'individual_offshore':
+                buyer_type = 'non_uk_individual'
+            else:
+                buyer_type = 'uk_individual'
+            
+            # Calculate SDLT (always BTL)
+            purchase_date = date.today()  # Use current date for deal analysis
+            
+            sdlt_result = sdlt_calculator.calculate_sdlt(
+                purchase_date=purchase_date,
+                purchase_price=int(deal_data['purchase_price']),
+                buyer_type=buyer_type,
+                is_btl=True
+            )
+            
+            sdlt_amount = Decimal(str(sdlt_result.get('sdlt', 0)))
+            
+            # Total cash deployed = deposit + SDLT + acquisition costs
+            total_cash_deployed = deal_data['deposit_paid'] + sdlt_amount + acquisition_costs
+            
+            # Calculate NRAT
+            if total_cash_deployed > 0:
+                nrat = (year_1_net_return_after_tax / total_cash_deployed) * 100
+            else:
+                nrat = Decimal('0')
+        else:
+            year_1_net_return_after_tax = Decimal('0')
+            sdlt_amount = Decimal('0')
+            total_cash_deployed = deal_data['deposit_paid'] + acquisition_costs
+            nrat = Decimal('0')
+        
+        # Calculate 10-year total
+        total_net_income_after_tax = sum(projection['net_cash_flow_after_tax'] for projection in cashflow_projection)
+        
+        # ============================================
+        # CAPITAL GROWTH CALCULATIONS
+        # ============================================
+        
+        # Setup for capital growth calculations
+        current_value = deal_data['current_market_value']
+        agency_fees_rate = Decimal('0.015')  # 1.5%
+        legal_fees_rate = Decimal('1500')
+        
+        # EPC upgrade costs (if needed)
+        epc_rating = deal_data.get('epc_rating', 'C')
+        if epc_rating and epc_rating not in ['A', 'B', 'C']:
+            epc_upgrade_cost = Decimal('5000')
+        else:
+            epc_upgrade_cost = Decimal('0')
+        
+        # Calculate total principal paid over 10 years (for notional equity)
+        if deal_data['has_mortgage']:
+            total_principal_paid = sum(projection['annual_principal_payment'] for projection in cashflow_projection)
+        else:
+            total_principal_paid = Decimal('0')
+        
+        # Calculate notional equity
+        notional_equity = current_value - deal_data['outstanding_mortgage_balance'] + total_principal_paid
+        
+        # --- SCENARIO 1: 0% Growth ---
+        future_value_no_growth = current_value
+        agency_fees_no_growth = future_value_no_growth * agency_fees_rate
+        total_selling_costs_no_growth = agency_fees_no_growth + legal_fees_rate + epc_upgrade_cost
+        net_capital_growth_no_growth = -total_selling_costs_no_growth
+        
+        # Calculate CGT for 0% growth
+        if net_capital_growth_no_growth <= 0:
+            cgt_payable_no_growth = Decimal('0')
+            net_capital_growth_after_cgt_no_growth = net_capital_growth_no_growth
+        else:
+            if deal_data['ownership_status'] == 'company':
+                cgt_payable_no_growth = corp_tax_calculator.calculate_corporation_tax(net_capital_growth_no_growth)
+            else:
+                year_10_cashflow = cashflow_projection[9]['net_cash_flow_after_tax'] if len(cashflow_projection) >= 10 else Decimal('0')
+                total_gains_and_income = net_capital_growth_no_growth + year_10_cashflow
+                cgt_rate = Decimal('0.24') if total_gains_and_income > 50270 else Decimal('0.18')
+                cgt_payable_no_growth = net_capital_growth_no_growth * cgt_rate
+            net_capital_growth_after_cgt_no_growth = net_capital_growth_no_growth - cgt_payable_no_growth
+        
+        no_growth_value = net_capital_growth_after_cgt_no_growth
+        no_growth_capital_growth_display = no_growth_value
+        
+        # Calculate return rates for 0% growth
+        if notional_equity and notional_equity != 0:
+            no_growth_annual_capital_return_rate = float((float(no_growth_value) / float(notional_equity)) / 10 * 100)
+            no_growth_total_return = float(total_net_income_after_tax + no_growth_value)
+            no_growth_annual_return_rate = float((no_growth_total_return / float(notional_equity)) / 10 * 100)
+        else:
+            no_growth_annual_capital_return_rate = 0
+            no_growth_annual_return_rate = 0
+        
+        # --- SCENARIO 2: 1.7% Growth ---
+        future_value_moderate_growth = current_value * ((Decimal('1.017')) ** 10)
+        agency_fees_moderate_growth = future_value_moderate_growth * agency_fees_rate
+        total_selling_costs_moderate_growth = agency_fees_moderate_growth + legal_fees_rate + epc_upgrade_cost
+        net_capital_growth_moderate = future_value_moderate_growth - current_value - total_selling_costs_moderate_growth
+        
+        # Calculate CGT for 1.7% growth
+        if net_capital_growth_moderate <= 0:
+            cgt_payable_moderate_growth = Decimal('0')
+            net_capital_growth_after_cgt_moderate = net_capital_growth_moderate
+        else:
+            if deal_data['ownership_status'] == 'company':
+                cgt_payable_moderate_growth = corp_tax_calculator.calculate_corporation_tax(net_capital_growth_moderate)
+            else:
+                year_10_cashflow = cashflow_projection[9]['net_cash_flow_after_tax'] if len(cashflow_projection) >= 10 else Decimal('0')
+                total_gains_and_income = net_capital_growth_moderate + year_10_cashflow
+                cgt_rate = Decimal('0.24') if total_gains_and_income > 50270 else Decimal('0.18')
+                cgt_payable_moderate_growth = net_capital_growth_moderate * cgt_rate
+            net_capital_growth_after_cgt_moderate = net_capital_growth_moderate - cgt_payable_moderate_growth
+        
+        moderate_growth_value = net_capital_growth_after_cgt_moderate
+        moderate_growth_capital_growth_display = moderate_growth_value
+        
+        # Calculate return rates for 1.7% growth
+        if notional_equity and notional_equity != 0:
+            moderate_growth_annual_capital_return_rate = float((float(moderate_growth_value) / float(notional_equity)) / 10 * 100)
+            moderate_growth_total_return = float(total_net_income_after_tax + moderate_growth_value)
+            moderate_growth_annual_return_rate = float((moderate_growth_total_return / float(notional_equity)) / 10 * 100)
+        else:
+            moderate_growth_annual_capital_return_rate = 0
+            moderate_growth_annual_return_rate = 0
+        
+        # --- SCENARIO 3: 3.4% Growth ---
+        future_value_average_growth = current_value * ((Decimal('1.034')) ** 10)
+        agency_fees_average_growth = future_value_average_growth * agency_fees_rate
+        total_selling_costs_average_growth = agency_fees_average_growth + legal_fees_rate + epc_upgrade_cost
+        net_capital_growth_average = future_value_average_growth - current_value - total_selling_costs_average_growth
+        
+        # Calculate CGT for 3.4% growth
+        if net_capital_growth_average <= 0:
+            cgt_payable_average_growth = Decimal('0')
+            net_capital_growth_after_cgt_average = net_capital_growth_average
+        else:
+            if deal_data['ownership_status'] == 'company':
+                cgt_payable_average_growth = corp_tax_calculator.calculate_corporation_tax(net_capital_growth_average)
+            else:
+                year_10_cashflow = cashflow_projection[9]['net_cash_flow_after_tax'] if len(cashflow_projection) >= 10 else Decimal('0')
+                total_gains_and_income = net_capital_growth_average + year_10_cashflow
+                cgt_rate = Decimal('0.24') if total_gains_and_income > 50270 else Decimal('0.18')
+                cgt_payable_average_growth = net_capital_growth_average * cgt_rate
+            net_capital_growth_after_cgt_average = net_capital_growth_average - cgt_payable_average_growth
+        
+        average_growth_value = net_capital_growth_after_cgt_average
+        average_growth_capital_growth_display = average_growth_value
+        
+        # Calculate return rates for 3.4% growth
+        if notional_equity and notional_equity != 0:
+            average_growth_annual_capital_return_rate = float((float(average_growth_value) / float(notional_equity)) / 10 * 100)
+            average_growth_total_return = float(total_net_income_after_tax + average_growth_value)
+            average_growth_annual_return_rate = float((average_growth_total_return / float(notional_equity)) / 10 * 100)
+        else:
+            average_growth_annual_capital_return_rate = 0
+            average_growth_annual_return_rate = 0
+        
+        context = {
+            'deal_data': deal_data,
+            'monthly_gross_income': monthly_gross_income,
+            'total_monthly_expenses': total_monthly_expenses,
+            'monthly_mortgage_payment': monthly_mortgage_payment,
+            'monthly_net_income': monthly_net_income,
+            'annual_net_income': annual_net_income,
+            'total_cash_invested': total_cash_invested,
+            'roi': roi,
+            'vacancy_rate': vacancy_rate * 100,
+            'maintenance_rate': maintenance_rate * 100,
+            # Advanced metrics
+            'gross_annual_yield': gross_annual_yield,
+            'net_annual_yield': net_annual_yield,
+            'dscr': dscr,
+            'opex_load': opex_load,
+            'cashflow_projection': cashflow_projection,
+            'total_net_income_after_tax': total_net_income_after_tax,
+            'nrat': nrat,
+            'sdlt_amount': sdlt_amount,
+            'total_cash_deployed': total_cash_deployed,
+            'year_1_net_return_after_tax': year_1_net_return_after_tax,
+            # Capital growth variables
+            'no_growth_value': no_growth_value,
+            'moderate_growth_value': moderate_growth_value,
+            'average_growth_value': average_growth_value,
+            'no_growth_capital_growth_display': no_growth_capital_growth_display,
+            'moderate_growth_capital_growth_display': moderate_growth_capital_growth_display,
+            'average_growth_capital_growth_display': average_growth_capital_growth_display,
+            'notional_equity': notional_equity,
+            'no_growth_annual_capital_return_rate': no_growth_annual_capital_return_rate,
+            'moderate_growth_annual_capital_return_rate': moderate_growth_annual_capital_return_rate,
+            'average_growth_annual_capital_return_rate': average_growth_annual_capital_return_rate,
+            'no_growth_annual_return_rate': no_growth_annual_return_rate,
+            'moderate_growth_annual_return_rate': moderate_growth_annual_return_rate,
+            'average_growth_annual_return_rate': average_growth_annual_return_rate,
+        }
+        return render(request, 'user_home/deal_analysis_result.html', context)
+    
+    context = {
+        'title': 'Analyse a Potential Investment',
+        'today': date.today().strftime('%Y-%m-%d'),
+    }
+    return render(request, 'user_home/analyse_deal.html', context)
 
 @login_required
 def property_detail(request, slug):
@@ -1260,3 +1823,110 @@ def profile_overview(request):
         'page_title': 'Profile Overview',
     }
     return render(request, 'user_home/profile_overview.html', context)
+
+@login_required
+def email_deal_analysis_pdf(request):
+    """Send deal analysis report as PDF via email"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+    
+    try:
+        # Get the deal data from session (stored during analyze_deal POST)
+        # For now, we'll send a simple email notification
+        # TODO: Implement actual PDF generation using libraries like WeasyPrint or ReportLab
+        
+        user_email = request.user.email
+        if not user_email:
+            return JsonResponse({'success': False, 'error': 'No email address found for your account'}, status=400)
+        
+        # Parse request body
+        try:
+            data = json.loads(request.body)
+            deal_name = data.get('deal_name', 'Investment Deal')
+        except:
+            deal_name = 'Investment Deal'
+        
+        # Email subject and message
+        subject = f'LEXIT - Deal Analysis Report: {deal_name}'
+        
+        # Create email body (HTML)
+        html_message = f"""
+        <html>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <div style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                        <h1 style="color: white; margin: 0; font-size: 28px;">LEXIT</h1>
+                        <p style="color: #e0e7ff; margin: 10px 0 0 0;">Property Investment Analysis</p>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 30px; border-radius: 0 0 10px 10px;">
+                        <h2 style="color: #1e40af; margin-top: 0;">Deal Analysis Report</h2>
+                        
+                        <p>Dear {request.user.first_name or request.user.username},</p>
+                        
+                        <p>Your deal analysis report for <strong>{deal_name}</strong> has been generated.</p>
+                        
+                        <div style="background: white; padding: 20px; border-left: 4px solid #1e40af; margin: 20px 0;">
+                            <p style="margin: 0;"><strong>Note:</strong> PDF generation is currently being implemented. For now, please return to the dashboard to view your complete analysis online.</p>
+                        </div>
+                        
+                        <p>To view your full analysis with all charts and metrics, please log in to your LEXIT dashboard:</p>
+                        
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="{settings.SITE_URL if hasattr(settings, 'SITE_URL') else 'http://127.0.0.1:8000'}/dashboard/" 
+                               style="background: #1e40af; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                                View Dashboard
+                            </a>
+                        </div>
+                        
+                        <p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 14px;">
+                            This is an automated message from LEXIT. If you have any questions, please contact our support team.
+                        </p>
+                    </div>
+                </div>
+            </body>
+        </html>
+        """
+        
+        # Plain text version
+        text_message = f"""
+        LEXIT - Deal Analysis Report
+        
+        Dear {request.user.first_name or request.user.username},
+        
+        Your deal analysis report for {deal_name} has been generated.
+        
+        Note: PDF generation is currently being implemented. For now, please return to the dashboard to view your complete analysis online.
+        
+        To view your full analysis, please visit your LEXIT dashboard.
+        
+        Best regards,
+        The LEXIT Team
+        """
+        
+        # Create email
+        email = EmailMessage(
+            subject=subject,
+            body=text_message,
+            from_email=settings.DEFAULT_FROM_EMAIL if hasattr(settings, 'DEFAULT_FROM_EMAIL') else 'noreply@lexit.com',
+            to=[user_email],
+        )
+        
+        # Attach HTML version
+        email.content_subtype = 'html'
+        email.body = html_message
+        
+        # Send email
+        email.send(fail_silently=False)
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Report sent to {user_email}'
+        })
+        
+    except Exception as e:
+        print(f"Error sending email: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': f'Failed to send email: {str(e)}'
+        }, status=500)
