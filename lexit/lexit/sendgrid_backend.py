@@ -5,9 +5,10 @@ This custom backend uses SendGrid's API instead of SMTP, which works better with
 
 from django.core.mail.backends.base import BaseEmailBackend
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, ClickTracking, OpenTracking, TrackingSettings
+from sendgrid.helpers.mail import Mail, ClickTracking, OpenTracking, TrackingSettings, Attachment, FileContent, FileName, FileType, Disposition
 from django.conf import settings
 import logging
+import base64
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +75,29 @@ class SendGridBackend(BaseEmailBackend):
             tracking_settings = TrackingSettings(click_tracking=click_tracking, open_tracking=open_tracking)
             
             mail.tracking_settings = tracking_settings
+            
+            # Add attachments if present
+            if hasattr(email_message, 'attachments') and email_message.attachments:
+                print(f"DEBUG: Adding {len(email_message.attachments)} attachment(s)")
+                for attachment_data in email_message.attachments:
+                    if len(attachment_data) == 3:
+                        filename, content, mimetype = attachment_data
+                        
+                        # Encode content to base64
+                        if isinstance(content, str):
+                            encoded_content = base64.b64encode(content.encode()).decode()
+                        else:
+                            encoded_content = base64.b64encode(content).decode()
+                        
+                        # Create SendGrid attachment
+                        attachment = Attachment()
+                        attachment.file_content = FileContent(encoded_content)
+                        attachment.file_name = FileName(filename)
+                        attachment.file_type = FileType(mimetype)
+                        attachment.disposition = Disposition('attachment')
+                        
+                        mail.add_attachment(attachment)
+                        print(f"DEBUG: Added attachment: {filename} ({mimetype})")
             
             print(f"DEBUG: Mail object created successfully with click tracking disabled")
             
