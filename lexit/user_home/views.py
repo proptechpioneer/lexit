@@ -2058,10 +2058,10 @@ def email_deal_analysis_pdf(request):
         for year_data in analysis_data['cashflow_projection']:
             cashflow_data.append([
                 str(year_data['year']),
-                f"£{year_data['projected_gross_rent']:,.0f}",
-                f"£{year_data['projected_total_expenses']:,.0f}",
+                f"£{year_data['gross_rent']:,.0f}",
+                f"£{year_data['total_expenses']:,.0f}",
                 f"£{year_data['annual_total_mortgage_payment']:,.0f}",
-                f"£{year_data['tax_payable']:,.0f}",
+                f"£{year_data['applicable_tax']:,.0f}",
                 f"£{year_data['net_cash_flow_after_tax']:,.0f}",
             ])
         
