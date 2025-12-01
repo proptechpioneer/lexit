@@ -1916,8 +1916,9 @@ def email_deal_analysis_pdf(request):
     try:
         from django.core.mail import EmailMultiAlternatives
         from django.template.loader import render_to_string
-        from playwright.sync_api import sync_playwright
+        from xhtml2pdf import pisa
         from datetime import datetime
+        import io
         
         # Get the deal analysis data from session
         analysis_data = request.session.get('deal_analysis_context')
@@ -1935,32 +1936,22 @@ def email_deal_analysis_pdf(request):
         except:
             deal_name = analysis_data['deal_data'].get('deal_name', 'Investment Deal')
         
-        # Render the HTML template with the same context as the screen view (minus navigation/buttons)
+        # Render the HTML template with the same context as the screen view
         html_content = render_to_string('user_home/deal_analysis_pdf.html', {
             **analysis_data,
             'deal_name': deal_name,
             'user': request.user,
         })
         
-        # Generate PDF using Playwright (renders exact HTML/CSS/JS including Chart.js)
-        pdf_bytes = None
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
-            
-            # Set content and wait for page to fully load (including charts)
-            page.set_content(html_content)
-            page.wait_for_load_state('networkidle')
-            page.wait_for_timeout(2000)  # Extra wait for Chart.js to render gauges
-            
-            # Generate PDF with proper formatting
-            pdf_bytes = page.pdf(
-                format='A4',
-                print_background=True,
-                margin={'top': '20px', 'right': '20px', 'bottom': '20px', 'left': '20px'}
-            )
-            
-            browser.close()
+        # Generate PDF using xhtml2pdf
+        pdf_file = io.BytesIO()
+        pisa_status = pisa.CreatePDF(html_content, dest=pdf_file)
+        
+        if pisa_status.err:
+            return JsonResponse({'success': False, 'error': 'PDF generation failed'}, status=500)
+        
+        pdf_file.seek(0)
+        pdf_bytes = pdf_file.read()
         
         if not pdf_bytes:
             return JsonResponse({'success': False, 'error': 'Failed to generate PDF'}, status=500)

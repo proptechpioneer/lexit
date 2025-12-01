@@ -5,10 +5,6 @@ set -o errexit
 echo "Installing dependencies..."
 pip install -r requirements.txt
 
-echo "Installing Playwright browsers..."
-playwright install chromium
-playwright install-deps chromium
-
 echo "=== STATIC FILES DEBUGGING ==="
 echo "Checking source static directory..."
 ls -la static/ 2>/dev/null || echo "No static directory found"
