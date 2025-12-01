@@ -940,6 +940,22 @@ def analyse_deal(request):
             average_growth_annual_capital_return_rate = 0
             average_growth_annual_return_rate = 0
         
+        # Get additional capital growth data for PDF
+        no_growth_future_value = current_value
+        moderate_growth_future_value = current_value * ((1 + Decimal('0.017')) ** 10)
+        average_growth_future_value = current_value * ((1 + Decimal('0.034')) ** 10)
+        
+        # Calculate net gains (value after selling costs)
+        agency_fees_rate = Decimal('0.015')
+        no_growth_net_gain = no_growth_value
+        moderate_growth_net_gain = moderate_growth_value  
+        average_growth_net_gain = average_growth_value
+        
+        # Risk analysis values
+        tenant_dispute_total = (monthly_mortgage_payment * 18) + 1500
+        tenant_dispute_monthly = tenant_dispute_total / 18
+        rrb_rent_recovery = deal_data['weekly_rent'] * 104
+        
         context = {
             'deal_data': deal_data,
             'monthly_gross_income': monthly_gross_income,
@@ -962,6 +978,7 @@ def analyse_deal(request):
             'sdlt_amount': sdlt_amount,
             'total_cash_deployed': total_cash_deployed,
             'year_1_net_return_after_tax': year_1_net_return_after_tax,
+            'acquisition_costs': acquisition_costs,
             # Capital growth variables
             'no_growth_value': no_growth_value,
             'moderate_growth_value': moderate_growth_value,
@@ -976,7 +993,72 @@ def analyse_deal(request):
             'no_growth_annual_return_rate': no_growth_annual_return_rate,
             'moderate_growth_annual_return_rate': moderate_growth_annual_return_rate,
             'average_growth_annual_return_rate': average_growth_annual_return_rate,
+            # PDF-specific data
+            'no_growth_future_value': no_growth_future_value,
+            'moderate_growth_future_value': moderate_growth_future_value,
+            'average_growth_future_value': average_growth_future_value,
+            'no_growth_net_gain': no_growth_net_gain,
+            'moderate_growth_net_gain': moderate_growth_net_gain,
+            'average_growth_net_gain': average_growth_net_gain,
+            'no_growth_capital_return': no_growth_annual_capital_return_rate,
+            'moderate_growth_capital_return': moderate_growth_annual_capital_return_rate,
+            'average_growth_capital_return': average_growth_annual_capital_return_rate,
+            'no_growth_total_return': no_growth_annual_return_rate,
+            'moderate_growth_total_return': moderate_growth_annual_return_rate,
+            'average_growth_total_return': average_growth_annual_return_rate,
+            'ten_year_total': total_net_income_after_tax,
+            'tenant_dispute_total': tenant_dispute_total,
+            'tenant_dispute_monthly': tenant_dispute_monthly,
+            'rrb_rent_recovery': rrb_rent_recovery,
         }
+        
+        # Store analysis data in session for PDF generation
+        request.session['deal_analysis_context'] = {
+            'deal_data': {k: float(v) if isinstance(v, Decimal) else v for k, v in deal_data.items()},
+            'metrics': {
+                'monthly_gross_income': float(monthly_gross_income),
+                'total_monthly_expenses': float(total_monthly_expenses),
+                'monthly_mortgage_payment': float(monthly_mortgage_payment),
+                'monthly_net_income': float(monthly_net_income),
+                'annual_net_income': float(annual_net_income),
+                'total_cash_invested': float(total_cash_invested),
+                'roi': float(roi),
+                'gross_annual_yield': float(gross_annual_yield),
+                'net_annual_yield': float(net_annual_yield),
+                'dscr': float(dscr),
+                'opex_load': float(opex_load),
+                'nrat': float(nrat),
+                'sdlt_amount': float(sdlt_amount),
+                'total_cash_deployed': float(total_cash_deployed),
+                'acquisition_costs': float(acquisition_costs),
+                'notional_equity': float(notional_equity),
+            },
+            'cashflow_projection': [
+                {k: float(v) if isinstance(v, Decimal) else v for k, v in proj.items()}
+                for proj in cashflow_projection
+            ],
+            'capital_growth': {
+                'no_growth_future_value': float(no_growth_future_value),
+                'moderate_growth_future_value': float(moderate_growth_future_value),
+                'average_growth_future_value': float(average_growth_future_value),
+                'no_growth_net_gain': float(no_growth_net_gain),
+                'moderate_growth_net_gain': float(moderate_growth_net_gain),
+                'average_growth_net_gain': float(average_growth_net_gain),
+                'no_growth_capital_return': float(no_growth_annual_capital_return_rate),
+                'moderate_growth_capital_return': float(moderate_growth_annual_capital_return_rate),
+                'average_growth_capital_return': float(average_growth_annual_capital_return_rate),
+                'no_growth_total_return': float(no_growth_annual_return_rate),
+                'moderate_growth_total_return': float(moderate_growth_annual_return_rate),
+                'average_growth_total_return': float(average_growth_annual_return_rate),
+            },
+            'risk_analysis': {
+                'tenant_dispute_total': float(tenant_dispute_total),
+                'tenant_dispute_monthly': float(tenant_dispute_monthly),
+                'rrb_rent_recovery': float(rrb_rent_recovery),
+            },
+            'ten_year_total': float(total_net_income_after_tax),
+        }
+        
         return render(request, 'user_home/deal_analysis_result.html', context)
     
     context = {
@@ -1831,20 +1913,74 @@ def email_deal_analysis_pdf(request):
         return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
     
     try:
-        # Get the deal data from session (stored during analyze_deal POST)
-        # For now, we'll send a simple email notification
-        # TODO: Implement actual PDF generation using libraries like WeasyPrint or ReportLab
+        from django.template.loader import render_to_string
+        from django.core.mail import EmailMultiAlternatives
+        from weasyprint import HTML
+        from datetime import datetime
+        import io
+        
+        # Get the deal analysis data from session
+        analysis_data = request.session.get('deal_analysis_context')
+        if not analysis_data:
+            return JsonResponse({'success': False, 'error': 'No analysis data found. Please run the analysis again.'}, status=400)
         
         user_email = request.user.email
         if not user_email:
             return JsonResponse({'success': False, 'error': 'No email address found for your account'}, status=400)
         
-        # Parse request body
+        # Parse request body for deal name
         try:
             data = json.loads(request.body)
-            deal_name = data.get('deal_name', 'Investment Deal')
+            deal_name = data.get('deal_name', analysis_data['deal_data'].get('deal_name', 'Investment Deal'))
         except:
-            deal_name = 'Investment Deal'
+            deal_name = analysis_data['deal_data'].get('deal_name', 'Investment Deal')
+        
+        # Prepare context for PDF template
+        pdf_context = {
+            'deal_data': analysis_data['deal_data'],
+            'monthly_gross_income': analysis_data['metrics']['monthly_gross_income'],
+            'total_monthly_expenses': analysis_data['metrics']['total_monthly_expenses'],
+            'monthly_mortgage_payment': analysis_data['metrics']['monthly_mortgage_payment'],
+            'monthly_net_income': analysis_data['metrics']['monthly_net_income'],
+            'annual_net_income': analysis_data['metrics']['annual_net_income'],
+            'total_cash_invested': analysis_data['metrics']['total_cash_invested'],
+            'roi': analysis_data['metrics']['roi'],
+            'gross_annual_yield': analysis_data['metrics']['gross_annual_yield'],
+            'net_annual_yield': analysis_data['metrics']['net_annual_yield'],
+            'dscr': analysis_data['metrics']['dscr'],
+            'opex_load': analysis_data['metrics']['opex_load'],
+            'nrat': analysis_data['metrics']['nrat'],
+            'sdlt_amount': analysis_data['metrics']['sdlt_amount'],
+            'total_cash_deployed': analysis_data['metrics']['total_cash_deployed'],
+            'acquisition_costs': analysis_data['metrics']['acquisition_costs'],
+            'notional_equity': analysis_data['metrics']['notional_equity'],
+            'cashflow_projection': analysis_data['cashflow_projection'],
+            'ten_year_total': analysis_data['ten_year_total'],
+            'no_growth_future_value': analysis_data['capital_growth']['no_growth_future_value'],
+            'moderate_growth_future_value': analysis_data['capital_growth']['moderate_growth_future_value'],
+            'average_growth_future_value': analysis_data['capital_growth']['average_growth_future_value'],
+            'no_growth_net_gain': analysis_data['capital_growth']['no_growth_net_gain'],
+            'moderate_growth_net_gain': analysis_data['capital_growth']['moderate_growth_net_gain'],
+            'average_growth_net_gain': analysis_data['capital_growth']['average_growth_net_gain'],
+            'no_growth_capital_return': analysis_data['capital_growth']['no_growth_capital_return'],
+            'moderate_growth_capital_return': analysis_data['capital_growth']['moderate_growth_capital_return'],
+            'average_growth_capital_return': analysis_data['capital_growth']['average_growth_capital_return'],
+            'no_growth_total_return': analysis_data['capital_growth']['no_growth_total_return'],
+            'moderate_growth_total_return': analysis_data['capital_growth']['moderate_growth_total_return'],
+            'average_growth_total_return': analysis_data['capital_growth']['average_growth_total_return'],
+            'tenant_dispute_total': analysis_data['risk_analysis']['tenant_dispute_total'],
+            'tenant_dispute_monthly': analysis_data['risk_analysis']['tenant_dispute_monthly'],
+            'rrb_rent_recovery': analysis_data['risk_analysis']['rrb_rent_recovery'],
+            'report_date': datetime.now(),
+        }
+        
+        # Render PDF HTML template
+        html_string = render_to_string('user_home/deal_analysis_pdf.html', pdf_context)
+        
+        # Generate PDF
+        pdf_file = io.BytesIO()
+        HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf(pdf_file)
+        pdf_file.seek(0)
         
         # Email subject and message
         subject = f'LEXIT - Deal Analysis Report: {deal_name}'
@@ -1864,13 +2000,27 @@ def email_deal_analysis_pdf(request):
                         
                         <p>Dear {request.user.first_name or request.user.username},</p>
                         
-                        <p>Your deal analysis report for <strong>{deal_name}</strong> has been generated.</p>
+                        <p>Your deal analysis report for <strong>{deal_name}</strong> has been generated and is attached to this email as a PDF.</p>
                         
                         <div style="background: white; padding: 20px; border-left: 4px solid #1e40af; margin: 20px 0;">
-                            <p style="margin: 0;"><strong>Note:</strong> PDF generation is currently being implemented. For now, please return to the dashboard to view your complete analysis online.</p>
+                            <p style="margin: 0;"><strong>Report Highlights:</strong></p>
+                            <ul style="margin: 10px 0;">
+                                <li>Net Return After Tax (NRAT): <strong>{pdf_context['nrat']:.1f}%</strong></li>
+                                <li>Monthly Net Income: <strong>£{pdf_context['monthly_net_income']:,.0f}</strong></li>
+                                <li>10-Year Total Return: <strong>£{pdf_context['ten_year_total']:,.0f}</strong></li>
+                            </ul>
                         </div>
                         
-                        <p>To view your full analysis with all charts and metrics, please log in to your LEXIT dashboard:</p>
+                        <p>The attached PDF contains:</p>
+                        <ul style="margin: 10px 0;">
+                            <li>Complete property and financial details</li>
+                            <li>10-year cashflow projection</li>
+                            <li>Capital growth scenarios</li>
+                            <li>Risk analysis</li>
+                            <li>Investment recommendations</li>
+                        </ul>
+                        
+                        <p>You can also view your analysis online in your LEXIT dashboard:</p>
                         
                         <div style="text-align: center; margin: 30px 0;">
                             <a href="{settings.SITE_URL if hasattr(settings, 'SITE_URL') else 'http://127.0.0.1:8000'}/dashboard/" 
@@ -1894,19 +2044,22 @@ def email_deal_analysis_pdf(request):
         
         Dear {request.user.first_name or request.user.username},
         
-        Your deal analysis report for {deal_name} has been generated.
+        Your deal analysis report for {deal_name} has been generated and is attached to this email as a PDF.
         
-        Note: PDF generation is currently being implemented. For now, please return to the dashboard to view your complete analysis online.
+        Report Highlights:
+        - Net Return After Tax (NRAT): {pdf_context['nrat']:.1f}%
+        - Monthly Net Income: £{pdf_context['monthly_net_income']:,.0f}
+        - 10-Year Total Return: £{pdf_context['ten_year_total']:,.0f}
         
-        To view your full analysis, please visit your LEXIT dashboard.
+        The attached PDF contains complete property details, 10-year cashflow projection, capital growth scenarios, risk analysis, and investment recommendations.
+        
+        You can also view your analysis online in your LEXIT dashboard.
         
         Best regards,
         The LEXIT Team
         """
         
         # Create email with both plain text and HTML versions
-        from django.core.mail import EmailMultiAlternatives
-        
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_message,
@@ -1917,16 +2070,29 @@ def email_deal_analysis_pdf(request):
         # Attach HTML version
         email.attach_alternative(html_message, "text/html")
         
+        # Attach PDF
+        email.attach(
+            f'LEXIT_Deal_Analysis_{deal_name.replace(" ", "_")}.pdf',
+            pdf_file.getvalue(),
+            'application/pdf'
+        )
+        
         # Send email
         email.send(fail_silently=False)
         
         return JsonResponse({
             'success': True,
-            'message': f'Report sent to {user_email}'
+            'message': f'Report sent to {user_email} with PDF attachment'
         })
         
     except Exception as e:
-        print(f"Error sending email: {str(e)}")
+        print(f"Error sending email with PDF: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({
+            'success': False,
+            'error': f'Failed to send email: {str(e)}'
+        }, status=500)
         return JsonResponse({
             'success': False,
             'error': f'Failed to send email: {str(e)}'

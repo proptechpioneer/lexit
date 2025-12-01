@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEXIT - Deal Analysis Report</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm 1.5cm;
+            @top-right {
+                content: "Page " counter(page) " of " counter(pages);
+                font-size: 10px;
+                color: #666;
+            }
+        }
+        
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        
+        .header p {
+            margin: 5px 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        h2 {
+            color: #1e40af;
+            font-size: 20px;
+            border-bottom: 2px solid #1e40af;
+            padding-bottom: 8px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        h3 {
+            color: #1e40af;
+            font-size: 16px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-left: 3px solid #1e40af;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #64748b;
+        }
+        
+        .info-value {
+            color: #1e40af;
+            font-weight: bold;
+        }
+        
+        .highlight-box {
+            background: #eff6ff;
+            border: 2px solid #1e40af;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border-radius: 8px;
+        }
+        
+        .highlight-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #1e40af;
+            margin: 10px 0;
+        }
+        
+        .metric-box {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 6px;
+        }
+        
+        .metric-label {
+            font-size: 9px;
+            color: #64748b;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        
+        .metric-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e40af;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10px;
+        }
+        
+        th {
+            background: #1e40af;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        
+        .good {
+            color: #16a34a;
+            font-weight: bold;
+        }
+        
+        .warning {
+            color: #ea580c;
+            font-weight: bold;
+        }
+        
+        .poor {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            text-align: center;
+            font-size: 9px;
+            color: #64748b;
+        }
+        
+        .page-break {
+            page-break-after: always;
+        }
+        
+        .cash-breakdown {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .cash-item {
+            background: #eff6ff;
+            padding: 15px;
+            text-align: center;
+            border-radius: 6px;
+        }
+        
+        .cash-label {
+            font-size: 10px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+        
+        .cash-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>LEXIT</h1>
+        <p>Property Investment Analysis Report</p>
+        <p style="margin-top: 15px; font-size: 18px; font-weight: bold;">{{ deal_data.deal_name }}</p>
+    </div>
+    
+    <!-- Total Cash Required -->
+    <div class="highlight-box">
+        <h3 style="margin: 0; color: #1e40af;">Total Cash Required</h3>
+        <div class="highlight-value">£{{ total_cash_deployed|floatformat:0 }}</div>
+        <p style="margin: 0; color: #64748b;">Total investment to complete this deal</p>
+    </div>
+    
+    <!-- Cash Breakdown -->
+    <div class="cash-breakdown">
+        <div class="cash-item">
+            <div class="cash-label">Deposit</div>
+            <div class="cash-value">£{{ deal_data.deposit_paid|floatformat:0 }}</div>
+        </div>
+        <div class="cash-item">
+            <div class="cash-label">SDLT/Land Tax</div>
+            <div class="cash-value">£{{ sdlt_amount|floatformat:0 }}</div>
+        </div>
+        <div class="cash-item">
+            <div class="cash-label">Acquisition Costs</div>
+            <div class="cash-value">£{{ acquisition_costs|floatformat:0 }}</div>
+        </div>
+    </div>
+    
+    <!-- Property Details -->
+    <h2>Property Details</h2>
+    <div class="info-grid">
+        <div class="info-item">
+            <span class="info-label">Property Type:</span>
+            <span class="info-value">{{ deal_data.property_type|title }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Bedrooms:</span>
+            <span class="info-value">{{ deal_data.number_bedrooms }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Bathrooms:</span>
+            <span class="info-value">{{ deal_data.number_bathrooms }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Parking Spaces:</span>
+            <span class="info-value">{{ deal_data.car_parking_spaces }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">EPC Rating:</span>
+            <span class="info-value">{{ deal_data.epc_rating|default:"Not specified" }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Purchase Price:</span>
+            <span class="info-value">£{{ deal_data.purchase_price|floatformat:0 }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Current Market Value:</span>
+            <span class="info-value">£{{ deal_data.current_market_value|floatformat:0 }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Ownership Structure:</span>
+            <span class="info-value">
+                {% if deal_data.ownership_status == 'company' %}Limited Company
+                {% elif deal_data.ownership_status == 'individual' %}Individual
+                {% else %}{{ deal_data.ownership_status|title }}{% endif %}
+            </span>
+        </div>
+    </div>
+    
+    <!-- Key Financial Metrics -->
+    <h2>Key Financial Metrics</h2>
+    <div class="metric-grid">
+        <div class="metric-card">
+            <div class="metric-label">NRAT</div>
+            <div class="metric-value 
+                {% if nrat >= 8 %}good
+                {% elif nrat >= 5 %}warning
+                {% else %}poor{% endif %}">
+                {{ nrat|floatformat:1 }}%
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Monthly Income</div>
+            <div class="metric-value">£{{ monthly_net_income|floatformat:0 }}</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Gross Yield</div>
+            <div class="metric-value">{{ gross_annual_yield|floatformat:2 }}%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Net Yield</div>
+            <div class="metric-value">{{ net_annual_yield|floatformat:2 }}%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">ROI</div>
+            <div class="metric-value">{{ roi|floatformat:2 }}%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">DSCR</div>
+            <div class="metric-value">{{ dscr|floatformat:2 }}</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Opex Load</div>
+            <div class="metric-value">{{ opex_load|floatformat:1 }}%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Monthly Cashflow</div>
+            <div class="metric-value">£{{ monthly_net_income|floatformat:0 }}</div>
+        </div>
+    </div>
+    
+    <!-- Mortgage Details -->
+    {% if deal_data.has_mortgage %}
+    <h2>Mortgage Details</h2>
+    <div class="info-grid">
+        <div class="info-item">
+            <span class="info-label">Mortgage Type:</span>
+            <span class="info-value">{{ deal_data.mortgage_type|title }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Outstanding Balance:</span>
+            <span class="info-value">£{{ deal_data.outstanding_mortgage_balance|floatformat:0 }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Interest Rate:</span>
+            <span class="info-value">{{ deal_data.mortgage_interest_rate }}%</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Years Remaining:</span>
+            <span class="info-value">{{ deal_data.mortgage_years_remaining }} years</span>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="page-break"></div>
+    
+    <!-- 10-Year Cashflow Projection -->
+    <h2>10-Year Cashflow Projection</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Gross Rent</th>
+                <th>Total Expenses</th>
+                <th>Mortgage Payment</th>
+                <th>Pre-Tax Cashflow</th>
+                <th>Tax</th>
+                <th>Net Cashflow</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for year in cashflow_projection %}
+            <tr>
+                <td><strong>{{ year.year }}</strong></td>
+                <td>£{{ year.projected_gross_rent|floatformat:0 }}</td>
+                <td>£{{ year.projected_total_expenses|floatformat:0 }}</td>
+                <td>£{{ year.annual_total_mortgage_payment|floatformat:0 }}</td>
+                <td>£{{ year.net_cash_flow_before_tax|floatformat:0 }}</td>
+                <td>£{{ year.tax_payable|floatformat:0 }}</td>
+                <td class="{% if year.net_cash_flow_after_tax >= 0 %}good{% else %}poor{% endif %}">
+                    £{{ year.net_cash_flow_after_tax|floatformat:0 }}
+                </td>
+            </tr>
+            {% endfor %}
+            <tr style="background: #1e40af; color: white; font-weight: bold;">
+                <td colspan="5">10-Year Total Net Income (After Tax)</td>
+                <td colspan="2" style="text-align: right; font-size: 14px;">£{{ ten_year_total|floatformat:0 }}</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <!-- Capital Growth Analysis -->
+    <h2>Capital Growth Scenarios (10 Years)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Scenario</th>
+                <th>Growth Rate</th>
+                <th>Property Value</th>
+                <th>Net Gain</th>
+                <th>Capital Return/Yr</th>
+                <th>Total Return/Yr</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>No Growth</strong></td>
+                <td>0.0%</td>
+                <td>£{{ no_growth_future_value|floatformat:0 }}</td>
+                <td>£{{ no_growth_net_gain|floatformat:0 }}</td>
+                <td>{{ no_growth_capital_return|floatformat:2 }}%</td>
+                <td>{{ no_growth_total_return|floatformat:2 }}%</td>
+            </tr>
+            <tr>
+                <td><strong>Moderate Growth</strong></td>
+                <td>1.7%</td>
+                <td>£{{ moderate_growth_future_value|floatformat:0 }}</td>
+                <td>£{{ moderate_growth_net_gain|floatformat:0 }}</td>
+                <td>{{ moderate_growth_capital_return|floatformat:2 }}%</td>
+                <td>{{ moderate_growth_total_return|floatformat:2 }}%</td>
+            </tr>
+            <tr>
+                <td><strong>Average Growth</strong></td>
+                <td>3.4%</td>
+                <td>£{{ average_growth_future_value|floatformat:0 }}</td>
+                <td class="good">£{{ average_growth_net_gain|floatformat:0 }}</td>
+                <td class="good">{{ average_growth_capital_return|floatformat:2 }}%</td>
+                <td class="good">{{ average_growth_total_return|floatformat:2 }}%</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <!-- Risk Analysis -->
+    <h2>Risk Analysis</h2>
+    <div class="metric-box">
+        <h3 style="margin-top: 0;">Tenant Dispute Scenario</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Total Cost (18 months):</span>
+                <span class="info-value poor">£{{ tenant_dispute_total|floatformat:0 }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Monthly Impact:</span>
+                <span class="info-value poor">£{{ tenant_dispute_monthly|floatformat:0 }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Rent Recovery Buffer:</span>
+                <span class="info-value good">£{{ rrb_rent_recovery|floatformat:0 }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Summary Notes -->
+    <div class="metric-box" style="margin-top: 30px;">
+        <h3 style="margin-top: 0;">Analysis Summary</h3>
+        <p><strong>Investment Strength:</strong> 
+            {% if nrat >= 8 %}
+                This property shows excellent investment potential with strong returns.
+            {% elif nrat >= 5 %}
+                This property shows good investment potential with acceptable returns.
+            {% else %}
+                This property shows poor investment returns and may require review.
+            {% endif %}
+        </p>
+        <p><strong>Key Considerations:</strong></p>
+        <ul style="margin: 10px 0;">
+            <li>Cashflow analysis assumes 3.85% vacancy rate and 3.5% maintenance reserve</li>
+            <li>Rental income projections use 3.71% annual growth rate</li>
+            <li>Expenses adjusted for 2.8% annual inflation</li>
+            <li>Capital gains tax included in exit calculations</li>
+            <li>All figures are estimates and actual results may vary</li>
+        </ul>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>LEXIT - Property Investment Analysis</strong></p>
+        <p>Generated on {{ report_date|date:"F d, Y" }} at {{ report_date|time:"H:i" }}</p>
+        <p>This report is for informational purposes only and does not constitute financial advice.</p>
+        <p>© {{ report_date|date:"Y" }} LEXIT. All rights reserved.</p>
+    </div>
+</body>
+</html>
