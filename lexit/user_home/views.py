@@ -1916,8 +1916,13 @@ def email_deal_analysis_pdf(request):
     try:
         from django.core.mail import EmailMultiAlternatives
         from django.template.loader import render_to_string
-        from weasyprint import HTML
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.units import inch
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+        from reportlab.lib import colors
         from datetime import datetime
+        from bs4 import BeautifulSoup
         import io
         
         # Get the deal analysis data from session
@@ -1943,9 +1948,58 @@ def email_deal_analysis_pdf(request):
             'user': request.user,
         })
         
-        # Generate PDF using WeasyPrint
+        # Generate PDF using reportlab
         pdf_file = io.BytesIO()
-        HTML(string=html_content).write_pdf(pdf_file)
+        doc = SimpleDocTemplate(pdf_file, pagesize=A4,
+                              rightMargin=0.5*inch, leftMargin=0.5*inch,
+                              topMargin=0.5*inch, bottomMargin=0.5*inch)
+        
+        # Parse HTML to extract text content
+        soup = BeautifulSoup(html_content, 'html.parser')
+        styles = getSampleStyleSheet()
+        story = []
+        
+        # Add title
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=24,
+            textColor=colors.HexColor('#1a237e'),
+            spaceAfter=30,
+            alignment=1  # Center
+        )
+        story.append(Paragraph(f"LEXIT Deal Analysis Report", title_style))
+        story.append(Paragraph(f"<b>{deal_name}</b>", styles['Heading2']))
+        story.append(Spacer(1, 0.3*inch))
+        
+        # Add deal data as table
+        deal_data = analysis_data.get('deal_data', {})
+        data = [
+            ['Property Details', ''],
+            ['Purchase Price', f"${deal_data.get('purchase_price', 0):,.0f}"],
+            ['Cash Required', f"${analysis_data.get('cash_required', 0):,.2f}"],
+            ['Annual Rent', f"${deal_data.get('annual_rent', 0):,.0f}"],
+            ['Net Cashflow (Annual)', f"${analysis_data.get('total_cashflow', {}).get('annual', 0):,.2f}"],
+            ['Cash on Cash Return', f"{analysis_data.get('metrics', {}).get('cash_on_cash', 0):.2f}%"],
+            ['ROI', f"{analysis_data.get('metrics', {}).get('roi', 0):.2f}%"],
+        ]
+        
+        t = Table(data, colWidths=[3*inch, 3*inch])
+        t.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a237e')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('FONTNAME', (0, 1), (0, -1), 'Helvetica-Bold'),
+        ]))
+        story.append(t)
+        
+        # Build PDF
+        doc.build(story)
         pdf_file.seek(0)
         pdf_bytes = pdf_file.read()
         
