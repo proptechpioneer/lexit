@@ -1916,7 +1916,7 @@ def email_deal_analysis_pdf(request):
     try:
         from django.core.mail import EmailMultiAlternatives
         from django.template.loader import render_to_string
-        from xhtml2pdf import pisa
+        from weasyprint import HTML
         from datetime import datetime
         import io
         
@@ -1943,13 +1943,9 @@ def email_deal_analysis_pdf(request):
             'user': request.user,
         })
         
-        # Generate PDF using xhtml2pdf
+        # Generate PDF using WeasyPrint
         pdf_file = io.BytesIO()
-        pisa_status = pisa.CreatePDF(html_content, dest=pdf_file)
-        
-        if pisa_status.err:
-            return JsonResponse({'success': False, 'error': 'PDF generation failed'}, status=500)
-        
+        HTML(string=html_content).write_pdf(pdf_file)
         pdf_file.seek(0)
         pdf_bytes = pdf_file.read()
         
