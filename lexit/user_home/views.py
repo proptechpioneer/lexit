@@ -1913,11 +1913,342 @@ def email_deal_analysis_pdf(request):
         return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
     
     try:
-        from django.template.loader import render_to_string
         from django.core.mail import EmailMultiAlternatives
-        from xhtml2pdf import pisa
+        from reportlab.lib.pagesizes import letter, A4
+        from reportlab.lib import colors
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.units import inch
+        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
+        from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
         from datetime import datetime
         import io
+        
+        # Get the deal analysis data from session
+        analysis_data = request.session.get('deal_analysis_context')
+        if not analysis_data:
+            return JsonResponse({'success': False, 'error': 'No analysis data found. Please run the analysis again.'}, status=400)
+        
+        user_email = request.user.email
+        if not user_email:
+            return JsonResponse({'success': False, 'error': 'No email address found for your account'}, status=400)
+        
+        # Parse request body for deal name
+        try:
+            data = json.loads(request.body)
+            deal_name = data.get('deal_name', analysis_data['deal_data'].get('deal_name', 'Investment Deal'))
+        except:
+            deal_name = analysis_data['deal_data'].get('deal_name', 'Investment Deal')
+        
+        # Prepare PDF context
+        pdf_context = analysis_data
+        
+        # Generate PDF using ReportLab
+        pdf_file = io.BytesIO()
+        doc = SimpleDocTemplate(pdf_file, pagesize=A4, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
+        
+        # Container for PDF elements
+        elements = []
+        
+        # Define styles
+        styles = getSampleStyleSheet()
+        title_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=24, textColor=colors.HexColor('#1e40af'), spaceAfter=30, alignment=TA_CENTER)
+        heading_style = ParagraphStyle('CustomHeading', parent=styles['Heading2'], fontSize=16, textColor=colors.HexColor('#1e40af'), spaceAfter=12, spaceBefore=12)
+        normal_style = styles['Normal']
+        
+        # Title
+        elements.append(Paragraph("LEXIT", title_style))
+        elements.append(Paragraph("Property Investment Analysis Report", ParagraphStyle('Subtitle', parent=styles['Normal'], fontSize=12, textColor=colors.HexColor('#3b82f6'), alignment=TA_CENTER, spaceAfter=10)))
+        elements.append(Paragraph(f"<b>{deal_name}</b>", ParagraphStyle('DealName', parent=styles['Normal'], fontSize=14, alignment=TA_CENTER, spaceAfter=20)))
+        elements.append(Spacer(1, 12))
+        
+        # Total Cash Required (Highlight Box)
+        elements.append(Paragraph("Total Cash Required", heading_style))
+        cash_data = [[f"£{analysis_data['metrics']['total_cash_deployed']:,.0f}"]]
+        cash_table = Table(cash_data, colWidths=[6*inch])
+        cash_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#eff6ff')),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#1e40af')),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 20),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+            ('TOPPADDING', (0, 0), (-1, -1), 12),
+            ('BOX', (0, 0), (-1, -1), 2, colors.HexColor('#1e40af')),
+        ]))
+        elements.append(cash_table)
+        elements.append(Spacer(1, 12))
+        
+        # Cash Breakdown
+        breakdown_data = [
+            ['Deposit', 'SDLT/Land Tax', 'Acquisition Costs'],
+            [f"£{analysis_data['deal_data']['deposit_paid']:,.0f}", 
+             f"£{analysis_data['metrics']['sdlt_amount']:,.0f}",
+             f"£{analysis_data['metrics']['acquisition_costs']:,.0f}"]
+        ]
+        breakdown_table = Table(breakdown_data, colWidths=[2*inch, 2*inch, 2*inch])
+        breakdown_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e40af')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#f8fafc')),
+            ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+        ]))
+        elements.append(breakdown_table)
+        elements.append(Spacer(1, 20))
+        
+        # Property Details
+        elements.append(Paragraph("Property Details", heading_style))
+        property_data = [
+            ['Property Type:', analysis_data['deal_data']['property_type'].title()],
+            ['Bedrooms:', str(analysis_data['deal_data']['number_bedrooms'])],
+            ['Bathrooms:', str(analysis_data['deal_data']['number_bathrooms'])],
+            ['Purchase Price:', f"£{analysis_data['deal_data']['purchase_price']:,.0f}"],
+            ['Current Market Value:', f"£{analysis_data['deal_data']['current_market_value']:,.0f}"],
+            ['Ownership:', 'Limited Company' if analysis_data['deal_data']['ownership_status'] == 'company' else 'Individual'],
+        ]
+        property_table = Table(property_data, colWidths=[2.5*inch, 3.5*inch])
+        property_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8fafc')),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ]))
+        elements.append(property_table)
+        elements.append(Spacer(1, 20))
+        
+        # Key Financial Metrics
+        elements.append(Paragraph("Key Financial Metrics", heading_style))
+        nrat = analysis_data['metrics']['nrat']
+        nrat_rating = 'Excellent' if nrat >= 8 else 'Good' if nrat >= 5 else 'Poor'
+        nrat_color = colors.green if nrat >= 8 else colors.orange if nrat >= 5 else colors.red
+        
+        metrics_data = [
+            ['NRAT', f"{nrat:.1f}% ({nrat_rating})", 'Monthly Income', f"£{analysis_data['metrics']['monthly_net_income']:,.0f}"],
+            ['Gross Yield', f"{analysis_data['metrics']['gross_annual_yield']:.2f}%", 'Net Yield', f"{analysis_data['metrics']['net_annual_yield']:.2f}%"],
+            ['ROI', f"{analysis_data['metrics']['roi']:.2f}%", 'DSCR', f"{analysis_data['metrics']['dscr']:.2f}"],
+        ]
+        metrics_table = Table(metrics_data, colWidths=[1.5*inch, 1.5*inch, 1.5*inch, 1.5*inch])
+        metrics_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8fafc')),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ]))
+        elements.append(metrics_table)
+        elements.append(Spacer(1, 20))
+        
+        # Page Break
+        elements.append(PageBreak())
+        
+        # 10-Year Cashflow Summary (first 5 years)
+        elements.append(Paragraph("10-Year Cashflow Projection", heading_style))
+        cashflow_data = [['Year', 'Gross Rent', 'Expenses', 'Mortgage', 'Tax', 'Net Cashflow']]
+        for year_data in analysis_data['cashflow_projection']:
+            cashflow_data.append([
+                str(year_data['year']),
+                f"£{year_data['projected_gross_rent']:,.0f}",
+                f"£{year_data['projected_total_expenses']:,.0f}",
+                f"£{year_data['annual_total_mortgage_payment']:,.0f}",
+                f"£{year_data['tax_payable']:,.0f}",
+                f"£{year_data['net_cash_flow_after_tax']:,.0f}",
+            ])
+        
+        cashflow_table = Table(cashflow_data, colWidths=[0.6*inch, 1.1*inch, 1.1*inch, 1.1*inch, 1.1*inch, 1.1*inch])
+        cashflow_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e40af')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ('TOPPADDING', (0, 0), (-1, -1), 4),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#f8fafc')),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ]))
+        elements.append(cashflow_table)
+        elements.append(Spacer(1, 12))
+        
+        # 10-Year Total
+        total_data = [[f"10-Year Total: £{analysis_data['ten_year_total']:,.0f}"]]
+        total_table = Table(total_data, colWidths=[6*inch])
+        total_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#1e40af')),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+        ]))
+        elements.append(total_table)
+        elements.append(Spacer(1, 20))
+        
+        # Capital Growth Scenarios
+        elements.append(Paragraph("Capital Growth Scenarios (10 Years)", heading_style))
+        growth_data = [
+            ['Scenario', 'Growth Rate', 'Future Value', 'Net Gain', 'Annual Return'],
+            ['No Growth', '0.0%', 
+             f"£{analysis_data['capital_growth']['no_growth_future_value']:,.0f}",
+             f"£{analysis_data['capital_growth']['no_growth_net_gain']:,.0f}",
+             f"{analysis_data['capital_growth']['no_growth_total_return']:.2f}%"],
+            ['Moderate', '1.7%',
+             f"£{analysis_data['capital_growth']['moderate_growth_future_value']:,.0f}",
+             f"£{analysis_data['capital_growth']['moderate_growth_net_gain']:,.0f}",
+             f"{analysis_data['capital_growth']['moderate_growth_total_return']:.2f}%"],
+            ['Average', '3.4%',
+             f"£{analysis_data['capital_growth']['average_growth_future_value']:,.0f}",
+             f"£{analysis_data['capital_growth']['average_growth_net_gain']:,.0f}",
+             f"{analysis_data['capital_growth']['average_growth_total_return']:.2f}%"],
+        ]
+        growth_table = Table(growth_data, colWidths=[1.2*inch, 1.1*inch, 1.3*inch, 1.3*inch, 1.2*inch])
+        growth_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e40af')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ('TOPPADDING', (0, 0), (-1, -1), 4),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#f8fafc')),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ]))
+        elements.append(growth_table)
+        elements.append(Spacer(1, 20))
+        
+        # Footer
+        elements.append(Spacer(1, 30))
+        elements.append(Paragraph(f"Report generated on {datetime.now().strftime('%B %d, %Y at %H:%M')}", 
+                                 ParagraphStyle('Footer', parent=styles['Normal'], fontSize=8, textColor=colors.grey, alignment=TA_CENTER)))
+        elements.append(Paragraph("© LEXIT - Property Investment Analysis. This report is for informational purposes only.", 
+                                 ParagraphStyle('Footer', parent=styles['Normal'], fontSize=8, textColor=colors.grey, alignment=TA_CENTER)))
+        
+        # Build PDF
+        doc.build(elements)
+        pdf_file.seek(0)
+        
+        # Email subject and message
+        subject = f'LEXIT - Deal Analysis Report: {deal_name}'
+        
+        # Create email body (HTML)
+        html_message = f"""
+        <html>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <div style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                        <h1 style="color: white; margin: 0; font-size: 28px;">LEXIT</h1>
+                        <p style="color: #e0e7ff; margin: 10px 0 0 0;">Property Investment Analysis</p>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 30px; border-radius: 0 0 10px 10px;">
+                        <h2 style="color: #1e40af; margin-top: 0;">Deal Analysis Report</h2>
+                        
+                        <p>Dear {request.user.first_name or request.user.username},</p>
+                        
+                        <p>Your deal analysis report for <strong>{deal_name}</strong> has been generated and is attached to this email as a PDF.</p>
+                        
+                        <div style="background: white; padding: 20px; border-left: 4px solid #1e40af; margin: 20px 0;">
+                            <p style="margin: 0;"><strong>Report Highlights:</strong></p>
+                            <ul style="margin: 10px 0;">
+                                <li>Net Return After Tax (NRAT): <strong>{analysis_data['metrics']['nrat']:.1f}%</strong></li>
+                                <li>Monthly Net Income: <strong>£{analysis_data['metrics']['monthly_net_income']:,.0f}</strong></li>
+                                <li>10-Year Total Return: <strong>£{analysis_data['ten_year_total']:,.0f}</strong></li>
+                            </ul>
+                        </div>
+                        
+                        <p>The attached PDF contains:</p>
+                        <ul style="margin: 10px 0;">
+                            <li>Complete property and financial details</li>
+                            <li>10-year cashflow projection</li>
+                            <li>Capital growth scenarios</li>
+                            <li>Risk analysis</li>
+                            <li>Investment recommendations</li>
+                        </ul>
+                        
+                        <p>You can also view your analysis online in your LEXIT dashboard:</p>
+                        
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="{settings.SITE_URL if hasattr(settings, 'SITE_URL') else 'http://127.0.0.1:8000'}/dashboard/" 
+                               style="background: #1e40af; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                                View Dashboard
+                            </a>
+                        </div>
+                        
+                        <p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 14px;">
+                            This is an automated message from LEXIT. If you have any questions, please contact our support team.
+                        </p>
+                    </div>
+                </div>
+            </body>
+        </html>
+        """
+        
+        # Plain text version
+        text_message = f"""
+        LEXIT - Deal Analysis Report
+        
+        Dear {request.user.first_name or request.user.username},
+        
+        Your deal analysis report for {deal_name} has been generated and is attached to this email as a PDF.
+        
+        Report Highlights:
+        - Net Return After Tax (NRAT): {analysis_data['metrics']['nrat']:.1f}%
+        - Monthly Net Income: £{analysis_data['metrics']['monthly_net_income']:,.0f}
+        - 10-Year Total Return: £{analysis_data['ten_year_total']:,.0f}
+        
+        The attached PDF contains complete property details, 10-year cashflow projection, capital growth scenarios, risk analysis, and investment recommendations.
+        
+        You can also view your analysis online in your LEXIT dashboard.
+        
+        Best regards,
+        The LEXIT Team
+        """
+        
+        # Create email with both plain text and HTML versions
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=text_message,
+            from_email=settings.DEFAULT_FROM_EMAIL if hasattr(settings, 'DEFAULT_FROM_EMAIL') else 'noreply@lexit.com',
+            to=[user_email],
+        )
+        
+        # Attach HTML version
+        email.attach_alternative(html_message, "text/html")
+        
+        # Attach PDF
+        email.attach(
+            f'LEXIT_Deal_Analysis_{deal_name.replace(" ", "_")}.pdf',
+            pdf_file.getvalue(),
+            'application/pdf'
+        )
+        
+        # Send email
+        email.send(fail_silently=False)
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Report sent to {user_email} with PDF attachment'
+        })
+        
+    except Exception as e:
+        print(f"Error sending email with PDF: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({
+            'success': False,
+            'error': f'Failed to send email: {str(e)}'
+        }, status=500)
         
         # Get the deal analysis data from session
         analysis_data = request.session.get('deal_analysis_context')
