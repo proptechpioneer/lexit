@@ -1904,8 +1904,10 @@ def email_deal_analysis_pdf(request):
         The LEXIT Team
         """
         
-        # Create email
-        email = EmailMessage(
+        # Create email with both plain text and HTML versions
+        from django.core.mail import EmailMultiAlternatives
+        
+        email = EmailMultiAlternatives(
             subject=subject,
             body=text_message,
             from_email=settings.DEFAULT_FROM_EMAIL if hasattr(settings, 'DEFAULT_FROM_EMAIL') else 'noreply@lexit.com',
@@ -1913,8 +1915,7 @@ def email_deal_analysis_pdf(request):
         )
         
         # Attach HTML version
-        email.content_subtype = 'html'
-        email.body = html_message
+        email.attach_alternative(html_message, "text/html")
         
         # Send email
         email.send(fail_silently=False)
