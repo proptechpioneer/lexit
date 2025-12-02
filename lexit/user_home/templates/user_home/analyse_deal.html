@@ -308,33 +308,49 @@
                             <i class="fas fa-calculator mr-2"></i>Income & Tax Information
                         </h2>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    
+                    <div class="grid grid-cols-1 gap-4">
                         <div>
                             <label class="flex text-sm font-medium text-gray-700 mb-2 items-center">
-                                <i class="fas fa-wallet mr-2 text-gray-400"></i>Annual Income (£)
+                                <i class="fas fa-wallet mr-2 text-gray-400"></i>Total Annual Income (£)
                                 <button type="button" onclick="showIncomeModal()" class="ml-2 text-primary-blue hover:text-blue-700">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
                             </label>
-                            <p class="text-xs text-gray-500 mb-2">Enter your total annual income <strong>excluding income from this property</strong></p>
-                             <p class="text-xs text-gray-500 mb-2"><strong>If the property is being purchased in a company make the income 0</strong></p>
+                            <p class="text-xs text-gray-500 mb-2"><strong>(Excluding income from this property)</strong></p>
+                            <p class="text-xs text-red-600 font-medium mb-2"><strong>If the property is being purchased in a company make the income 0</strong></p>
                             <input type="number" name="annual_income" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors" step="0.01" placeholder="0.00">
                         </div>
                         
-                        <div class="flex flex-col justify-center space-y-3">
+                        <div>
                             <label class="flex items-center cursor-pointer">
                                 <input type="checkbox" name="is_uk_resident" class="h-4 w-4 text-primary-blue focus:ring-primary-blue border-gray-300 rounded">
-                                <span class="ml-2 text-sm font-medium text-gray-700">UK Resident for Tax Purposes</span>
+                                <span class="ml-2 text-sm font-medium text-gray-700">Purchaser is UK Resident</span>
                             </label>
-                            
+                        </div>
+                        
+                        <div>
                             <label class="flex items-center cursor-pointer">
                                 <input type="checkbox" name="has_personal_allowance" class="h-4 w-4 text-primary-blue focus:ring-primary-blue border-gray-300 rounded">
-                                <span class="ml-2 text-sm font-medium text-gray-700">Has Personal Tax Allowance Remaining</span>
+                                <span class="ml-2 text-sm font-medium text-gray-700">Eligible for UK tax-free allowance</span>
                             </label>
                         </div>
                     </div>
                 </div>
-
+                
+                <div class="bg-red-600 border-l-4 border-red-800 p-3 mb-4 rounded-lg">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-circle text-white text-lg"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-white">
+                                <strong>Important:</strong> Please enter your UK income (excluding this property) so we can accurately analyse your tax liabilities and provide you with the most accurate analysis.
+                            </p>
+                        </div>
+                    </div>
+                </div>
                 <!-- Submit Button -->
                 <div class="flex justify-end mt-8">
                     <button type="submit" 

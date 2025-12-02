@@ -781,12 +781,14 @@ def analyse_deal(request):
             year_1_net_return_after_tax = cashflow_projection[0]['net_cash_flow_after_tax']
             
             # Determine buyer type for SDLT calculation
-            if deal_data['ownership_status'] == 'uk_limited_company':
+            if deal_data['ownership_status'] == 'company':
                 buyer_type = 'uk_company'
-            elif deal_data['ownership_status'] in ['individual_onshore', 'individual_onshore_notaxfree']:
-                buyer_type = 'uk_individual'
-            elif deal_data['ownership_status'] == 'individual_offshore':
-                buyer_type = 'non_uk_individual'
+            elif deal_data['ownership_status'] == 'individual':
+                # Check if UK resident
+                if deal_data['is_uk_resident']:
+                    buyer_type = 'uk_individual'
+                else:
+                    buyer_type = 'non_uk_individual'
             else:
                 buyer_type = 'uk_individual'
             
