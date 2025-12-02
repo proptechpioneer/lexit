@@ -113,9 +113,13 @@
                                 £{{ no_growth_value|floatformat:0|intcomma }}
                             </span>
                         </div>
-                        <div class="flex justify-between items-center pt-2">
+                        <div class="flex justify-between items-center pt-2 border-b border-gray-200">
                             <span class="font-bold">IRR (10 years)</span>
                             <span class="font-bold text-primary-blue" id="irr0Growth">-</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-2">
+                            <span class="font-bold">Avg Return on Equity</span>
+                            <span class="font-bold {% if no_growth_annual_return_rate < 0 %}text-red-600{% else %}text-green-600{% endif %}">{{ no_growth_annual_return_rate|floatformat:1 }}%</span>
                         </div>
                     </div>
                 </div>
@@ -157,9 +161,13 @@
                                 £{{ moderate_growth_value|floatformat:0|intcomma }}
                             </span>
                         </div>
-                        <div class="flex justify-between items-center pt-2">
+                        <div class="flex justify-between items-center pt-2 border-b border-gray-200">
                             <span class="font-bold">IRR (10 years)</span>
                             <span class="font-bold text-primary-blue" id="irr1_7Growth">-</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-2">
+                            <span class="font-bold">Avg Return on Equity</span>
+                            <span class="font-bold {% if moderate_growth_annual_return_rate < 0 %}text-red-600{% else %}text-green-600{% endif %}">{{ moderate_growth_annual_return_rate|floatformat:1 }}%</span>
                         </div>
                     </div>
                 </div>
@@ -201,9 +209,13 @@
                                 £{{ average_growth_value|floatformat:0|intcomma }}
                             </span>
                         </div>
-                        <div class="flex justify-between items-center pt-2">
+                        <div class="flex justify-between items-center pt-2 border-b border-gray-200">
                             <span class="font-bold">IRR (10 years)</span>
                             <span class="font-bold text-primary-blue" id="irr3_4Growth">-</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-2">
+                            <span class="font-bold">Avg Return on Equity</span>
+                            <span class="font-bold {% if average_growth_annual_return_rate < 0 %}text-red-600{% else %}text-green-600{% endif %}">{{ average_growth_annual_return_rate|floatformat:1 }}%</span>
                         </div>
                     </div>
                 </div>
@@ -1359,8 +1371,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // IRR Calculation Function
-    function calculateIRR(initialInvestment, cashFlows, terminalValue) {
+    function calculateIRR(initialInvestment, cashFlows, capitalGrowth) {
         // IRR calculation using Newton-Raphson method
+        // Note: capitalGrowth is the net gain after sale (property value increase minus costs and taxes)
+        // The final year cash flow should include both rental income AND the capital growth from sale
         const maxIterations = 1000;
         const tolerance = 0.00001;
         let rate = 0.1; // Initial guess: 10%
@@ -1369,15 +1383,19 @@ document.addEventListener('DOMContentLoaded', function() {
             let npv = -initialInvestment;
             let derivative = 0;
             
-            // Add annual cash flows
+            // Add annual cash flows (years 1-9)
             for (let year = 1; year <= cashFlows.length; year++) {
-                npv += cashFlows[year - 1] / Math.pow(1 + rate, year);
-                derivative -= year * cashFlows[year - 1] / Math.pow(1 + rate, year + 1);
+                if (year < 10) {
+                    // Regular rental income cash flow
+                    npv += cashFlows[year - 1] / Math.pow(1 + rate, year);
+                    derivative -= year * cashFlows[year - 1] / Math.pow(1 + rate, year + 1);
+                } else {
+                    // Year 10: rental income PLUS capital growth from sale
+                    const finalYearCashFlow = cashFlows[year - 1] + capitalGrowth;
+                    npv += finalYearCashFlow / Math.pow(1 + rate, year);
+                    derivative -= year * finalYearCashFlow / Math.pow(1 + rate, year + 1);
+                }
             }
-            
-            // Add terminal value (capital growth) in year 10
-            npv += terminalValue / Math.pow(1 + rate, 10);
-            derivative -= 10 * terminalValue / Math.pow(1 + rate, 11);
             
             // Check for convergence
             if (Math.abs(npv) < tolerance) {

@@ -515,10 +515,9 @@ def analyse_deal(request):
         acquisition_costs = (deal_data['conveyancing_fees'] + 
                            deal_data['mortgage_arrangement_fees'] + 
                            deal_data['survey_costs'])
-        total_cash_invested = deal_data['deposit_paid'] + acquisition_costs
         
-        # Calculate ROI
-        roi = (annual_net_income / total_cash_invested * 100) if total_cash_invested > 0 else 0
+        # Note: ROI will be calculated later after SDLT is computed
+        # to ensure it uses total_cash_deployed (deposit + SDLT + acquisition costs)
         
         # ============================================
         # ADVANCED METRICS (matching property_detail)
@@ -812,11 +811,23 @@ def analyse_deal(request):
                 nrat = (year_1_net_return_after_tax / total_cash_deployed) * 100
             else:
                 nrat = Decimal('0')
+            
+            # Calculate ROI (Year 1 annual net income / total cash deployed)
+            if total_cash_deployed > 0:
+                roi = (annual_net_income / total_cash_deployed) * 100
+            else:
+                roi = Decimal('0')
         else:
             year_1_net_return_after_tax = Decimal('0')
             sdlt_amount = Decimal('0')
             total_cash_deployed = deal_data['deposit_paid'] + acquisition_costs
             nrat = Decimal('0')
+            
+            # Calculate ROI even without SDLT calculation
+            if total_cash_deployed > 0:
+                roi = (annual_net_income / total_cash_deployed) * 100
+            else:
+                roi = Decimal('0')
         
         # Calculate 10-year total
         total_net_income_after_tax = sum(projection['net_cash_flow_after_tax'] for projection in cashflow_projection)
@@ -965,7 +976,6 @@ def analyse_deal(request):
             'monthly_mortgage_payment': monthly_mortgage_payment,
             'monthly_net_income': monthly_net_income,
             'annual_net_income': annual_net_income,
-            'total_cash_invested': total_cash_invested,
             'roi': roi,
             'vacancy_rate': vacancy_rate * 100,
             'maintenance_rate': maintenance_rate * 100,
@@ -1023,7 +1033,6 @@ def analyse_deal(request):
                 'monthly_mortgage_payment': float(monthly_mortgage_payment),
                 'monthly_net_income': float(monthly_net_income),
                 'annual_net_income': float(annual_net_income),
-                'total_cash_invested': float(total_cash_invested),
                 'roi': float(roi),
                 'gross_annual_yield': float(gross_annual_yield),
                 'net_annual_yield': float(net_annual_yield),
