@@ -18,7 +18,7 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 class="text-primary-blue text-3xl font-bold">{{ deal_data.deal_name }}</h1>
-                <p class="text-gray-600 mb-0">Investment Analysis Results</p>
+                <p class="text-gray-600 mb-0">Investment Analysis</p>
             </div>
             <div class="flex gap-2">
                 <a href="{% url 'user_home:analyse_deal' %}" class="bg-dark-pink hover:bg-pink text-white px-4 py-2 rounded-lg inline-flex items-center transition-colors">
@@ -34,41 +34,201 @@
 
     <!-- Total Cash Required Section -->
     <div class="bg-white rounded-lg shadow-lg mb-6 overflow-hidden">
-        <div class="p-6">
-            <h2 class="text-2xl font-bold text-primary-blue mb-4">Total Cash Required</h2>
-            <div class="text-center">
-                <div class="bg-gradient-to-r from-primary-blue to-blue-600 text-white rounded-lg p-6 shadow-xl">
-                    <div class="text-5xl font-bold mb-2">
+        <div class="p-4">
+            <!-- Grid layout: 4 columns side by side -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <!-- Total Cash Required -->
+                <div class="bg-gradient-to-r from-primary-blue to-blue-600 text-white rounded-lg p-4 text-center">
+                    <div class="text-xs opacity-90 mb-1">Total Cash Required</div>
+                    <div class="text-2xl lg:text-3xl font-bold">
                         £{{ total_cash_deployed|floatformat:0|intcomma }}
                     </div>
-                    <p class="text-lg opacity-90">Total investment required to complete this deal</p>
                 </div>
-            </div>
-            
-            <!-- Breakdown -->
-            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                
+                <!-- Deposit -->
                 <div class="bg-blue-50 p-4 rounded-lg text-center">
-                    <div class="text-sm text-gray-600 mb-1">Deposit</div>
-                    <div class="text-xl font-bold text-primary-blue">£{{ deal_data.deposit_paid|floatformat:0|intcomma }}</div>
+                    <div class="text-xs text-gray-600 mb-1">Deposit</div>
+                    <div class="text-2xl lg:text-3xl font-bold text-primary-blue">£{{ deal_data.deposit_paid|floatformat:0|intcomma }}</div>
                 </div>
+                
+                <!-- SDLT -->
                 <div class="bg-blue-50 p-4 rounded-lg text-center">
-                    <div class="text-sm text-gray-600 mb-1">SDLT/Land Tax</div>
-                    <div class="text-xl font-bold text-primary-blue">£{{ sdlt_amount|floatformat:0|intcomma }}</div>
+                    <div class="text-xs text-gray-600 mb-1">SDLT/Land Tax</div>
+                    <div class="text-2xl lg:text-3xl font-bold text-primary-blue">£{{ sdlt_amount|floatformat:0|intcomma }}</div>
                 </div>
+                
+                <!-- Acquisition Costs -->
                 <div class="bg-blue-50 p-4 rounded-lg text-center">
-                    <div class="text-sm text-gray-600 mb-1">Acquisition Costs</div>
-                    <div class="text-xl font-bold text-primary-blue">£{{ deal_data.conveyancing_fees|add:deal_data.mortgage_arrangement_fees|add:deal_data.survey_costs|floatformat:0|intcomma }}</div>
+                    <div class="text-xs text-gray-600 mb-1">Acquisition Costs</div>
+                    <div class="text-2xl lg:text-3xl font-bold text-primary-blue">£{{ deal_data.conveyancing_fees|add:deal_data.mortgage_arrangement_fees|add:deal_data.survey_costs|floatformat:0|intcomma }}</div>
                 </div>
             </div>
         </div>
     </div>
     <!-- End Total Cash Required Section -->
 
+    <!-- Investment Returns Breakdown Section -->
+    <div class="bg-white rounded-lg shadow-lg mb-6 overflow-hidden">
+        <div class="p-6">
+            <h2 class="text-2xl font-bold text-primary-blue mb-4 text-center">Investment Returns Analysis</h2>
+            <p class="text-center text-gray-600 mb-6">Forecast total returns breakdown showing the contribution of rental income and capital growth across different scenarios</p>
+            
+            <!-- Three Scenario Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- 0% Growth Scenario -->
+                <div class="border border-gray-200 rounded-lg p-6">
+                    <div class="text-center">
+                        <h3 class="text-lg font-bold text-primary-blue mb-2">0% Capital Growth</h3>
+                        <div class="bg-linear-to-r from-primary-blue to-blue-600 text-white rounded-lg p-2 mb-0">
+                            <div class="text-sm opacity-90 mb-1">Total Return After Tax</div>
+                            <div class="text-3xl font-bold">
+                                {% with total_return=total_net_income_after_tax|add:no_growth_value %}
+                                £{{ total_return|floatformat:0|intcomma }}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pie Chart -->
+                    <div class="relative h-40 mb-4 flex items-center justify-center" style="margin-top: -50px;">
+                        <canvas id="pieChart0Growth"></canvas>
+                    </div>
+                    
+                    <!-- Breakdown -->
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+                            <span class="flex items-center">
+                                <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                Forecast Rental Income (After Tax)
+                            </span>
+                            <span class="font-bold">£{{ total_net_income_after_tax|floatformat:0|intcomma }}</span>
+                        </div>
+                        <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+                            <span class="flex items-center">
+                                <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                                Forecast Capital Growth (After Tax)
+                            </span>
+                            <span class="font-bold {% if no_growth_value < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                £{{ no_growth_value|floatformat:0|intcomma }}
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center pt-2">
+                            <span class="font-bold">IRR (10 years)</span>
+                            <span class="font-bold text-primary-blue" id="irr0Growth">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 1.7% Growth Scenario -->
+                <div class="border border-gray-200 rounded-lg p-6">
+                    <div class="text-center">
+                        <h3 class="text-lg font-bold text-primary-blue mb-2">1.7% Capital Growth</h3>
+                        <div class="bg-linear-to-r from-primary-blue to-blue-600 text-white rounded-lg p-2 mb-0">
+                            <div class="text-sm opacity-90 mb-1">Total Return After Tax</div>
+                            <div class="text-3xl font-bold">
+                                {% with total_return=total_net_income_after_tax|add:moderate_growth_value %}
+                                £{{ total_return|floatformat:0|intcomma }}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pie Chart -->
+                    <div class="relative h-40 mb-4 flex items-center justify-center" style="margin-top: -50px;">
+                        <canvas id="pieChart1_7Growth"></canvas>
+                    </div>
+                    
+                    <!-- Breakdown -->
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+                            <span class="flex items-center">
+                                <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                Forecast Rental Income (After Tax)
+                            </span>
+                            <span class="font-bold">£{{ total_net_income_after_tax|floatformat:0|intcomma }}</span>
+                        </div>
+                        <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+                            <span class="flex items-center">
+                                <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                                Forecast Capital Growth (After Tax)
+                            </span>
+                            <span class="font-bold {% if moderate_growth_value < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                £{{ moderate_growth_value|floatformat:0|intcomma }}
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center pt-2">
+                            <span class="font-bold">IRR (10 years)</span>
+                            <span class="font-bold text-primary-blue" id="irr1_7Growth">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 3.4% Growth Scenario -->
+                <div class="border border-gray-200 rounded-lg p-6">
+                    <div class="text-center">
+                        <h3 class="text-lg font-bold text-primary-blue mb-2">3.4% Capital Growth</h3>
+                        <div class="bg-linear-to-r from-primary-blue to-blue-600 text-white rounded-lg p-2 mb-0">
+                            <div class="text-sm opacity-90 mb-1">Total Return After Tax</div>
+                            <div class="text-3xl font-bold">
+                                {% with total_return=total_net_income_after_tax|add:average_growth_value %}
+                                £{{ total_return|floatformat:0|intcomma }}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pie Chart -->
+                    <div class="relative h-40 mb-4 flex items-center justify-center" style="margin-top: -50px;">
+                        <canvas id="pieChart3_4Growth"></canvas>
+                    </div>
+                    
+                    <!-- Breakdown -->
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+                            <span class="flex items-center">
+                                <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                Forecast Rental Income (After Tax)
+                            </span>
+                            <span class="font-bold">£{{ total_net_income_after_tax|floatformat:0|intcomma }}</span>
+                        </div>
+                        <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+                            <span class="flex items-center">
+                                <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                                Forecast Capital Growth (After Tax)
+                            </span>
+                            <span class="font-bold {% if average_growth_value < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                £{{ average_growth_value|floatformat:0|intcomma }}
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center pt-2">
+                            <span class="font-bold">IRR (10 years)</span>
+                            <span class="font-bold text-primary-blue" id="irr3_4Growth">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- Explanation -->
+            <div class="bg-blue-100 p-6 rounded-lg mt-6">
+                <h5 class="text-blue-800 font-medium mb-3"><i class="fas fa-info-circle mr-2"></i>Understanding Your Returns</h5>
+                <ul class="mb-0 text-blue-700 space-y-1">
+                    <li><i class="fas fa-chart-pie mr-2"></i><strong>Rental Income (After Tax)</strong> represents the total net cash flow from rental operations over 10 years after all taxes</li>
+                    <li><i class="fas fa-home mr-2"></i><strong>Capital Growth (After Tax)</strong> shows the property appreciation less selling costs and capital gains tax</li>
+                    <li><i class="fas fa-percentage mr-2"></i><strong>IRR (Internal Rate of Return)</strong> is the annualized rate of return on your investment, accounting for the timing of all cash flows</li>
+                    <li><i class="fas fa-coins mr-2"></i>The pie charts visualize the proportion of your total returns coming from income vs. capital appreciation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- End Investment Returns Breakdown Section -->
+
     <!-- Main Hero Grid Container -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+    <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
         
         <!-- Left Side - Property Details Box -->
-        <div class="md:col-span-1">
+        <!-- <div class="md:col-span-1">
             <div class="bg-white rounded-lg shadow-lg overflow-hidden h-full min-h-[400px] max-h-[600px]">
                 <div class="p-6">
                     <h2 class="text-primary-blue text-3xl font-bold">{{ deal_data.deal_name }}</h2>
@@ -113,15 +273,15 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- End Left Side - Property Details Box -->
 
         <!-- Right Side - 2x2 Grid -->
-        <div class="md:col-span-1">
+        <!-- <div class="md:col-span-1">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 h-full min-h-[400px] max-h-[600px]">
                 
                 <!-- Top Left Square - NRAT -->
-                <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full border border-gray-200">
+                <!-- <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full border border-gray-200">
                     <div class="flex items-center justify-center">
                         <h4 class="text-primary-blue mb-0 font-bold text-lg">NRAT</h4>
                     </div>
@@ -141,10 +301,10 @@
                             {% if nrat >= 8 %}Excellent{% elif nrat >= 5 %}Good{% else %}Poor{% endif %}
                         </span>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Top Right Square - Monthly Income -->
-                <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
+                <!-- <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
                     <div class="flex items-center justify-center">
                         <h4 class="text-primary-blue mb-0 font-bold text-lg">Monthly Income</h4>
                     </div>
@@ -164,10 +324,10 @@
                         {% if monthly_net_income > 0 %}Positive{% elif monthly_net_income == 0 %}Break Even{% else %}Negative{% endif %}
                         </span>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Bottom Left Square - Gross Yield -->
-                <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
+                <!-- <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
                     <div class="flex items-center justify-center">
                         <h4 class="text-primary-blue mb-0 font-bold text-lg">Gross Yield</h4>
                     </div>
@@ -187,10 +347,10 @@
                             {% if gross_annual_yield > 5 %}High{% elif gross_annual_yield > 3 %}Moderate{% else %}Low{% endif %}
                         </span>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Bottom Right Square - Net Yield -->
-                <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
+                <!-- <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
                     <div class="flex items-center justify-center">
                         <h4 class="text-primary-blue mb-0 font-bold text-lg">Net Yield</h4>
                     </div>
@@ -210,16 +370,15 @@
                             {% if net_annual_yield > 4 %}High{% elif net_annual_yield > 2 %}Moderate{% else %}Low{% endif %}
                         </span>
                     </div>
-                </div>
+                </div> -->
 
-            </div>      
+            <!-- </div>      
         </div>
-    </div>
-    <!-- End Main Hero Grid Container -->
-    <br>
+        </div> -->
+        <!-- End Main Hero Grid Container -->
 
-    <!-- KPI Dashboard Section -->
-    <div class="bg-white rounded-lg shadow-lg mb-8 mt-12 overflow-hidden">
+        <!-- KPI Dashboard Section -->
+        <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
         <div class="p-4 sm:p-6 lg:p-8">
             <div class="text-center mb-6 sm:mb-8">
                 <h1 class="text-4xl text-primary-blue mb-3 font-bold">Performance Dashboard</h1>
@@ -471,7 +630,7 @@
     <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
         <div class="p-8">
             <div class="text-center mb-8">
-                <h1 class="text-4xl text-primary-blue mb-3 font-bold">Capital Growth Analysis</h1>
+                <h1 class="text-4xl text-primary-blue mb-3 font-bold">Forecast Capital Growth Analysis</h1>
                 <p class="text-primary-blue">This section provides an analysis of the capital growth forecast for the property, including historical trends and future projections. <strong>Many buy-to-let investors buy property assuming that they will get capital appreciation. We have tested this for you to give you some insight into what capital appreciation you may achieve over the next 10 years.</strong></p>
             </div>
 
@@ -1082,6 +1241,207 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         new Chart(cashFlowCtx.getContext('2d'), cashFlowConfig);
+    }
+
+    // Investment Returns Pie Charts
+    function createReturnsPieChart(canvasId, rentalIncome, capitalGrowth) {
+        const ctx = document.getElementById(canvasId);
+        if (!ctx) return;
+        
+        // If both are negative, show empty pie chart outline
+        if (rentalIncome < 0 && capitalGrowth < 0) {
+            new Chart(ctx.getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: ['No Returns'],
+                    datasets: [{
+                        data: [1],
+                        backgroundColor: ['rgba(200, 200, 200, 0.1)'],
+                        borderColor: ['rgba(200, 200, 200, 0.5)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    }
+                }
+            });
+            return;
+        }
+        
+        // If rental income is negative but capital growth is positive, only show capital growth
+        if (rentalIncome < 0 && capitalGrowth > 0) {
+            new Chart(ctx.getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: ['Capital Growth'],
+                    datasets: [{
+                        data: [capitalGrowth],
+                        backgroundColor: ['rgba(59, 130, 246, 0.8)'],
+                        borderColor: ['rgba(59, 130, 246, 1)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': £' + context.parsed.toLocaleString(undefined, {maximumFractionDigits: 0});
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            return;
+        }
+        
+        // If capital growth is negative, don't show the chart
+        if (capitalGrowth < 0) {
+            // Leave canvas blank - don't create a chart
+            return;
+        }
+        
+        // If both are effectively zero, don't show chart
+        if (rentalIncome < 100 && capitalGrowth < 100) {
+            return;
+        }
+        
+        // Show chart with both rental income and capital growth (both positive)
+        new Chart(ctx.getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: ['Rental Income', 'Capital Growth'],
+                datasets: [{
+                    data: [rentalIncome, capitalGrowth],
+                    backgroundColor: [
+                        'rgba(34, 197, 94, 0.8)',  // Green for rental income
+                        'rgba(59, 130, 246, 0.8)'   // Blue for capital growth
+                    ],
+                    borderColor: [
+                        'rgba(34, 197, 94, 1)', 
+                        'rgba(59, 130, 246, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': £' + context.parsed.toLocaleString(undefined, {maximumFractionDigits: 0});
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // IRR Calculation Function
+    function calculateIRR(initialInvestment, cashFlows, terminalValue) {
+        // IRR calculation using Newton-Raphson method
+        const maxIterations = 1000;
+        const tolerance = 0.00001;
+        let rate = 0.1; // Initial guess: 10%
+        
+        for (let i = 0; i < maxIterations; i++) {
+            let npv = -initialInvestment;
+            let derivative = 0;
+            
+            // Add annual cash flows
+            for (let year = 1; year <= cashFlows.length; year++) {
+                npv += cashFlows[year - 1] / Math.pow(1 + rate, year);
+                derivative -= year * cashFlows[year - 1] / Math.pow(1 + rate, year + 1);
+            }
+            
+            // Add terminal value (capital growth) in year 10
+            npv += terminalValue / Math.pow(1 + rate, 10);
+            derivative -= 10 * terminalValue / Math.pow(1 + rate, 11);
+            
+            // Check for convergence
+            if (Math.abs(npv) < tolerance) {
+                return rate * 100; // Convert to percentage
+            }
+            
+            // Newton-Raphson update
+            if (Math.abs(derivative) < tolerance) {
+                break; // Avoid division by zero
+            }
+            rate = rate - npv / derivative;
+            
+            // Boundary check
+            if (rate < -0.99 || rate > 10) {
+                return null; // IRR out of reasonable range
+            }
+        }
+        
+        return null; // Did not converge
+    }
+    
+    // Initialize pie charts and calculate IRR
+    const totalCashDeployed = {{ total_cash_deployed|default:0 }};
+    const rentalIncome = {{ total_net_income_after_tax|default:0 }};
+    const capitalGrowth0 = {{ no_growth_value|default:0 }};
+    const capitalGrowth1_7 = {{ moderate_growth_value|default:0 }};
+    const capitalGrowth3_4 = {{ average_growth_value|default:0 }};
+    
+    // Annual cash flows from projections
+    const annualCashFlows = [
+        {% for projection in cashflow_projection %}
+            {{ projection.net_cash_flow_after_tax|default:0 }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    // Create pie charts
+    createReturnsPieChart('pieChart0Growth', rentalIncome, capitalGrowth0);
+    createReturnsPieChart('pieChart1_7Growth', rentalIncome, capitalGrowth1_7);
+    createReturnsPieChart('pieChart3_4Growth', rentalIncome, capitalGrowth3_4);
+    
+    // Calculate and display IRR for each scenario
+    const irr0 = calculateIRR(totalCashDeployed, annualCashFlows, capitalGrowth0);
+    const irr1_7 = calculateIRR(totalCashDeployed, annualCashFlows, capitalGrowth1_7);
+    const irr3_4 = calculateIRR(totalCashDeployed, annualCashFlows, capitalGrowth3_4);
+    
+    if (irr0 !== null) {
+        document.getElementById('irr0Growth').textContent = irr0.toFixed(2) + '%';
+        document.getElementById('irr0Growth').className = irr0 >= 0 ? 'font-bold text-green-600' : 'font-bold text-red-600';
+    } else {
+        document.getElementById('irr0Growth').textContent = 'N/A';
+    }
+    
+    if (irr1_7 !== null) {
+        document.getElementById('irr1_7Growth').textContent = irr1_7.toFixed(2) + '%';
+        document.getElementById('irr1_7Growth').className = irr1_7 >= 0 ? 'font-bold text-green-600' : 'font-bold text-red-600';
+    } else {
+        document.getElementById('irr1_7Growth').textContent = 'N/A';
+    }
+    
+    if (irr3_4 !== null) {
+        document.getElementById('irr3_4Growth').textContent = irr3_4.toFixed(2) + '%';
+        document.getElementById('irr3_4Growth').className = irr3_4 >= 0 ? 'font-bold text-green-600' : 'font-bold text-red-600';
+    } else {
+        document.getElementById('irr3_4Growth').textContent = 'N/A';
     }
 
     // Cash flow toggle functions
