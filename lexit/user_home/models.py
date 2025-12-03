@@ -127,7 +127,11 @@ class Property(models.Model):
     def buyer_type_for_sdlt(self):
         """Determine the buyer type for SDLT calculations based on ownership status and UK residence"""
         if self.ownership_status == 'company':
-            return 'uk_company'
+            # Check if UK resident company
+            if self.uk_resident:
+                return 'uk_company'
+            else:
+                return 'non_uk_company'
         elif self.ownership_status == 'individual':
             # Check if UK resident for individuals
             if self.uk_resident:

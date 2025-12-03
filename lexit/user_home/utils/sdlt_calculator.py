@@ -361,9 +361,9 @@ class SDLTCalculator:
             }
         ]
         
-        # Additional property (BTL) surcharge rates - tiered system
-        # These are ADDED to the base rates above
-        self.btl_tiered_surcharges = [
+        # Additional property (BTL) surcharge rates - tiered system for individuals
+        # These are the full rates (base + 5% surcharge)
+        self.btl_tiered_individual = [
             {
                 'from': '2016-04-01',
                 'to': '2050-12-31',
@@ -374,6 +374,44 @@ class SDLTCalculator:
                     {'limit': 1500000, 'rate': 0.15},     # 15% on £925k-£1.5m
                     {'limit': float('inf'), 'rate': 0.17} # 17% above £1.5m
                 ]
+            }
+        ]
+        
+        # Company BTL rates (UK resident company)
+        # For purchases ≤ £500k: banded rates with 5% surcharge
+        # For purchases > £500k: flat 17%
+        self.btl_tiered_company_uk = [
+            {
+                'from': '2016-04-01',
+                'to': '2050-12-31',
+                'thresholds': [
+                    {'limit': 125000, 'rate': 0.05},      # 5% on first £125k
+                    {'limit': 250000, 'rate': 0.07},      # 7% on £125k-£250k
+                    {'limit': 925000, 'rate': 0.10},      # 10% on £250k-£925k
+                    {'limit': 1500000, 'rate': 0.15},     # 15% on £925k-£1.5m
+                    {'limit': float('inf'), 'rate': 0.17} # 17% above £1.5m
+                ],
+                'flat_rate_threshold': 500000,
+                'flat_rate': 0.17
+            }
+        ]
+        
+        # Non-resident company BTL rates
+        # For purchases ≤ £500k: banded rates with 5% surcharge + 2% non-resident surcharge
+        # For purchases > £500k: flat 19%
+        self.btl_tiered_company_non_uk = [
+            {
+                'from': '2016-04-01',
+                'to': '2050-12-31',
+                'thresholds': [
+                    {'limit': 125000, 'rate': 0.07},      # 7% on first £125k (5% + 2%)
+                    {'limit': 250000, 'rate': 0.09},      # 9% on £125k-£250k (7% + 2%)
+                    {'limit': 925000, 'rate': 0.12},      # 12% on £250k-£925k (10% + 2%)
+                    {'limit': 1500000, 'rate': 0.17},     # 17% on £925k-£1.5m (15% + 2%)
+                    {'limit': float('inf'), 'rate': 0.19} # 19% above £1.5m (17% + 2%)
+                ],
+                'flat_rate_threshold': 500000,
+                'flat_rate': 0.19
             }
         ]
     
@@ -387,14 +425,22 @@ class SDLTCalculator:
                 return rate_tier
         return None
     
-    def find_btl_tiered_surcharges(self, purchase_date):
-        """Find the applicable BTL tiered surcharge structure for a given date"""
-        for surcharge_period in self.btl_tiered_surcharges:
-            from_date = datetime.strptime(surcharge_period['from'], '%Y-%m-%d').date()
-            to_date = datetime.strptime(surcharge_period['to'], '%Y-%m-%d').date()
+    def find_btl_tiered_structure(self, purchase_date, buyer_type):
+        """Find the applicable BTL tiered structure for a given date and buyer type"""
+        # Determine which rate structure to use based on buyer type
+        if buyer_type == 'uk_company':
+            rate_structures = self.btl_tiered_company_uk
+        elif buyer_type == 'non_uk_company':
+            rate_structures = self.btl_tiered_company_non_uk
+        else:  # uk_individual or non_uk_individual
+            rate_structures = self.btl_tiered_individual
+        
+        for structure in rate_structures:
+            from_date = datetime.strptime(structure['from'], '%Y-%m-%d').date()
+            to_date = datetime.strptime(structure['to'], '%Y-%m-%d').date()
             
             if from_date <= purchase_date <= to_date:
-                return surcharge_period['thresholds']
+                return structure
         return None
     
     def find_btl_surcharge_rate(self, purchase_date, buyer_type):
@@ -415,7 +461,7 @@ class SDLTCalculator:
             purchase_date: Date of purchase
             purchase_price: Purchase price of property
             ownership_type: 'individual' or 'company' (legacy support)
-            buyer_type: 'uk_individual', 'non_uk_individual', or 'uk_company' (new system)
+            buyer_type: 'uk_individual', 'non_uk_individual', 'uk_company', or 'non_uk_company'
             is_btl: Whether this is a Buy-to-Let property
         """
         try:
@@ -436,7 +482,7 @@ class SDLTCalculator:
                     raise ValueError('Invalid ownership type')
             
             # Validate buyer_type
-            valid_buyer_types = ['uk_individual', 'non_uk_individual', 'uk_company']
+            valid_buyer_types = ['uk_individual', 'non_uk_individual', 'uk_company', 'non_uk_company']
             if buyer_type not in valid_buyer_types:
                 raise ValueError(f'Buyer type must be one of: {", ".join(valid_buyer_types)}')
             
@@ -450,43 +496,63 @@ class SDLTCalculator:
             if not applicable_rate_tier:
                 raise ValueError('No applicable stamp duty rates found for the given date')
             
-            # Get BTL tiered surcharge structure if applicable
-            btl_tiered_surcharges = None
+            # Get BTL structure if applicable
+            btl_structure = None
             if is_btl:
-                btl_tiered_surcharges = self.find_btl_tiered_surcharges(purchase_date)
+                btl_structure = self.find_btl_tiered_structure(purchase_date, buyer_type)
             
             # Calculate SDLT using tiered system
             sdlt = 0
             breakdown = []
             previous_limit = 0
+            is_flat_rate = False
             
-            # For BTL, we use the tiered surcharge rates directly (not base + surcharge)
-            if is_btl and btl_tiered_surcharges:
-                # Use BTL tiered rates (which are the full rates, not surcharges)
-                for threshold in btl_tiered_surcharges:
-                    taxable_amount = min(purchase_price, threshold['limit']) - previous_limit
-                    
-                    if taxable_amount <= 0:
-                        break
-                    
-                    rate = Decimal(str(threshold['rate']))
-                    tax_on_band = taxable_amount * rate
-                    sdlt += tax_on_band
-                    
-                    # Build description for this band
-                    band_description = f"£{previous_limit:,} - £{threshold['limit']:,}" if threshold['limit'] != float('inf') else f"£{previous_limit:,} - ∞"
+            # For BTL, check if flat rate applies (companies over £500k)
+            if is_btl and btl_structure:
+                # Check if flat rate applies (companies with purchase price > threshold)
+                flat_rate_threshold = btl_structure.get('flat_rate_threshold')
+                flat_rate = btl_structure.get('flat_rate')
+                
+                if (buyer_type in ['uk_company', 'non_uk_company'] and 
+                    flat_rate_threshold and flat_rate and 
+                    purchase_price > flat_rate_threshold):
+                    # Apply flat rate on entire purchase price
+                    is_flat_rate = True
+                    rate = Decimal(str(flat_rate))
+                    sdlt = purchase_price * rate
                     
                     breakdown.append({
-                        'band': band_description,
-                        'taxable_amount': taxable_amount,
+                        'band': f'Entire purchase (flat rate for company > £{flat_rate_threshold:,})',
+                        'taxable_amount': purchase_price,
                         'rate': f"{rate * 100:.1f}%",
-                        'tax': tax_on_band
+                        'tax': sdlt
                     })
-                    
-                    previous_limit = threshold['limit']
-                    
-                    if purchase_price <= threshold['limit']:
-                        break
+                else:
+                    # Use BTL tiered rates
+                    for threshold in btl_structure['thresholds']:
+                        taxable_amount = min(purchase_price, threshold['limit']) - previous_limit
+                        
+                        if taxable_amount <= 0:
+                            break
+                        
+                        rate = Decimal(str(threshold['rate']))
+                        tax_on_band = taxable_amount * rate
+                        sdlt += tax_on_band
+                        
+                        # Build description for this band
+                        band_description = f"£{previous_limit:,} - £{threshold['limit']:,}" if threshold['limit'] != float('inf') else f"£{previous_limit:,} - ∞"
+                        
+                        breakdown.append({
+                            'band': band_description,
+                            'taxable_amount': taxable_amount,
+                            'rate': f"{rate * 100:.1f}%",
+                            'tax': tax_on_band
+                        })
+                        
+                        previous_limit = threshold['limit']
+                        
+                        if purchase_price <= threshold['limit']:
+                            break
             else:
                 # Standard rates for non-BTL properties
                 for threshold in applicable_rate_tier['thresholds']:
@@ -520,6 +586,7 @@ class SDLTCalculator:
                 'rate_tier': applicable_rate_tier['tier'],
                 'buyer_type': buyer_type,
                 'is_btl': is_btl,
+                'is_flat_rate': is_flat_rate,
                 'breakdown': breakdown,
                 'effective_rate': f"{(sdlt / purchase_price) * 100:.3f}%"
             }
