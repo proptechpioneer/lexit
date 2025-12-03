@@ -360,6 +360,22 @@ class SDLTCalculator:
                 ]
             }
         ]
+        
+        # Additional property (BTL) surcharge rates - tiered system
+        # These are ADDED to the base rates above
+        self.btl_tiered_surcharges = [
+            {
+                'from': '2016-04-01',
+                'to': '2050-12-31',
+                'thresholds': [
+                    {'limit': 125000, 'rate': 0.05},      # 5% on first £125k
+                    {'limit': 250000, 'rate': 0.07},      # 7% on £125k-£250k
+                    {'limit': 925000, 'rate': 0.10},      # 10% on £250k-£925k
+                    {'limit': 1500000, 'rate': 0.15},     # 15% on £925k-£1.5m
+                    {'limit': float('inf'), 'rate': 0.17} # 17% above £1.5m
+                ]
+            }
+        ]
     
     def find_applicable_rate_tier(self, purchase_date):
         """Find the applicable rate tier for a given date"""
@@ -369,6 +385,16 @@ class SDLTCalculator:
             
             if from_date <= purchase_date <= to_date:
                 return rate_tier
+        return None
+    
+    def find_btl_tiered_surcharges(self, purchase_date):
+        """Find the applicable BTL tiered surcharge structure for a given date"""
+        for surcharge_period in self.btl_tiered_surcharges:
+            from_date = datetime.strptime(surcharge_period['from'], '%Y-%m-%d').date()
+            to_date = datetime.strptime(surcharge_period['to'], '%Y-%m-%d').date()
+            
+            if from_date <= purchase_date <= to_date:
+                return surcharge_period['thresholds']
         return None
     
     def find_btl_surcharge_rate(self, purchase_date, buyer_type):
@@ -424,76 +450,76 @@ class SDLTCalculator:
             if not applicable_rate_tier:
                 raise ValueError('No applicable stamp duty rates found for the given date')
             
-            # Calculate base SDLT
+            # Get BTL tiered surcharge structure if applicable
+            btl_tiered_surcharges = None
+            if is_btl:
+                btl_tiered_surcharges = self.find_btl_tiered_surcharges(purchase_date)
+            
+            # Calculate SDLT using tiered system
             sdlt = 0
             breakdown = []
             previous_limit = 0
             
-            # Get BTL surcharge rate if applicable
-            btl_surcharge_rate = 0
-            if is_btl:
-                btl_surcharge_rate = self.find_btl_surcharge_rate(purchase_date, buyer_type)
+            # For BTL, we use the tiered surcharge rates directly (not base + surcharge)
+            if is_btl and btl_tiered_surcharges:
+                # Use BTL tiered rates (which are the full rates, not surcharges)
+                for threshold in btl_tiered_surcharges:
+                    taxable_amount = min(purchase_price, threshold['limit']) - previous_limit
+                    
+                    if taxable_amount <= 0:
+                        break
+                    
+                    rate = Decimal(str(threshold['rate']))
+                    tax_on_band = taxable_amount * rate
+                    sdlt += tax_on_band
+                    
+                    # Build description for this band
+                    band_description = f"£{previous_limit:,} - £{threshold['limit']:,}" if threshold['limit'] != float('inf') else f"£{previous_limit:,} - ∞"
+                    
+                    breakdown.append({
+                        'band': band_description,
+                        'taxable_amount': taxable_amount,
+                        'rate': f"{rate * 100:.1f}%",
+                        'tax': tax_on_band
+                    })
+                    
+                    previous_limit = threshold['limit']
+                    
+                    if purchase_price <= threshold['limit']:
+                        break
+            else:
+                # Standard rates for non-BTL properties
+                for threshold in applicable_rate_tier['thresholds']:
+                    taxable_amount = min(purchase_price, threshold['limit']) - previous_limit
+                    
+                    if taxable_amount <= 0:
+                        break
+                    
+                    rate = Decimal(str(threshold['rate']))
+                    tax_on_band = taxable_amount * rate
+                    sdlt += tax_on_band
+                    
+                    # Build description for this band
+                    band_description = f"£{previous_limit:,} - £{threshold['limit']:,}" if threshold['limit'] != float('inf') else f"£{previous_limit:,} - ∞"
+                    
+                    breakdown.append({
+                        'band': band_description,
+                        'taxable_amount': taxable_amount,
+                        'rate': f"{rate * 100:.1f}%",
+                        'tax': tax_on_band
+                    })
+                    
+                    previous_limit = threshold['limit']
+                    
+                    if purchase_price <= threshold['limit']:
+                        break
             
-            # Legacy company surcharge (for properties over £40k purchased by companies after April 2016)
-            # This is separate from BTL surcharge and applies to all company purchases
-            is_legacy_company_surcharge = (buyer_type == 'uk_company' and 
-                                         purchase_date >= datetime(2016, 4, 1).date())
-            
-            for threshold in applicable_rate_tier['thresholds']:
-                taxable_amount = min(purchase_price, threshold['limit']) - previous_limit
-                
-                if taxable_amount <= 0:
-                    break
-                
-                rate = Decimal(str(threshold['rate']))
-                
-                # Apply legacy company surcharge if applicable (for properties over £40k)
-                if is_legacy_company_surcharge and threshold['limit'] > 40000:
-                    rate += Decimal('0.03')
-                
-                # Apply BTL surcharge if applicable (applies to all bands)
-                if is_btl and btl_surcharge_rate > 0:
-                    rate += Decimal(str(btl_surcharge_rate))
-                
-                tax_on_band = taxable_amount * rate
-                sdlt += tax_on_band
-                
-                # Build description for this band
-                band_description = f"£{previous_limit:,} - £{threshold['limit']:,}" if threshold['limit'] != float('inf') else f"£{previous_limit:,} - ∞"
-                
-                breakdown.append({
-                    'band': band_description,
-                    'taxable_amount': taxable_amount,
-                    'rate': f"{rate * 100:.1f}%",
-                    'tax': tax_on_band
-                })
-                
-                previous_limit = threshold['limit']
-                
-                if purchase_price <= threshold['limit']:
-                    break
-            
-            # Calculate total surcharges for reporting
-            total_btl_surcharge = 0
-            total_company_surcharge = 0
-            
-            if is_btl and btl_surcharge_rate > 0:
-                total_btl_surcharge = purchase_price * Decimal(str(btl_surcharge_rate))
-            
-            if is_legacy_company_surcharge:
-                # Company surcharge applies to amount over £40k
-                company_surcharge_amount = max(0, purchase_price - 40000)
-                total_company_surcharge = company_surcharge_amount * Decimal('0.03')
             
             return {
                 'sdlt': round(sdlt, 2),
                 'rate_tier': applicable_rate_tier['tier'],
                 'buyer_type': buyer_type,
                 'is_btl': is_btl,
-                'btl_surcharge_rate': f"{btl_surcharge_rate * 100:.1f}%" if btl_surcharge_rate > 0 else "0.0%",
-                'btl_surcharge_amount': round(total_btl_surcharge, 2),
-                'company_surcharge': is_legacy_company_surcharge,
-                'company_surcharge_amount': round(total_company_surcharge, 2),
                 'breakdown': breakdown,
                 'effective_rate': f"{(sdlt / purchase_price) * 100:.3f}%"
             }
