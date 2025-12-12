@@ -2,7 +2,7 @@
 {% load humanize %}
 
 {% block title %}
-    LEXIT | Deal Analysis Results
+    LEXIT | Deal Analysis Rfor esults
 {% endblock %}
 
 {% block content %}
@@ -1322,8 +1322,41 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // If capital growth is negative, don't show the chart
-        if (capitalGrowth < 0) {
+        // If capital growth is negative but rental income is positive, only show rental income
+        if (capitalGrowth < 0 && rentalIncome > 0) {
+            new Chart(ctx.getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: ['Rental Income'],
+                    datasets: [{
+                        data: [rentalIncome],
+                        backgroundColor: ['rgba(59, 130, 246, 0.8)'],
+                        borderColor: ['rgba(59, 130, 246, 1)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': £' + context.parsed.toLocaleString(undefined, {maximumFractionDigits: 0});
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            return;
+        }
+        
+        // If both are negative, show empty pie chart outline
+        if (rentalIncome < 0 && capitalGrowth < 0) {
             // Leave canvas blank - don't create a chart
             return;
         }
