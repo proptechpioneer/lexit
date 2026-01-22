@@ -135,6 +135,8 @@
                     <!-- Copyright -->
                     <div>
                         <p class="m-0 text-sm text-[#05113a] opacity-80">&copy; {% now "Y" %} LEXIT. All rights reserved.</p>
+                        <p class="m-0 text-xs text-[#05113a] opacity-70 mt-2">PRS IM Limited</p>
+                        <p class="m-0 text-xs text-[#05113a] opacity-70">86-90 Paul Street, London EC2A 4NE, England</p>
                     </div>
                 </div>
                 
@@ -239,9 +241,13 @@
 
             <!-- Bottom Bar -->
             <div class="border-t border-gray-600 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-400 text-sm">
-                    © {{ "now"|date:"Y" }} LEXIT. All rights reserved.
-                </p>
+                <div>
+                    <p class="text-gray-400 text-sm">
+                        © {{ "now"|date:"Y" }} LEXIT. All rights reserved.
+                    </p>
+                    <p class="text-gray-400 text-xs mt-2">PRS-IM Limited</p>
+                    <p class="text-gray-400 text-xs">86-90 Paul Street, London EC2A 4NE, England</p>
+                </div>
                 <div class="flex space-x-6 mt-4 md:mt-0">
                     <a href="javascript:void(0);" onclick="openPrivacyModal()" class="text-gray-400 hover:text-white text-sm transition-colors cursor-pointer">Privacy Policy</a>
                     <a href="javascript:void(0);" onclick="openTermsModal()" class="text-gray-400 hover:text-white text-sm transition-colors cursor-pointer">Terms of Service</a>
