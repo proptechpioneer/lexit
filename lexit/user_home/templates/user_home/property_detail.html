@@ -955,11 +955,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to get constrained gauge size for 2x2 grid
     function getConstrainedGaugeSize() {
         const width = window.innerWidth;
-        if (width >= 1280) return { width: 160, height: 80 }; // xl - balanced size
-        if (width >= 1024) return { width: 144, height: 72 };  // lg - balanced size  
-        if (width >= 768) return { width: 128, height: 64 };   // md - balanced size
-        if (width >= 640) return { width: 112, height: 56 };   // sm - balanced size
-        return { width: 96, height: 48 };                     // mobile - compact
+        // Height needs to be slightly more than half width to properly display semi-circle arc
+        if (width >= 1280) return { width: 180, height: 100 }; // xl - proper arc ratio
+        if (width >= 1024) return { width: 160, height: 90 };  // lg - proper arc ratio  
+        if (width >= 768) return { width: 140, height: 80 };   // md - proper arc ratio
+        if (width >= 640) return { width: 120, height: 70 };   // sm - proper arc ratio
+        return { width: 100, height: 60 };                     // mobile - proper arc ratio
     }
 
     // Gauge data configuration
@@ -986,6 +987,14 @@ document.addEventListener('DOMContentLoaded', function() {
             cutout: '85%',
             rotation: -90,
             circumference: 180,
+            layout: {
+                padding: {
+                    top: 5,
+                    bottom: 5,
+                    left: 10,
+                    right: 10
+                }
+            },
             plugins: {
                 tooltip: {
                     enabled: false
@@ -1120,7 +1129,12 @@ document.addEventListener('DOMContentLoaded', function() {
             rotation: -90,
             circumference: 180,
             layout: {
-                padding: 0
+                padding: {
+                    top: 5,
+                    bottom: 5,
+                    left: 10,
+                    right: 10
+                }
             },
             plugins: {
                 tooltip: { enabled: false },
@@ -1181,7 +1195,12 @@ document.addEventListener('DOMContentLoaded', function() {
             rotation: -90,
             circumference: 180,
             layout: {
-                padding: 0
+                padding: {
+                    top: 5,
+                    bottom: 5,
+                    left: 10,
+                    right: 10
+                }
             },
             plugins: {
                 tooltip: { enabled: false },
@@ -1237,7 +1256,12 @@ document.addEventListener('DOMContentLoaded', function() {
             rotation: -90,
             circumference: 180,
             layout: {
-                padding: 0
+                padding: {
+                    top: 5,
+                    bottom: 5,
+                    left: 10,
+                    right: 10
+                }
             },
             plugins: {
                 tooltip: { enabled: false },
@@ -1298,7 +1322,12 @@ document.addEventListener('DOMContentLoaded', function() {
             rotation: -90,
             circumference: 180,
             layout: {
-                padding: 0
+                padding: {
+                    top: 5,
+                    bottom: 5,
+                    left: 10,
+                    right: 10
+                }
             },
             plugins: {
                 tooltip: { enabled: false },
@@ -1844,7 +1873,7 @@ document.addEventListener('DOMContentLoaded', function() {
 #weeklyRentGauge,
 #grossYieldGaugeSmall {
     max-width: 180px !important;
-    max-height: 90px !important;
+    max-height: 100px !important;
 }
 
 /* Ensure status badges are visible in gauge containers */
@@ -1875,8 +1904,8 @@ document.addEventListener('DOMContentLoaded', function() {
     #monthlyIncomeGaugeSmall,
     #weeklyRentGauge,
     #grossYieldGaugeSmall {
-        max-width: 144px !important;
-        max-height: 72px !important;
+        max-width: 140px !important;
+        max-height: 80px !important;
     }
     
     .gauge-container + div {
@@ -1893,8 +1922,8 @@ document.addEventListener('DOMContentLoaded', function() {
     #monthlyIncomeGaugeSmall,
     #weeklyRentGauge,
     #grossYieldGaugeSmall {
-        max-width: 112px !important;
-        max-height: 56px !important;
+        max-width: 120px !important;
+        max-height: 70px !important;
     }
     
     .gauge-container + div {
