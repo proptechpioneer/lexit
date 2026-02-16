@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% load humanize %}
+{% load l10n %}
 
 {% block title %}
     LEXIT | {{ property.property_name }}
@@ -943,6 +944,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // Store chart instances for resize
     var chartInstances = [];
 
+    function toNumber(value) {
+        var parsed = parseFloat(value);
+        return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function getGaugeParts(rawValue, maxValue) {
+        var safeMax = Math.max(Math.abs(maxValue), 1);
+        var value = toNumber(rawValue);
+        var gaugeValue = value < 0 ? safeMax * 0.05 : Math.min(Math.abs(value), safeMax);
+        var remainder = Math.max(0, safeMax - gaugeValue);
+        return {
+            value: value,
+            gaugeValue: gaugeValue,
+            remainder: remainder,
+            color: value < 0 ? '#ef4444' : 'rgba(255, 19, 146, 0.8)'
+        };
+    }
+
     // Function to get appropriate gauge size based on viewport
     function getGaugeSize() {
         const width = window.innerWidth;
@@ -1107,18 +1126,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Small Property Value Gauge (Top Left Square)
     var propertyValueSmallData = {
-        value: {{ property.estimated_market_value|default:0 }},
+        value: toNumber('{{ property.estimated_market_value|default_if_none:0|unlocalize|escapejs }}'),
         max: 1000000,
         label: "Property Value"
     };
+
+    var propertyValueSmallParts = getGaugeParts(propertyValueSmallData.value, propertyValueSmallData.max);
 
     var propertyValueSmallConfig = {
         type: 'doughnut',
         data: {
             labels: [propertyValueSmallData.label],
             datasets: [{
-                data: [propertyValueSmallData.value, propertyValueSmallData.max - propertyValueSmallData.value],
-                backgroundColor: ['rgba(255, 19, 146, 0.8)', 'rgba(0, 0, 0, 0.1)'],
+                data: [propertyValueSmallParts.gaugeValue, propertyValueSmallParts.remainder],
+                backgroundColor: [propertyValueSmallParts.color, 'rgba(0, 0, 0, 0.1)'],
                 borderWidth: 0
             }]
         },
@@ -1168,23 +1189,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Small Monthly Income Gauge (Top Right Square)
     var monthlyIncomeSmallData = {
-        value: {{ net_monthly_income|default:0 }},
+        value: toNumber('{{ net_monthly_income|default_if_none:0|unlocalize|escapejs }}'),
         max: 5000, // £5000 max monthly income
         label: "Monthly Income"
     };
 
-    // Handle negative values for monthly income
-    var monthlyIncomeValue = monthlyIncomeSmallData.value;
-    var monthlyIncomeGaugeValue = monthlyIncomeValue < 0 ? monthlyIncomeSmallData.max * 0.05 : monthlyIncomeValue;
-    var monthlyIncomeBackgroundColor = monthlyIncomeValue < 0 ? '#ef4444' : 'rgba(255, 19, 146, 0.8)';
+    var monthlyIncomeParts = getGaugeParts(monthlyIncomeSmallData.value, monthlyIncomeSmallData.max);
 
     var monthlyIncomeSmallConfig = {
         type: 'doughnut',
         data: {
             labels: [monthlyIncomeSmallData.label],
             datasets: [{
-                data: [monthlyIncomeGaugeValue, monthlyIncomeSmallData.max - monthlyIncomeGaugeValue],
-                backgroundColor: [monthlyIncomeBackgroundColor, 'rgba(0, 0, 0, 0.1)'],
+                data: [monthlyIncomeParts.gaugeValue, monthlyIncomeParts.remainder],
+                backgroundColor: [monthlyIncomeParts.color, 'rgba(0, 0, 0, 0.1)'],
                 borderWidth: 0
             }]
         },
@@ -1234,18 +1252,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Weekly Rent Gauge (Bottom Left Square)
     var weeklyRentData = {
-        value: {{ property.weekly_rent|default:0 }},
-        max: 1000, // £1000 max weekly rent
-        label: "Weekly Rent"
+        value: toNumber('{{ gross_annual_yield|default_if_none:0|unlocalize|escapejs }}'),
+        max: 15, // 15% max gross yield
+        label: "Gross Yield"
     };
+
+    var weeklyRentParts = getGaugeParts(weeklyRentData.value, weeklyRentData.max);
 
     var weeklyRentConfig = {
         type: 'doughnut',
         data: {
             labels: [weeklyRentData.label],
             datasets: [{
-                data: [weeklyRentData.value, weeklyRentData.max - weeklyRentData.value],
-                backgroundColor: ['rgba(255, 19, 146, 0.8)', 'rgba(0, 0, 0, 0.1)'],
+                data: [weeklyRentParts.gaugeValue, weeklyRentParts.remainder],
+                backgroundColor: [weeklyRentParts.color, 'rgba(0, 0, 0, 0.1)'],
                 borderWidth: 0
             }]
         },
@@ -1295,23 +1315,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Small Gross Yield Gauge (Bottom Right Square)
     var grossYieldSmallData = {
-        value: {{ net_annual_yield|default:0 }},
+        value: toNumber('{{ net_annual_yield|default_if_none:0|unlocalize|escapejs }}'),
         max: 15, // 15% max yield
         label: "Net Yield"
     };
 
-    // Handle negative values for net yield
-    var grossYieldSmallValue = grossYieldSmallData.value;
-    var grossYieldSmallGaugeValue = grossYieldSmallValue < 0 ? grossYieldSmallData.max * 0.05 : grossYieldSmallValue;
-    var grossYieldSmallBackgroundColor = grossYieldSmallValue < 0 ? '#ef4444' : 'rgba(255, 19, 146, 0.8)';
+    var grossYieldSmallParts = getGaugeParts(grossYieldSmallData.value, grossYieldSmallData.max);
 
     var grossYieldSmallConfig = {
         type: 'doughnut',
         data: {
             labels: [grossYieldSmallData.label],
             datasets: [{
-                data: [grossYieldSmallGaugeValue, grossYieldSmallData.max - grossYieldSmallGaugeValue],
-                backgroundColor: [grossYieldSmallBackgroundColor, 'rgba(0, 0, 0, 0.1)'],
+                data: [grossYieldSmallParts.gaugeValue, grossYieldSmallParts.remainder],
+                backgroundColor: [grossYieldSmallParts.color, 'rgba(0, 0, 0, 0.1)'],
                 borderWidth: 0
             }]
         },
