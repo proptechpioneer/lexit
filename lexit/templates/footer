@@ -135,8 +135,10 @@
                     <!-- Copyright -->
                     <div>
                         <p class="m-0 text-sm text-[#05113a] opacity-80">&copy; {% now "Y" %} LEXIT. All rights reserved.</p>
-                        <p class="m-0 text-xs text-[#05113a] opacity-70 mt-2">PRS IM Limited</p>
-                        <p class="m-0 text-xs text-[#05113a] opacity-70">86-90 Paul Street, London EC2A 4NE, England</p>
+                        <p class="m-0 text-xs text-[#05113a] opacity-70 mt-2">LEXIT is owned and operated by PRS IM Limited and is part of the PRSim Ecosystem</p>
+                        <p class="m-0 text-xs text-[#05113a] opacity-70">PRS IM Limited, registered in England and Wales (Company No. 15803800)</p>
+                        <p class="m-0 text-xs text-[#05113a] opacity-70">3rd Floor, 86-90 Paul Street, London EC2A 4NE, England</p>
+                        <p class="m-0 text-xs text-[#05113a] opacity-70">Contact: +44 (0) 7771 107 963 | info@lexit.tech</p>    
                     </div>
                 </div>
                 
