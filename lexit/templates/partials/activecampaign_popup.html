@@ -1,0 +1,84 @@
+<div id="ac-popup-overlay" class="fixed inset-0 bg-black/50 z-50 hidden" aria-hidden="true"></div>
+<div id="ac-popup-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="ac-popup-title">
+  <div class="relative w-full max-w-xl bg-white rounded-lg shadow-lg p-6">
+    <button id="ac-popup-close" type="button" class="absolute top-3 right-3 text-primary-blue hover:text-dark-pink text-2xl leading-none" aria-label="Close signup popup">&times;</button>
+
+    <h2 id="ac-popup-title" class="font-archivo text-2xl text-primary-blue mb-3">Stay Ahead of the BtL Storm</h2>
+    <p class="text-primary-blue mb-5">
+      Join our mailing list for exclusive updates on Section 24, EPC upgrades, Renters' Rights Act changes, and proven strategies to protect &amp; grow your portfolio.
+    </p>
+
+    <form method="POST" action="https://prs-im.activehosted.com/proc.php" id="ac_mail_form" class="space-y-4">
+      <input type="hidden" name="u" value="1" />
+      <input type="hidden" name="f" value="1" />
+      <input type="hidden" name="s" value="" />
+      <input type="hidden" name="c" value="0" />
+      <input type="hidden" name="m" value="0" />
+      <input type="hidden" name="act" value="sub" />
+      <input type="hidden" name="v" value="2" />
+      <input type="hidden" name="or" value="66958a0d-eea5-4620-a384-95e59728dc90" />
+
+      <div>
+        <label for="ac_firstname" class="block font-semibold text-primary-blue mb-1">First Name</label>
+        <input id="ac_firstname" name="firstname" type="text" placeholder="Type your first name" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label for="ac_email" class="block font-semibold text-primary-blue mb-1">Email <span class="text-red-600">*</span></label>
+        <input id="ac_email" name="email" type="email" placeholder="Type your email" required class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label for="ac_btl" class="block font-semibold text-primary-blue mb-1">Do you own a Buy-to-Let?</label>
+        <select id="ac_btl" name="field[3]" class="w-full border border-gray-300 rounded px-3 py-2">
+          <option value=""></option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </div>
+
+      <button type="submit" class="w-full bg-dark-pink text-white py-2.5 rounded font-semibold hover:bg-primary-blue transition-colors">Submit</button>
+    </form>
+  </div>
+</div>
+
+<script>
+(function () {
+  var popupKey = 'ac_popup_seen';
+  var overlay = document.getElementById('ac-popup-overlay');
+  var modal = document.getElementById('ac-popup-modal');
+  var closeButton = document.getElementById('ac-popup-close');
+
+  if (!overlay || !modal || !closeButton) {
+    return;
+  }
+
+  function openPopup() {
+    overlay.classList.remove('hidden');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    overlay.setAttribute('aria-hidden', 'false');
+  }
+
+  function closePopup() {
+    overlay.classList.add('hidden');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    overlay.setAttribute('aria-hidden', 'true');
+    sessionStorage.setItem(popupKey, '1');
+  }
+
+  closeButton.addEventListener('click', closePopup);
+  overlay.addEventListener('click', closePopup);
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+      closePopup();
+    }
+  });
+
+  if (sessionStorage.getItem(popupKey) !== '1') {
+    window.setTimeout(openPopup, 5000);
+  }
+})();
+</script>
