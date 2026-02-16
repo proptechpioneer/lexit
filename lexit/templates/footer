@@ -164,8 +164,8 @@
                     </div>
                     <!-- Terms and Conditions -->
                     <div class="flex gap-4 flex-wrap">
-                        <p class="m-0 text-sm text-[#05113a] opacity-70"><a href="javascript:void(0);" onclick="openTermsModal()" class="text-[#05113a] no-underline cursor-pointer hover:opacity-80">Terms of Service</a></p>
-                        <p class="m-0 text-sm text-[#05113a] opacity-70"><a href="javascript:void(0);" onclick="openPrivacyModal()" class="text-[#05113a] no-underline cursor-pointer hover:opacity-80">Privacy Policy</a></p>
+                        <p class="m-0 text-sm text-[#05113a] opacity-70"><a href="{% url 'terms_of_service' %}" class="text-[#05113a] no-underline cursor-pointer hover:opacity-80">Terms of Service</a></p>
+                        <p class="m-0 text-sm text-[#05113a] opacity-70"><a href="{% url 'privacy_policy' %}" class="text-[#05113a] no-underline cursor-pointer hover:opacity-80">Privacy Policy</a></p>
                     </div>
                 </div>
             </div>
@@ -253,8 +253,8 @@
                     <p class="text-gray-400 text-xs">Contact: <a href="tel:+447771107963" class="hover:text-white transition-colors">+44 (0) 7771 107 963</a> | <a href="mailto:info@lexit.tech" class="hover:text-white transition-colors">info@lexit.tech</a></p>
                 </div>
                 <div class="flex space-x-6 mt-4 md:mt-0">
-                    <a href="javascript:void(0);" onclick="openPrivacyModal()" class="text-gray-400 hover:text-white text-sm transition-colors cursor-pointer">Privacy Policy</a>
-                    <a href="javascript:void(0);" onclick="openTermsModal()" class="text-gray-400 hover:text-white text-sm transition-colors cursor-pointer">Terms of Service</a>
+                    <a href="{% url 'privacy_policy' %}" class="text-gray-400 hover:text-white text-sm transition-colors cursor-pointer">Privacy Policy</a>
+                    <a href="{% url 'terms_of_service' %}" class="text-gray-400 hover:text-white text-sm transition-colors cursor-pointer">Terms of Service</a>
                 </div>
             </div>
         </div>

@@ -32,3 +32,9 @@ def test_css(request):
 
 def debug_static(request):
     return render(request, "debug_static.html")
+
+def terms_of_service(request):
+    return render(request, "terms_of_service.html")
+
+def privacy_policy(request):
+    return render(request, "privacy_policy.html")
