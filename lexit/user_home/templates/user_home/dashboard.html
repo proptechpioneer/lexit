@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% load humanize %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}
 LEXIT | Dashboard
@@ -180,7 +181,7 @@ LEXIT | Dashboard
                                 <div class="relative mb-2 h-16 w-24 sm:h-20 sm:w-28 lg:h-24 lg:w-32">
                                     <canvas id="expenseGauge"></canvas>
                                     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-2 sm:mt-3 lg:mt-4">
-                                        <h5 class="text-primary-blue mb-0 font-bold text-xs sm:text-sm lg:text-base" id="annualIncomeDisplay">£{{ monthly_rent|default:0|floatformat:0|intcomma }}</h5>
+                                        <h5 class="text-primary-blue mb-0 font-bold text-xs sm:text-sm lg:text-base" id="annualIncomeDisplay">£{{ net_annual_return|default:0|floatformat:0|intcomma }}</h5>
                                         <small class="text-primary-blue block text-xs">Annual Income</small>
                                     </div>
                                 </div>
@@ -236,24 +237,27 @@ LEXIT | Dashboard
                 </div>
 
                 <!-- Chart.js Script -->
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
                 <script>
                 document.addEventListener('DOMContentLoaded', function() {
+                    function toNumber(value) {
+                        var parsed = parseFloat(value);
+                        return Number.isFinite(parsed) ? parsed : 0;
+                    }
+
                     // Function to create Chart.js donut gauge
                     function createGauge(elementId, value, maxValue, label) {
                         var ctx = document.getElementById(elementId);
                         if (!ctx) return;
 
-                        // Handle negative values - show minimal gauge for negative numbers
-                        var displayValue = value < 0 ? 0 : value;
-                        var gaugeValue = value < 0 ? maxValue * 0.05 : Math.abs(value); // Show 5% for negative
+                        var safeMaxValue = Math.max(Math.abs(maxValue), 1);
+                        var gaugeValue = value < 0 ? safeMaxValue * 0.05 : Math.min(Math.abs(value), safeMaxValue);
 
                         var config = {
                             type: 'doughnut',
                             data: {
                                 labels: [label],
                                 datasets: [{
-                                    data: [gaugeValue, maxValue - gaugeValue],
+                                    data: [gaugeValue, safeMaxValue - gaugeValue],
                                     backgroundColor: [value < 0 ? '#ef4444' : '#d94590', 'rgba(0, 0, 0, 0.1)'],
                                     borderWidth: 0
                                 }]
@@ -280,18 +284,17 @@ LEXIT | Dashboard
                     }
 
                     // Equity Gauge
-                    var equityValue = {{ total_equity|default:0|floatformat:0 }};
+                    var equityValue = toNumber('{{ total_equity|default_if_none:0|unlocalize|escapejs }}');
                     var equityMax = Math.max(Math.abs(equityValue), 1000000);
                     createGauge('equityGauge', equityValue, equityMax, 'Estimated Equity');
 
                     // Income Gauge
-                    var incomeValue = {{ monthly_rent|default:0|floatformat:0 }};
+                    var incomeValue = toNumber('{{ monthly_rent|default_if_none:0|unlocalize|escapejs }}');
                     var incomeMax = Math.max(Math.abs(incomeValue), 5000);
                     createGauge('incomeGauge', incomeValue, incomeMax, 'Net Monthly Income');
 
                     // Annual Income Gauge (First Year Net Income After Tax for All Properties)
-                    // TODO: Fix backend calculation - should be from cashflow projection year 1
-                    var annualIncomeValue = -11013; // Correct value from cashflow calculation
+                    var annualIncomeValue = toNumber('{{ net_annual_return|default_if_none:0|unlocalize|escapejs }}');
                     var annualIncomeMax = Math.max(Math.abs(annualIncomeValue), 60000);
                     createGauge('expenseGauge', annualIncomeValue, annualIncomeMax, 'Annual Income');
                     
@@ -304,12 +307,12 @@ LEXIT | Dashboard
                     }
 
                     // NRAT Gauge
-                    var nratValue = {{ average_nrat|default:0|floatformat:1 }};
+                    var nratValue = toNumber('{{ average_nrat|default_if_none:0|unlocalize|escapejs }}');
                     var nratMax = Math.max(Math.abs(nratValue), 15);
                     createGauge('nratGauge', nratValue, nratMax, 'Average NRAT');
 
                     // Yield Gauge (Return on Equity)
-                    var yieldValue = {{ average_roe|default:0|floatformat:1 }};
+                    var yieldValue = toNumber('{{ average_roe|default_if_none:0|unlocalize|escapejs }}');
                     var yieldMax = Math.max(Math.abs(yieldValue), 15);
                     createGauge('yieldGauge', yieldValue, yieldMax, 'Average ROE');
                 });
