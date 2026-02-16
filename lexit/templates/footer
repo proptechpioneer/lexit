@@ -137,8 +137,8 @@
                         <p class="m-0 text-sm text-[#05113a] opacity-80">&copy; {% now "Y" %} LEXIT. All rights reserved.</p>
                         <p class="m-0 text-xs text-[#05113a] opacity-70 mt-2">LEXIT is owned and operated by PRS IM Limited and is part of the PRSim Ecosystem</p>
                         <p class="m-0 text-xs text-[#05113a] opacity-70">PRS IM Limited, registered in England and Wales (Company No. 15803800)</p>
-                        <p class="m-0 text-xs text-[#05113a] opacity-70">3rd Floor, 86-90 Paul Street, London EC2A 4NE, England</p>
-                        <p class="m-0 text-xs text-[#05113a] opacity-70">Contact: +44 (0) 7771 107 963 | info@lexit.tech</p>    
+                        <address class="m-0 not-italic text-xs text-[#05113a] opacity-70">3rd Floor, 86-90 Paul Street, London EC2A 4NE, England</address>
+                        <p class="m-0 text-xs text-[#05113a] opacity-70">Contact: <a href="tel:+447771107963" class="hover:opacity-80">+44 (0) 7771 107 963</a> | <a href="mailto:info@lexit.tech" class="hover:opacity-80">info@lexit.tech</a></p>
                     </div>
                 </div>
                 
@@ -245,12 +245,12 @@
             <div class="border-t border-gray-600 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
                 <div>
                     <p class="text-gray-400 text-sm">
-                        © {{ "now"|date:"Y" }} LEXIT. All rights reserved.
+                        © {% now "Y" %} LEXIT. All rights reserved.
                     </p>
                     <p class="text-gray-400 text-xs mt-2">LEXIT is owned and operated by PRS IM Limited and is part of the PRSim Ecosystem</p>
                     <p class="text-gray-400 text-xs">PRS IM Limited, registered in England and Wales (Company No. 15803800)</p>
-                    <p class="text-gray-400 text-xs">3rd Floor, 86-90 Paul Street, London EC2A 4NE, England</p>
-                    <p class="text-gray-400 text-xs">Contact: +44 (0) 7771 107 963 | info@lexit.tech</p>
+                    <address class="text-gray-400 text-xs not-italic">3rd Floor, 86-90 Paul Street, London EC2A 4NE, England</address>
+                    <p class="text-gray-400 text-xs">Contact: <a href="tel:+447771107963" class="hover:text-white transition-colors">+44 (0) 7771 107 963</a> | <a href="mailto:info@lexit.tech" class="hover:text-white transition-colors">info@lexit.tech</a></p>
                 </div>
                 <div class="flex space-x-6 mt-4 md:mt-0">
                     <a href="javascript:void(0);" onclick="openPrivacyModal()" class="text-gray-400 hover:text-white text-sm transition-colors cursor-pointer">Privacy Policy</a>
