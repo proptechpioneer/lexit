@@ -1,6 +1,15 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from user_home.models import Testimonial
 from news.models import NewsArticle
+
+
+def referral_entry(request, ref_code):
+    referral_code = (ref_code or '').strip().upper()
+    if referral_code:
+        request.session['referral_code'] = referral_code
+        return redirect(f"{reverse('users:register')}?ref={referral_code}")
+    return redirect('users:register')
 
 def landing_page(request):
     referral_code = (request.GET.get('ref') or '').strip().upper()

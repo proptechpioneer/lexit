@@ -163,6 +163,7 @@ urlpatterns = [
     path('test-postmark-direct/', direct_postmark_test, name='test_postmark_direct'),  # Direct Postmark API test
     path('test-sendgrid-direct/', direct_postmark_test, name='test_sendgrid_direct_legacy'),  # Legacy alias for compatibility
     path('', views.landing_page, name='landing_page'),
+    path('r/<str:ref_code>/', views.referral_entry, name='referral_entry'),
     path('rrb/', views.rrb_home, name='rrb_home'),
     path('terms-of-service/', views.terms_of_service, name='terms_of_service'),
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
