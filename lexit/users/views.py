@@ -42,10 +42,12 @@ def _find_referrer_profile(referral_code):
 
     for profile in UserProfile.objects.select_related('user').all():
         full_name = f"{profile.user.first_name or ''}{profile.user.last_name or ''}"
+        email_local_part = (profile.user.email or '').split('@')[0]
         if (
             _normalize_ref_token(profile.referral_code) == normalized_ref
             or _normalize_ref_token(profile.user.username) == normalized_ref
             or _normalize_ref_token(full_name) == normalized_ref
+            or _normalize_ref_token(email_local_part) == normalized_ref
         ):
             return profile
     return None
