@@ -3,6 +3,10 @@ from user_home.models import Testimonial
 from news.models import NewsArticle
 
 def landing_page(request):
+    referral_code = (request.GET.get('ref') or '').strip().upper()
+    if referral_code:
+        request.session['referral_code'] = referral_code
+
     # Get active testimonials ordered by display_order
     testimonials = Testimonial.objects.filter(is_active=True).order_by('display_order', '-created_at')
     
