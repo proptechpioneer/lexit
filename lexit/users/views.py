@@ -10,6 +10,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils import timezone
+from django.db.models import Q
 from honeypot.decorators import check_honeypot
 from .security_utils import check_honeypot_with_logging
 from .forms import SimpleUserCreationForm, UserProfileForm, ExtendedUserProfileForm
@@ -75,7 +76,7 @@ def register_view(request):
 
             if referral_code:
                 referrer_profile = UserProfile.objects.select_related('user').filter(
-                    referral_code__iexact=referral_code
+                    Q(referral_code__iexact=referral_code) | Q(user__username__iexact=referral_code)
                 ).first()
                 if referrer_profile and referrer_profile.user_id != user.id:
                     profile = user.profile
