@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import json
-from urllib import request, error
+from urllib import request as urllib_request, error as urllib_error
 
 # Direct Postmark test without Django's send_mail
 @csrf_exempt
@@ -32,7 +32,7 @@ def direct_postmark_test(request):
             'MessageStream': 'outbound',
         }
 
-        req = request.Request(
+        req = urllib_request.Request(
             'https://api.postmarkapp.com/email',
             data=json.dumps(payload).encode('utf-8'),
             headers={
@@ -43,7 +43,7 @@ def direct_postmark_test(request):
             method='POST',
         )
 
-        with request.urlopen(req, timeout=getattr(settings, 'EMAIL_TIMEOUT', 30)) as response:
+        with urllib_request.urlopen(req, timeout=getattr(settings, 'EMAIL_TIMEOUT', 30)) as response:
             response_body = response.read().decode('utf-8') if response else ''
             return JsonResponse({
                 'success': 200 <= response.status < 300,
@@ -54,7 +54,7 @@ def direct_postmark_test(request):
                 'postmark_server_token': 'Configured',
                 'response_body': response_body,
             })
-    except error.HTTPError as http_error:
+    except urllib_error.HTTPError as http_error:
         body = http_error.read().decode('utf-8') if hasattr(http_error, 'read') else ''
         return JsonResponse({
             'success': False,
