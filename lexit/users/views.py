@@ -24,6 +24,30 @@ logger = logging.getLogger(__name__)
 
 # Create your views here.
 
+
+def _normalize_ref_token(value):
+    return ''.join(ch for ch in (value or '').upper() if ch.isalnum())
+
+
+def _find_referrer_profile(referral_code):
+    direct_match = UserProfile.objects.select_related('user').filter(
+        Q(referral_code__iexact=referral_code) | Q(user__username__iexact=referral_code)
+    ).first()
+    if direct_match:
+        return direct_match
+
+    normalized_ref = _normalize_ref_token(referral_code)
+    if not normalized_ref:
+        return None
+
+    for profile in UserProfile.objects.select_related('user').all():
+        if (
+            _normalize_ref_token(profile.referral_code) == normalized_ref
+            or _normalize_ref_token(profile.user.username) == normalized_ref
+        ):
+            return profile
+    return None
+
 @login_required
 def profile_view(request):
     """View and edit user profile"""
@@ -84,9 +108,7 @@ def register_view(request):
             referrer_user = None
 
             if referral_code:
-                referrer_profile = UserProfile.objects.select_related('user').filter(
-                    Q(referral_code__iexact=referral_code) | Q(user__username__iexact=referral_code)
-                ).first()
+                referrer_profile = _find_referrer_profile(referral_code)
                 if referrer_profile and referrer_profile.user_id != user.id:
                     referrer_user = referrer_profile.user
                     profile = user.profile
