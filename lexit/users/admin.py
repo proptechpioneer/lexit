@@ -6,10 +6,10 @@ from .models import UserProfile, HoneypotAttempt, SecurityEvent
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'country', 'created_at', 'updated_at')
+    list_display = ('user', 'country', 'referral_code', 'referred_by', 'created_at', 'updated_at')
     list_filter = ('country', 'created_at', 'use_avatar')
-    search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name')
-    readonly_fields = ('created_at', 'updated_at')
+    search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name', 'referral_code')
+    readonly_fields = ('created_at', 'updated_at', 'referral_code')
 
 
 @admin.register(HoneypotAttempt)

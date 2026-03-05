@@ -15,6 +15,21 @@
             <p class="text-lg" style="color: white !important;">Update your personal information and preferences below.</p>
         </div>
 
+        <div class="mb-8 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-lg font-semibold text-primary-blue mb-2">
+                <i class="fas fa-link mr-2"></i>Your Referral Link
+            </h2>
+            <p class="text-sm text-gray-600 mb-3">Share this link with a contact. If they register with it, they are tagged as your referral.</p>
+            <input
+                type="text"
+                value="{{ referral_signup_url }}"
+                readonly
+                onclick="this.select();"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm text-gray-700"
+            >
+            <p class="text-sm text-gray-600 mt-3">Total referred signups: <strong>{{ referral_count }}</strong></p>
+        </div>
+
         <!-- Form Container -->
         <div class="bg-white rounded-lg shadow-md p-8">
             <form method="post" enctype="multipart/form-data">

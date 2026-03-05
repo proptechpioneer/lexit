@@ -1,10 +1,9 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import secrets
+import string
 
 # Create your models here.
 
@@ -71,6 +70,27 @@ class UserProfile(models.Model):
     ]
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    referral_code = models.CharField(
+        max_length=12,
+        unique=True,
+        blank=True,
+        null=True,
+        db_index=True,
+        help_text='Unique referral code used in signup links'
+    )
+    referred_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='referred_users',
+        help_text='User who referred this account'
+    )
+    referred_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text='When the referral was attributed'
+    )
     
     # Profile Image and Avatar
     profile_image = models.ImageField(
@@ -179,6 +199,19 @@ class UserProfile(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @staticmethod
+    def generate_referral_code(length=8):
+        alphabet = string.ascii_uppercase + string.digits
+        return ''.join(secrets.choice(alphabet) for _ in range(length))
+
+    def save(self, *args, **kwargs):
+        if not self.referral_code:
+            candidate = self.generate_referral_code()
+            while UserProfile.objects.filter(referral_code=candidate).exists():
+                candidate = self.generate_referral_code()
+            self.referral_code = candidate
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return f"{self.user.username}'s Profile"

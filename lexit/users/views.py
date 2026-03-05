@@ -4,11 +4,12 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils import timezone
 from honeypot.decorators import check_honeypot
 from .security_utils import check_honeypot_with_logging
 from .forms import SimpleUserCreationForm, UserProfileForm, ExtendedUserProfileForm
@@ -46,19 +47,49 @@ def profile_view(request):
         user_form = UserProfileForm(instance=request.user)
         profile_form = ExtendedUserProfileForm(instance=request.user.profile)
     
+    referral_signup_url = request.build_absolute_uri(
+        f"{reverse('users:register')}?ref={request.user.profile.referral_code}"
+    )
+
     return render(request, 'users/profile.html', {
         'user_form': user_form,
-        'profile_form': profile_form
+        'profile_form': profile_form,
+        'referral_signup_url': referral_signup_url,
+        'referral_count': request.user.referred_users.count(),
     })
 
 
 @check_honeypot_with_logging
 def register_view(request):
     """Simple user registration view with minimal fields"""
+    referral_code = (request.GET.get('ref') or request.POST.get('referral_code') or '').strip().upper()
+
     if request.method == 'POST':
         form = SimpleUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()  # This will create both User and basic UserProfile
+
+            if referral_code:
+                referrer_profile = UserProfile.objects.select_related('user').filter(
+                    referral_code__iexact=referral_code
+                ).first()
+                if referrer_profile and referrer_profile.user_id != user.id:
+                    profile = user.profile
+                    profile.referred_by = referrer_profile.user
+                    profile.referred_at = timezone.now()
+                    profile.save(update_fields=['referred_by', 'referred_at'])
+                    logger.info(
+                        "Referral tracked: new_user=%s referred_by=%s code=%s",
+                        user.email,
+                        referrer_profile.user.email,
+                        referral_code,
+                    )
+                else:
+                    logger.warning(
+                        "Referral code not matched during signup: code=%s new_user=%s",
+                        referral_code,
+                        user.email,
+                    )
 
             # Sync new signup to ActiveCampaign (non-blocking)
             ac_result = sync_contact(user)
@@ -110,7 +141,10 @@ def register_view(request):
     else:
         form = SimpleUserCreationForm()
     
-    return render(request, 'users/register.html', {'form': form})
+    return render(request, 'users/register.html', {
+        'form': form,
+        'referral_code': referral_code,
+    })
 
 
 @check_honeypot_with_logging

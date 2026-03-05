@@ -27,6 +27,13 @@
                 <form method="post" style="display: flex; flex-direction: column; gap: 24px;">
                     {% csrf_token %}
                     {% render_honeypot_field %}
+                    {% if referral_code %}
+                        <input type="hidden" name="referral_code" value="{{ referral_code }}">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+                            <i class="fas fa-user-friends mr-2"></i>
+                            Referral detected: <strong>{{ referral_code }}</strong>
+                        </div>
+                    {% endif %}
                     
                     <!-- Username and Email (Side by Side) -->
                     <div style="display: flex; gap: 16px; flex-wrap: wrap;">
