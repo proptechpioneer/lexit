@@ -315,7 +315,7 @@
             </form>
           {% else %}
             <a href="{% url 'users:login' %}" class="text-primary-blue font-semibold hover:bg-dark-pink hover:text-white px-3 py-2 rounded transition">Login</a>
-            <a href="{% url 'users:register' %}" class="text-primary-blue border px-4 py-2 font-semibold hover:bg-dark-pink hover:text-white" style="border-radius: 50px;">Try it FREE</a>
+            <a href="{% url 'users:register' %}{% if request.GET.ref %}?ref={{ request.GET.ref|urlencode }}{% endif %}" class="text-primary-blue border px-4 py-2 font-semibold hover:bg-dark-pink hover:text-white" style="border-radius: 50px;">Try it FREE</a>
           {% endif %}
         </div>
         
@@ -408,7 +408,7 @@
                 </form>
               {% else %}
                 <a href="{% url 'users:login' %}" class="text-primary-blue font-semibold hover:bg-dark-pink hover:text-white text-xl">Login</a>
-                <a href="{% url 'users:register' %}" class="text-primary-blue border border-text-primary-blue px-8 py-4 font-semibold hover:bg-dark-pink hover:text-white text-xl" style="border-radius: 50px;">Try it FREE</a>
+                <a href="{% url 'users:register' %}{% if request.GET.ref %}?ref={{ request.GET.ref|urlencode }}{% endif %}" class="text-primary-blue border border-text-primary-blue px-8 py-4 font-semibold hover:bg-dark-pink hover:text-white text-xl" style="border-radius: 50px;">Try it FREE</a>
               {% endif %}
             </div>
           </div>

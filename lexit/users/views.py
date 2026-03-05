@@ -50,11 +50,15 @@ def profile_view(request):
     referral_signup_url = request.build_absolute_uri(
         f"{reverse('users:register')}?ref={request.user.profile.referral_code}"
     )
+    referral_landing_url = request.build_absolute_uri(
+        f"{reverse('landing_page')}?ref={request.user.profile.referral_code}"
+    )
 
     return render(request, 'users/profile.html', {
         'user_form': user_form,
         'profile_form': profile_form,
         'referral_signup_url': referral_signup_url,
+        'referral_landing_url': referral_landing_url,
         'referral_count': request.user.referred_users.count(),
     })
 

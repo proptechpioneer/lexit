@@ -74,7 +74,7 @@
             </h2>
 
             <!-- CTA Button -->
-            <a href="{% url 'users:register' %}" 
+                <a href="{% url 'users:register' %}{% if request.GET.ref %}?ref={{ request.GET.ref|urlencode }}{% endif %}" 
                class="footer-cta-button inline-flex items-center justify-center w-[220px] sm:w-[240px] md:w-[260px] h-12 sm:h-14 md:h-16 bg-[#05113a] rounded-[60px] overflow-hidden hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-[#05113a] focus:ring-offset-2 focus:ring-offset-[#ffd700] transition-all duration-200 cursor-pointer mx-auto px-6"
                aria-label="Get free analysis">
                 <span class="font-archivo font-bold text-white text-sm sm:text-base text-center tracking-[0] leading-[normal] whitespace-nowrap">
@@ -98,7 +98,7 @@
             </h2>
 
             <!-- CTA Button -->
-            <a href="{% url 'users:register' %}" 
+                <a href="{% url 'users:register' %}{% if request.GET.ref %}?ref={{ request.GET.ref|urlencode }}{% endif %}" 
                class="absolute left-1/2 transform -translate-x-1/2 w-[260px] h-16 bg-[#05113a] flex items-center justify-center rounded-[60px] overflow-hidden hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-[#05113a] focus:ring-offset-2 focus:ring-offset-[#ffd700] transition-all duration-200 cursor-pointer"
                style="top: 456px;"
                aria-label="Get free analysis">
@@ -215,7 +215,7 @@
                             {% if user.is_authenticated %}
                             <li><a href="{% url 'user_home:user_home' %}" class="text-gray-300 hover:text-white transition-colors">Dashboard</a></li>
                             {% else %}
-                            <li><a href="{% url 'users:register' %}" class="text-gray-300 hover:text-white transition-colors">Get Started</a></li>
+                            <li><a href="{% url 'users:register' %}{% if request.GET.ref %}?ref={{ request.GET.ref|urlencode }}{% endif %}" class="text-gray-300 hover:text-white transition-colors">Get Started</a></li>
                             {% endif %}
                         </ul>
                     </div>

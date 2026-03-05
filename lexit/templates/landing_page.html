@@ -60,7 +60,7 @@
         </h1>
         
         <!-- Button -->
-        <a href="{% url 'users:register' %}" 
+                <a href="{% url 'users:register' %}{% if request.GET.ref %}?ref={{ request.GET.ref|urlencode }}{% endif %}" 
            class="inline-block bg-[#05113a] text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-bold text-sm sm:text-base hover:bg-blue-800 transition-colors">
           TRY IT FOR FREE
         </a>
@@ -594,7 +594,7 @@
                 </p>
 
                 <!-- CTA Button -->
-                <a href="{% url 'users:register' %}" 
+                <a href="{% url 'users:register' %}{% if request.GET.ref %}?ref={{ request.GET.ref|urlencode }}{% endif %}" 
                    class="w-[270px] h-16 bg-[#05113a] flex items-center justify-center rounded-[60px] overflow-hidden cursor-pointer hover:bg-[#0a1a52] transition-colors">
                     <span class="font-archivo font-bold text-white text-base text-center tracking-[0] leading-[normal] whitespace-nowrap">
                         TRY IT FOR FREE NOW
