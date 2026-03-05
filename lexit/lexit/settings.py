@@ -291,6 +291,11 @@ if ENVIRONMENT == 'production':
                 'level': 'INFO',
                 'propagate': True,
             },
+            'users': {
+                'handlers': ['console'],
+                'level': 'INFO',
+                'propagate': False,
+            },
             'honeypot': {
                 'handlers': ['console'],
                 'level': 'WARNING',
@@ -342,6 +347,11 @@ else:
                 'handlers': ['file', 'console'],
                 'level': 'INFO',
                 'propagate': True,
+            },
+            'users': {
+                'handlers': ['file', 'console'],
+                'level': 'INFO',
+                'propagate': False,
             },
             'honeypot': {
                 'handlers': ['honeypot_file', 'console'],
