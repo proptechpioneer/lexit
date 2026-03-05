@@ -206,6 +206,9 @@ class UserProfile(models.Model):
         return ''.join(secrets.choice(alphabet) for _ in range(length))
 
     def save(self, *args, **kwargs):
+        if self.referral_code:
+            self.referral_code = self.referral_code.strip().upper()
+
         if not self.referral_code:
             candidate = self.generate_referral_code()
             while UserProfile.objects.filter(referral_code=candidate).exists():
