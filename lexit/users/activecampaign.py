@@ -8,7 +8,7 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 
-def sync_contact(user):
+def sync_contact(user, referral_code=None, referred_by=None):
     api_url = (getattr(settings, "ACTIVECAMPAIGN_API_URL", "") or "").strip().rstrip("/")
     api_key = (getattr(settings, "ACTIVECAMPAIGN_API_KEY", "") or "").strip()
 
@@ -53,7 +53,58 @@ def sync_contact(user):
                 api_key,
             )
 
-        return {"success": True, "contact_id": contact_id}
+        applied_tags = []
+        signup_tag_id = (getattr(settings, "ACTIVECAMPAIGN_SIGNUP_TAG_ID", "") or "").strip()
+        referral_tag_id = (getattr(settings, "ACTIVECAMPAIGN_REFERRAL_TAG_ID", "") or "").strip()
+
+        if contact_id and signup_tag_id:
+            _post_json(
+                f"{api_url}/api/3/contactTags",
+                {
+                    "contactTag": {
+                        "contact": str(contact_id),
+                        "tag": str(signup_tag_id),
+                    }
+                },
+                api_key,
+            )
+            applied_tags.append(str(signup_tag_id))
+
+        if contact_id and referral_tag_id and referred_by:
+            _post_json(
+                f"{api_url}/api/3/contactTags",
+                {
+                    "contactTag": {
+                        "contact": str(contact_id),
+                        "tag": str(referral_tag_id),
+                    }
+                },
+                api_key,
+            )
+            applied_tags.append(str(referral_tag_id))
+
+        if contact_id and referred_by:
+            note_lines = [
+                "Referral tracked by LEXIT.",
+                f"Referred by username: {getattr(referred_by, 'username', '')}",
+                f"Referred by email: {getattr(referred_by, 'email', '')}",
+            ]
+            if referral_code:
+                note_lines.append(f"Referral code used: {referral_code}")
+
+            _post_json(
+                f"{api_url}/api/3/notes",
+                {
+                    "note": {
+                        "note": "\n".join(note_lines),
+                        "relid": str(contact_id),
+                        "reltype": "Subscriber",
+                    }
+                },
+                api_key,
+            )
+
+        return {"success": True, "contact_id": contact_id, "applied_tags": applied_tags}
     except Exception as exc:
         logger.warning("ActiveCampaign sync failed for %s: %s", user.email, str(exc))
         return {"success": False, "reason": str(exc)}

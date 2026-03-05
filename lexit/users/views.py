@@ -67,20 +67,30 @@ def profile_view(request):
 @check_honeypot_with_logging
 def register_view(request):
     """Simple user registration view with minimal fields"""
-    referral_code = (request.GET.get('ref') or request.POST.get('referral_code') or '').strip().upper()
+    referral_code = (
+        request.GET.get('ref')
+        or request.POST.get('referral_code')
+        or request.session.get('referral_code')
+        or ''
+    ).strip().upper()
+
+    if referral_code:
+        request.session['referral_code'] = referral_code
 
     if request.method == 'POST':
         form = SimpleUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()  # This will create both User and basic UserProfile
+            referrer_user = None
 
             if referral_code:
                 referrer_profile = UserProfile.objects.select_related('user').filter(
                     Q(referral_code__iexact=referral_code) | Q(user__username__iexact=referral_code)
                 ).first()
                 if referrer_profile and referrer_profile.user_id != user.id:
+                    referrer_user = referrer_profile.user
                     profile = user.profile
-                    profile.referred_by = referrer_profile.user
+                    profile.referred_by = referrer_user
                     profile.referred_at = timezone.now()
                     profile.save(update_fields=['referred_by', 'referred_at'])
                     logger.info(
@@ -97,12 +107,17 @@ def register_view(request):
                     )
 
             # Sync new signup to ActiveCampaign (non-blocking)
-            ac_result = sync_contact(user)
+            ac_result = sync_contact(
+                user,
+                referral_code=referral_code,
+                referred_by=referrer_user,
+            )
             if ac_result.get('success'):
                 logger.info(
-                    "ActiveCampaign sync success for %s (contact_id=%s)",
+                    "ActiveCampaign sync success for %s (contact_id=%s, tags=%s)",
                     user.email,
                     ac_result.get('contact_id'),
+                    ac_result.get('applied_tags') or [],
                 )
             else:
                 logger.warning(
@@ -142,6 +157,8 @@ def register_view(request):
             
             login(request, user)  # Automatically log in the new user
             messages.success(request, 'Welcome to LEXIT! Your account has been created successfully.')
+            if 'referral_code' in request.session:
+                del request.session['referral_code']
             return redirect('user_home:user_home')  # Redirect to user dashboard
     else:
         form = SimpleUserCreationForm()
