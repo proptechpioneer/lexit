@@ -8,6 +8,7 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('profile/', views.profile_view, name='profile'),
+    path('activecampaign-diagnostic/', views.activecampaign_diagnostic_view, name='activecampaign_diagnostic'),
     # Password reset URLs
     path('password_reset/', views.CustomPasswordResetView.as_view(), name='forgot_password'),
     path('password_reset/done/', views.password_reset_done_view, name='password_reset_done'),
