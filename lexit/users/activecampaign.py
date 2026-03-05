@@ -70,7 +70,9 @@ def sync_contact(user, referral_code=None, referred_by=None):
             )
             applied_tags.append(str(signup_tag_id))
 
-        if contact_id and referral_tag_id and referred_by:
+        has_referral_token = bool((referral_code or '').strip())
+
+        if contact_id and referral_tag_id and (referred_by or has_referral_token):
             _post_json(
                 f"{api_url}/api/3/contactTags",
                 {
@@ -83,12 +85,19 @@ def sync_contact(user, referral_code=None, referred_by=None):
             )
             applied_tags.append(str(referral_tag_id))
 
-        if contact_id and referred_by:
+        if contact_id and (referred_by or has_referral_token):
             note_lines = [
                 "Referral tracked by LEXIT.",
-                f"Referred by username: {getattr(referred_by, 'username', '')}",
-                f"Referred by email: {getattr(referred_by, 'email', '')}",
             ]
+
+            if referred_by:
+                note_lines.extend([
+                    f"Referred by username: {getattr(referred_by, 'username', '')}",
+                    f"Referred by email: {getattr(referred_by, 'email', '')}",
+                ])
+            else:
+                note_lines.append("No internal referrer account matched.")
+
             if referral_code:
                 note_lines.append(f"Referral code used: {referral_code}")
 
