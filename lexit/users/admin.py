@@ -28,7 +28,6 @@ class UserProfileAdmin(admin.ModelAdmin):
     readonly_fields = (
         'created_at',
         'updated_at',
-        'referral_code',
         'referred_contacts_count',
         'referred_contacts_report',
     )
