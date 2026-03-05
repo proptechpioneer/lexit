@@ -13,6 +13,7 @@ from honeypot.decorators import check_honeypot
 from .security_utils import check_honeypot_with_logging
 from .forms import SimpleUserCreationForm, UserProfileForm, ExtendedUserProfileForm
 from .models import UserProfile
+from .activecampaign import sync_contact
 import datetime
 
 # Create your views here.
@@ -54,6 +55,11 @@ def register_view(request):
         form = SimpleUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()  # This will create both User and basic UserProfile
+
+            # Sync new signup to ActiveCampaign (non-blocking)
+            ac_result = sync_contact(user)
+            if not ac_result.get('success') and ac_result.get('reason') not in ['not_configured', 'missing_email']:
+                print(f"ActiveCampaign sync failed for {user.email}: {ac_result.get('reason')}")
             
             # Send welcome email
             try:

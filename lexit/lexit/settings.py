@@ -261,6 +261,11 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='info@lexit.tech')
 SERVER_EMAIL = env('SERVER_EMAIL', default='info@lexit.tech')
 EMAIL_TIMEOUT = 30  # Timeout in seconds
 
+# ActiveCampaign Configuration
+ACTIVECAMPAIGN_API_URL = env('ACTIVECAMPAIGN_API_URL', default='')
+ACTIVECAMPAIGN_API_KEY = env('ACTIVECAMPAIGN_API_KEY', default='')
+ACTIVECAMPAIGN_DEFAULT_LIST_ID = env('ACTIVECAMPAIGN_DEFAULT_LIST_ID', default='')
+
 # Logging Configuration
 if ENVIRONMENT == 'production':
     # Production logging - console only (Render captures these)
