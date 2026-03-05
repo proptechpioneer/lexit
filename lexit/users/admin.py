@@ -6,10 +6,86 @@ from .models import UserProfile, HoneypotAttempt, SecurityEvent
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'country', 'referral_code', 'referred_by', 'created_at', 'updated_at')
-    list_filter = ('country', 'created_at', 'use_avatar')
-    search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name', 'referral_code')
-    readonly_fields = ('created_at', 'updated_at', 'referral_code')
+    list_display = (
+        'user',
+        'country',
+        'referral_code',
+        'referred_by',
+        'referred_contacts_count',
+        'created_at',
+        'updated_at',
+    )
+    list_filter = ('country', 'created_at', 'use_avatar', 'referred_by')
+    search_fields = (
+        'user__username',
+        'user__email',
+        'user__first_name',
+        'user__last_name',
+        'referral_code',
+        'referred_by__username',
+        'referred_by__email',
+    )
+    readonly_fields = (
+        'created_at',
+        'updated_at',
+        'referral_code',
+        'referred_contacts_count',
+        'referred_contacts_report',
+    )
+
+    fieldsets = (
+        ('User', {
+            'fields': ('user',)
+        }),
+        ('Referral Tracking', {
+            'fields': (
+                'referral_code',
+                'referred_by',
+                'referred_at',
+                'referred_contacts_count',
+                'referred_contacts_report',
+            )
+        }),
+        ('Profile Details', {
+            'fields': (
+                'profile_image', 'avatar_choice', 'use_avatar',
+                'country', 'city', 'retirement_objective', 'income_objective',
+                'capital_gain_objective', 'accidental_landlord', 'future_ownership',
+                'facebook_url', 'linkedin_url', 'twitter_url', 'whatsapp_number',
+                'bio', 'website_url', 'show_email', 'show_social_media',
+            ),
+            'classes': ('collapse',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at')
+        }),
+    )
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user', 'referred_by')
+
+    def referred_contacts_count(self, obj):
+        return obj.user.referred_users.count()
+    referred_contacts_count.short_description = 'Referred Contacts'
+
+    def referred_contacts_report(self, obj):
+        referred_profiles = UserProfile.objects.select_related('user').filter(
+            referred_by=obj.user
+        ).order_by('-referred_at', '-created_at')[:50]
+
+        if not referred_profiles:
+            return 'No referred contacts yet.'
+
+        rows = []
+        for profile in referred_profiles:
+            display_name = profile.user.get_full_name().strip() or profile.user.username
+            referred_at = profile.referred_at or profile.created_at
+            rows.append(
+                f"{display_name} ({profile.user.email}) — {referred_at:%Y-%m-%d %H:%M}"
+            )
+
+        return format_html('<br>'.join(rows))
+    referred_contacts_report.short_description = 'Referred Contacts Report (latest 50)'
 
 
 @admin.register(HoneypotAttempt)
