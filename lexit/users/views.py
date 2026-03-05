@@ -15,6 +15,10 @@ from .forms import SimpleUserCreationForm, UserProfileForm, ExtendedUserProfileF
 from .models import UserProfile
 from .activecampaign import sync_contact
 import datetime
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -58,8 +62,18 @@ def register_view(request):
 
             # Sync new signup to ActiveCampaign (non-blocking)
             ac_result = sync_contact(user)
-            if not ac_result.get('success') and ac_result.get('reason') not in ['not_configured', 'missing_email']:
-                print(f"ActiveCampaign sync failed for {user.email}: {ac_result.get('reason')}")
+            if ac_result.get('success'):
+                logger.info(
+                    "ActiveCampaign sync success for %s (contact_id=%s)",
+                    user.email,
+                    ac_result.get('contact_id'),
+                )
+            else:
+                logger.warning(
+                    "ActiveCampaign sync result for %s: %s",
+                    user.email,
+                    ac_result.get('reason'),
+                )
             
             # Send welcome email
             try:
