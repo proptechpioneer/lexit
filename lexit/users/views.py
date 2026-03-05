@@ -9,7 +9,6 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.http import JsonResponse
 from honeypot.decorators import check_honeypot
 from .security_utils import check_honeypot_with_logging
 from .forms import SimpleUserCreationForm, UserProfileForm, ExtendedUserProfileForm
@@ -17,53 +16,9 @@ from .models import UserProfile
 from .activecampaign import sync_contact
 import datetime
 import logging
-import json
-from urllib import request as urllib_request, error as urllib_error
 
 
 logger = logging.getLogger(__name__)
-
-
-def activecampaign_diagnostic_view(request):
-    api_url = (getattr(settings, 'ACTIVECAMPAIGN_API_URL', '') or '').strip().rstrip('/')
-    api_key = (getattr(settings, 'ACTIVECAMPAIGN_API_KEY', '') or '').strip()
-    list_id = (getattr(settings, 'ACTIVECAMPAIGN_DEFAULT_LIST_ID', '') or '').strip()
-
-    result = {
-        'configured': bool(api_url and api_key),
-        'api_url_set': bool(api_url),
-        'api_key_set': bool(api_key),
-        'default_list_id': list_id or None,
-        'api_reachable': False,
-        'api_status': None,
-        'error': None,
-    }
-
-    if not result['configured']:
-        return JsonResponse(result)
-
-    req = urllib_request.Request(
-        f"{api_url}/api/3/users?limit=1",
-        headers={
-            'Api-Token': api_key,
-            'Accept': 'application/json',
-        },
-        method='GET',
-    )
-
-    try:
-        with urllib_request.urlopen(req, timeout=20) as response:
-            result['api_reachable'] = True
-            result['api_status'] = response.status
-            _ = json.loads(response.read().decode('utf-8') or '{}')
-    except urllib_error.HTTPError as exc:
-        result['api_status'] = exc.code
-        body = exc.read().decode('utf-8') if hasattr(exc, 'read') else ''
-        result['error'] = f"HTTP {exc.code}: {body[:300]}"
-    except Exception as exc:
-        result['error'] = str(exc)
-
-    return JsonResponse(result)
 
 # Create your views here.
 
