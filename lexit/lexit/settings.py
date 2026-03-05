@@ -47,13 +47,28 @@ else:
         '*',  # Temporary - allow all hosts for testing
     ]
 
-# CSRF Configuration for Railway
-CSRF_TRUSTED_ORIGINS = [
+# CSRF Configuration for Railway / custom domains
+_csrf_origins_default = [
     'https://*.up.railway.app',
     'https://*.railway.app',
     'https://lexit.tech',
     'https://www.lexit.tech',
+    'https://lexit-production.up.railway.app',
 ]
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in env('CSRF_TRUSTED_ORIGINS', default=','.join(_csrf_origins_default)).split(',')
+    if origin.strip()
+]
+
+# Railway/Proxy HTTPS handling (prevents false CSRF failures behind reverse proxy)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+
+if ENVIRONMENT != 'development':
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SAMESITE = 'Lax'
 
 # Application definition
 
