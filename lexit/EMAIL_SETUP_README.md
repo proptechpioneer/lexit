@@ -45,11 +45,9 @@ DEFAULT_FROM_EMAIL=info@lexit.tech
 2. Generate App Password: Google Account > Security > App passwords
 3. Use App Password in `EMAIL_HOST_PASSWORD`
 
-#### SendGrid Setup:
+#### Postmark Setup (API):
 ```bash
-EMAIL_HOST=smtp.sendgrid.net
-EMAIL_HOST_USER=apikey
-EMAIL_HOST_PASSWORD=your-sendgrid-api-key
+POSTMARK_SERVER_TOKEN=your-postmark-server-token
 ```
 
 #### Other Providers:
@@ -109,7 +107,7 @@ msg.send()
 
 ### Rate Limiting:
 - Gmail: 500 emails/day for free accounts
-- SendGrid: 100 emails/day free tier
+- Postmark: transactional email service with server-token authentication
 - Consider upgrading for higher volume
 
 ## 🚨 Common Issues

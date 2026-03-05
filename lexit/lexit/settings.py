@@ -226,19 +226,19 @@ HONEYPOT_FIELD_NAME = 'email_address'  # Hidden field name (should be different 
 HONEYPOT_VALUE = ''  # Expected value (usually empty)
 
 # Email Configuration
-# Always use SendGrid for actual email sending (even in development)
-EMAIL_BACKEND = 'lexit.sendgrid_backend.SendGridBackend'
-SENDGRID_API_KEY = env('SENDGRID_API_KEY', default='')
+# Always use Postmark for transactional email sending
+EMAIL_BACKEND = 'lexit.postmark_backend.PostmarkBackend'
+POSTMARK_SERVER_TOKEN = env('POSTMARK_SERVER_TOKEN', default='')
 
 # if ENVIRONMENT == 'development':
 #     # Development: Print emails to console
 #     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # else:
-#     # Production: Use SendGrid API (more reliable than SMTP on Railway)
-#     EMAIL_BACKEND = 'lexit.sendgrid_backend.SendGridBackend'
-#     SENDGRID_API_KEY = env('SENDGRID_API_KEY', default='')
+#     # Production: Use Postmark API
+#     EMAIL_BACKEND = 'lexit.postmark_backend.PostmarkBackend'
+#     POSTMARK_SERVER_TOKEN = env('POSTMARK_SERVER_TOKEN', default='')
 
-# Fallback SMTP settings (keep for compatibility)
+# Optional SMTP settings (kept for compatibility)
 EMAIL_HOST = env('EMAIL_HOST', default='smtp.office365.com')
 EMAIL_PORT = env('EMAIL_PORT', default=465, cast=int)
 EMAIL_USE_TLS = env('EMAIL_USE_TLS', default=False, cast=bool)
@@ -246,11 +246,11 @@ EMAIL_USE_SSL = env('EMAIL_USE_SSL', default=True, cast=bool)
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
 
-# Office 365 SSL/TLS configuration - Railway container fix
+# SSL/TLS configuration for SMTP fallback
 import ssl
 import certifi
 EMAIL_SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
-# Office 365 support: Railway container CA certificate compatibility fix
+# SMTP fallback compatibility fix
 EMAIL_SSL_CONTEXT.check_hostname = False
 EMAIL_SSL_CONTEXT.verify_mode = ssl.CERT_NONE
 EMAIL_SSL_CONTEXT.set_ciphers('DEFAULT:@SECLEVEL=1')

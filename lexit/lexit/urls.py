@@ -23,7 +23,7 @@ from django.views.generic import RedirectView
 from . import views
 from .media_views import serve_media
 from .email_test_views import test_email
-from .sendgrid_direct_test import direct_sendgrid_test
+from .sendgrid_direct_test import direct_postmark_test
 
 def favicon_view(request):
     # Return a redirect to the static favicon
@@ -160,7 +160,8 @@ urlpatterns = [
     path('preview-welcome-email/', preview_welcome_email, name='preview_welcome_email'),  # Email preview
     path('preview-welcome-email-txt/', preview_welcome_email_txt, name='preview_welcome_email_txt'),  # Text email preview
     path('test-email/', test_email, name='test_email'),  # Email test endpoint
-    path('test-sendgrid-direct/', direct_sendgrid_test, name='test_sendgrid_direct'),  # Direct SendGrid API test
+    path('test-postmark-direct/', direct_postmark_test, name='test_postmark_direct'),  # Direct Postmark API test
+    path('test-sendgrid-direct/', direct_postmark_test, name='test_sendgrid_direct_legacy'),  # Legacy alias for compatibility
     path('', views.landing_page, name='landing_page'),
     path('rrb/', views.rrb_home, name='rrb_home'),
     path('terms-of-service/', views.terms_of_service, name='terms_of_service'),

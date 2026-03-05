@@ -42,8 +42,8 @@ def test_email(request):
                 fail_silently=False,
             )
             
-            # Debug: Check if SendGrid API key is configured
-            sendgrid_key_status = "Configured" if getattr(settings, 'SENDGRID_API_KEY', None) else "Missing"
+            # Debug: Check if Postmark server token is configured
+            postmark_token_status = "Configured" if getattr(settings, 'POSTMARK_SERVER_TOKEN', None) else "Missing"
             
             if result:
                 return JsonResponse({
@@ -51,15 +51,15 @@ def test_email(request):
                     'message': f'Email sent successfully to {to_email}!',
                     'backend': settings.EMAIL_BACKEND,
                     'from_email': settings.DEFAULT_FROM_EMAIL,
-                    'sendgrid_api_key': sendgrid_key_status,
+                    'postmark_server_token': postmark_token_status,
                     'result_count': result
                 })
             else:
                 return JsonResponse({
                     'success': False, 
-                    'error': 'Email sending returned 0 - check SendGrid configuration',
+                    'error': 'Email sending returned 0 - check Postmark configuration',
                     'backend': settings.EMAIL_BACKEND,
-                    'sendgrid_api_key': sendgrid_key_status,
+                    'postmark_server_token': postmark_token_status,
                     'from_email': settings.DEFAULT_FROM_EMAIL
                 })
                 
@@ -69,7 +69,7 @@ def test_email(request):
                 'error': f'Email sending exception: {str(e)}',
                 'backend': settings.EMAIL_BACKEND,
                 'error_type': type(e).__name__,
-                'sendgrid_api_key': "Configured" if getattr(settings, 'SENDGRID_API_KEY', None) else "Missing"
+                'postmark_server_token': "Configured" if getattr(settings, 'POSTMARK_SERVER_TOKEN', None) else "Missing"
             })
             
     except json.JSONDecodeError:
