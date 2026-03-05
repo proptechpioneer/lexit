@@ -41,9 +41,11 @@ def _find_referrer_profile(referral_code):
         return None
 
     for profile in UserProfile.objects.select_related('user').all():
+        full_name = f"{profile.user.first_name or ''}{profile.user.last_name or ''}"
         if (
             _normalize_ref_token(profile.referral_code) == normalized_ref
             or _normalize_ref_token(profile.user.username) == normalized_ref
+            or _normalize_ref_token(full_name) == normalized_ref
         ):
             return profile
     return None
@@ -106,6 +108,13 @@ def register_view(request):
         if form.is_valid():
             user = form.save()  # This will create both User and basic UserProfile
             referrer_user = None
+            logger.info(
+                "Referral signup attempt: new_user=%s query_ref=%s session_ref=%s post_ref=%s",
+                user.email,
+                (request.GET.get('ref') or '').strip(),
+                (request.session.get('referral_code') or '').strip(),
+                (request.POST.get('referral_code') or '').strip(),
+            )
 
             if referral_code:
                 referrer_profile = _find_referrer_profile(referral_code)
@@ -127,6 +136,11 @@ def register_view(request):
                         referral_code,
                         user.email,
                     )
+            else:
+                logger.warning(
+                    "No referral code available during signup: new_user=%s",
+                    user.email,
+                )
 
             # Sync new signup to ActiveCampaign (non-blocking)
             ac_result = sync_contact(
