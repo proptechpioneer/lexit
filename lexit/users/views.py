@@ -125,7 +125,8 @@ def register_view(request):
                     profile = user.profile
                     profile.referred_by = referrer_user
                     profile.referred_at = timezone.now()
-                    profile.save(update_fields=['referred_by', 'referred_at'])
+                    profile.referral_code_used = referral_code
+                    profile.save(update_fields=['referred_by', 'referred_at', 'referral_code_used'])
                     logger.info(
                         "Referral tracked: new_user=%s referred_by=%s code=%s",
                         user.email,
@@ -133,6 +134,9 @@ def register_view(request):
                         referral_code,
                     )
                 else:
+                    profile = user.profile
+                    profile.referral_code_used = referral_code
+                    profile.save(update_fields=['referral_code_used'])
                     logger.warning(
                         "Referral code not matched during signup: code=%s new_user=%s",
                         referral_code,

@@ -91,6 +91,13 @@ class UserProfile(models.Model):
         blank=True,
         help_text='When the referral was attributed'
     )
+    referral_code_used = models.CharField(
+        max_length=64,
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text='Original referral token submitted at signup for audit and CRM tagging'
+    )
     
     # Profile Image and Avatar
     profile_image = models.ImageField(

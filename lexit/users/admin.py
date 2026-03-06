@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from .models import UserProfile, HoneypotAttempt, SecurityEvent
+from .activecampaign import build_referral_code_tag_name
 
 
 @admin.register(UserProfile)
@@ -10,6 +11,8 @@ class UserProfileAdmin(admin.ModelAdmin):
         'user',
         'country',
         'referral_code',
+        'referral_code_used',
+        'ac_referral_tag',
         'referred_by',
         'referred_contacts_count',
         'created_at',
@@ -22,12 +25,14 @@ class UserProfileAdmin(admin.ModelAdmin):
         'user__first_name',
         'user__last_name',
         'referral_code',
+        'referral_code_used',
         'referred_by__username',
         'referred_by__email',
     )
     readonly_fields = (
         'created_at',
         'updated_at',
+        'ac_referral_tag',
         'referred_contacts_count',
         'referred_contacts_report',
     )
@@ -39,6 +44,8 @@ class UserProfileAdmin(admin.ModelAdmin):
         ('Referral Tracking', {
             'fields': (
                 'referral_code',
+                'referral_code_used',
+                'ac_referral_tag',
                 'referred_by',
                 'referred_at',
                 'referred_contacts_count',
@@ -67,6 +74,15 @@ class UserProfileAdmin(admin.ModelAdmin):
         return obj.user.referred_users.count()
     referred_contacts_count.short_description = 'Referred Contacts'
 
+    def ac_referral_tag(self, obj):
+        source_code = obj.referral_code_used
+        if not source_code and obj.referred_by and hasattr(obj.referred_by, 'profile'):
+            source_code = obj.referred_by.profile.referral_code
+
+        tag_name = build_referral_code_tag_name(source_code)
+        return tag_name or 'N/A'
+    ac_referral_tag.short_description = 'AC Referral Tag'
+
     def referred_contacts_report(self, obj):
         referred_profiles = UserProfile.objects.select_related('user').filter(
             referred_by=obj.user
@@ -79,8 +95,14 @@ class UserProfileAdmin(admin.ModelAdmin):
         for profile in referred_profiles:
             display_name = profile.user.get_full_name().strip() or profile.user.username
             referred_at = profile.referred_at or profile.created_at
+            used_code = profile.referral_code_used or obj.referral_code
+            ac_tag = build_referral_code_tag_name(used_code)
             rows.append(
-                f"{display_name} ({profile.user.email}) — {referred_at:%Y-%m-%d %H:%M}"
+                (
+                    f"{display_name} ({profile.user.email}) — {referred_at:%Y-%m-%d %H:%M}"
+                    f" — code={used_code or 'N/A'}"
+                    f" — ac_tag={ac_tag or 'N/A'}"
+                )
             )
 
         return format_html('<br>'.join(rows))

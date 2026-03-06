@@ -1,5 +1,6 @@
 import json
 import logging
+from urllib.parse import quote
 from urllib import request as urllib_request, error as urllib_error
 
 from django.conf import settings
@@ -85,6 +86,27 @@ def sync_contact(user, referral_code=None, referred_by=None):
             )
             applied_tags.append(str(referral_tag_id))
 
+        if contact_id and has_referral_token:
+            normalized_referral_code = _normalize_referral_code(referral_code)
+            if normalized_referral_code:
+                code_tag_id = _ensure_referral_code_tag(
+                    api_url=api_url,
+                    api_key=api_key,
+                    referral_code=normalized_referral_code,
+                )
+                if code_tag_id:
+                    _post_json(
+                        f"{api_url}/api/3/contactTags",
+                        {
+                            "contactTag": {
+                                "contact": str(contact_id),
+                                "tag": str(code_tag_id),
+                            }
+                        },
+                        api_key,
+                    )
+                    applied_tags.append(str(code_tag_id))
+
         if contact_id and (referred_by or has_referral_token):
             note_lines = [
                 "Referral tracked by LEXIT.",
@@ -138,3 +160,79 @@ def _post_json(url, payload, api_key):
     except urllib_error.HTTPError as exc:
         body = exc.read().decode("utf-8") if hasattr(exc, "read") else ""
         raise RuntimeError(f"HTTP {exc.code}: {body}")
+
+
+def _get_json(url, api_key):
+    req = urllib_request.Request(
+        url,
+        headers={
+            "Api-Token": api_key,
+            "Accept": "application/json",
+        },
+        method="GET",
+    )
+
+    try:
+        with urllib_request.urlopen(req, timeout=30) as response:
+            body = response.read().decode("utf-8") if response else "{}"
+            return json.loads(body) if body else {}
+    except urllib_error.HTTPError as exc:
+        body = exc.read().decode("utf-8") if hasattr(exc, "read") else ""
+        raise RuntimeError(f"HTTP {exc.code}: {body}")
+
+
+def _normalize_referral_code(referral_code):
+    return ''.join(ch for ch in (referral_code or '').strip().upper() if ch.isalnum())
+
+
+def build_referral_code_tag_name(referral_code):
+    normalized_referral_code = _normalize_referral_code(referral_code)
+    if not normalized_referral_code:
+        return ''
+
+    tag_prefix = (
+        getattr(settings, "ACTIVECAMPAIGN_REFERRAL_CODE_TAG_PREFIX", "ref=")
+        or "ref="
+    ).strip()
+    return f"{tag_prefix}{normalized_referral_code}"
+
+
+def _ensure_referral_code_tag(api_url, api_key, referral_code):
+    tag_name = build_referral_code_tag_name(referral_code)
+    if not tag_name:
+        return None
+
+    existing_tag = _find_existing_tag(
+        api_url=api_url,
+        api_key=api_key,
+        tag_name=tag_name,
+    )
+    if existing_tag:
+        return str(existing_tag.get("id"))
+
+    create_response = _post_json(
+        f"{api_url}/api/3/tags",
+        {
+            "tag": {
+                "tag": tag_name,
+                "tagType": "contact",
+                "description": f"Referral code captured at signup: {referral_code}",
+            }
+        },
+        api_key,
+    )
+
+    created_tag = (create_response or {}).get("tag") or {}
+    created_tag_id = created_tag.get("id")
+    return str(created_tag_id) if created_tag_id else None
+
+
+def _find_existing_tag(api_url, api_key, tag_name):
+    encoded_tag_name = quote(tag_name)
+    response = _get_json(f"{api_url}/api/3/tags?search={encoded_tag_name}", api_key)
+    tags = (response or {}).get("tags") or []
+
+    for tag in tags:
+        if str((tag or {}).get("tag", "")).strip().lower() == tag_name.lower():
+            return tag
+    return None
