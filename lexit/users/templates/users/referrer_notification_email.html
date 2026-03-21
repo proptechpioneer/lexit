@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEXIT referral update</title>
+</head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:Segoe UI,Arial,sans-serif;color:#1f2937;">
+    <div style="max-width:600px;margin:24px auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+        <div style="background:#1e40af;color:#ffffff;padding:20px 24px;">
+            <h1 style="margin:0;font-size:20px;">Referral update</h1>
+        </div>
+        <div style="padding:24px;line-height:1.6;">
+            <p style="margin-top:0;">Hi {{ referrer_user.first_name|default:referrer_user.username }},</p>
+            <p>A new member has just joined LEXIT using your referral link.</p>
+            <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:12px 14px;margin:16px 0;">
+                <p style="margin:0;"><strong>Referred member identifier:</strong> {{ referred_identifier }}</p>
+                {% if referral_code %}
+                <p style="margin:6px 0 0 0;"><strong>Referral token used:</strong> {{ referral_code }}</p>
+                {% endif %}
+            </div>
+            <p>For privacy reasons, we do not include the new member's contact details.</p>
+            <p style="margin-bottom:0;">Thank you for helping grow the LEXIT community.</p>
+        </div>
+        <div style="padding:16px 24px;background:#f9fafb;border-top:1px solid #e5e7eb;color:#6b7280;font-size:12px;">
+            <p style="margin:0;">This is an automated referral update from LEXIT.</p>
+            <p style="margin:4px 0 0 0;">© {{ current_year }} LEXIT. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

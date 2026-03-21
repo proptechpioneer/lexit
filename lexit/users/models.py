@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.conf import settings
 import secrets
 import string
 
@@ -77,6 +78,11 @@ class UserProfile(models.Model):
         null=True,
         db_index=True,
         help_text='Unique referral code used in signup links'
+    )
+    can_refer = models.BooleanField(
+        default=False,
+        db_index=True,
+        help_text='Manually enable this user as an approved referrer',
     )
     referred_by = models.ForeignKey(
         User,
@@ -266,6 +272,87 @@ class UserProfile(models.Model):
     class Meta:
         verbose_name = 'User Profile'
         verbose_name_plural = 'User Profiles'
+
+
+class Referrer(models.Model):
+    """Admin-managed referrer records with generated referral links."""
+
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150, blank=True, default='')
+    email = models.EmailField(unique=True)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='managed_referrer',
+        editable=False,
+    )
+    referral_code = models.CharField(max_length=12, unique=True, blank=True, default='')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}".strip() or self.email
+
+    @property
+    def referral_landing_url(self):
+        base_url = (getattr(settings, 'REFERRAL_BASE_URL', '') or '').rstrip('/')
+        if not base_url or not self.referral_code:
+            return ''
+        return f"{base_url}/?ref={self.referral_code}"
+
+    @property
+    def referral_signup_url(self):
+        base_url = (getattr(settings, 'REFERRAL_BASE_URL', '') or '').rstrip('/')
+        if not base_url or not self.referral_code:
+            return ''
+        return f"{base_url}/users/register/?ref={self.referral_code}"
+
+    def save(self, *args, **kwargs):
+        self.email = (self.email or '').strip().lower()
+
+        if not self.user_id:
+            local_part = (self.email.split('@')[0] or 'referrer').strip().lower() or 'referrer'
+            username = local_part
+            suffix = 1
+            while User.objects.filter(username=username).exists():
+                suffix += 1
+                username = f"{local_part}{suffix}"
+
+            user = User(
+                username=username,
+                first_name=(self.first_name or '').strip(),
+                last_name=(self.last_name or '').strip(),
+                email=self.email,
+                is_active=True,
+            )
+            user.set_unusable_password()
+            user.save()
+            self.user = user
+        else:
+            self.user.first_name = (self.first_name or '').strip()
+            self.user.last_name = (self.last_name or '').strip()
+            self.user.email = self.email
+            self.user.save(update_fields=['first_name', 'last_name', 'email'])
+
+        super().save(*args, **kwargs)
+
+        profile = self.user.profile if hasattr(self.user, 'profile') else UserProfile.objects.create(user=self.user)
+        profile.can_refer = bool(self.is_active)
+        if self.referral_code:
+            profile.referral_code = self.referral_code
+            profile.save(update_fields=['can_refer', 'referral_code'])
+        else:
+            profile.save(update_fields=['can_refer'])
+
+        if self.referral_code != (profile.referral_code or ''):
+            self.referral_code = profile.referral_code or ''
+            super().save(update_fields=['referral_code'])
 
 
 @receiver(post_save, sender=User)

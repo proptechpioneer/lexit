@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
-from .models import UserProfile, HoneypotAttempt, SecurityEvent
+from .models import UserProfile, Referrer, HoneypotAttempt, SecurityEvent
 from .activecampaign import build_referral_code_tag_name
 
 
@@ -9,6 +9,7 @@ from .activecampaign import build_referral_code_tag_name
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = (
         'user',
+        'can_refer',
         'country',
         'referral_code',
         'referral_code_used',
@@ -18,7 +19,7 @@ class UserProfileAdmin(admin.ModelAdmin):
         'created_at',
         'updated_at',
     )
-    list_filter = ('country', 'created_at', 'use_avatar', 'referred_by')
+    list_filter = ('can_refer', 'country', 'created_at', 'use_avatar', 'referred_by')
     search_fields = (
         'user__username',
         'user__email',
@@ -43,6 +44,7 @@ class UserProfileAdmin(admin.ModelAdmin):
         }),
         ('Referral Tracking', {
             'fields': (
+                'can_refer',
                 'referral_code',
                 'referral_code_used',
                 'ac_referral_tag',
@@ -107,6 +109,51 @@ class UserProfileAdmin(admin.ModelAdmin):
 
         return format_html('<br>'.join(rows))
     referred_contacts_report.short_description = 'Referred Contacts Report (latest 50)'
+
+
+@admin.register(Referrer)
+class ReferrerAdmin(admin.ModelAdmin):
+    list_display = (
+        'first_name',
+        'last_name',
+        'email',
+        'referral_code',
+        'is_active',
+        'referral_landing_url_display',
+        'created_at',
+    )
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('first_name', 'last_name', 'email', 'referral_code')
+    readonly_fields = (
+        'user',
+        'referral_landing_url_display',
+        'referral_signup_url_display',
+        'created_at',
+        'updated_at',
+    )
+    fieldsets = (
+        ('Referrer Details', {
+            'fields': ('first_name', 'last_name', 'email', 'is_active')
+        }),
+        ('Referral Access', {
+            'fields': ('referral_code', 'referral_landing_url_display', 'referral_signup_url_display')
+        }),
+        ('System', {
+            'fields': ('user', 'created_at', 'updated_at')
+        }),
+    )
+
+    def referral_landing_url_display(self, obj):
+        if not obj.referral_landing_url:
+            return 'Available after save'
+        return format_html('<code>{}</code>', obj.referral_landing_url)
+    referral_landing_url_display.short_description = 'Referral Landing URL'
+
+    def referral_signup_url_display(self, obj):
+        if not obj.referral_signup_url:
+            return 'Available after save'
+        return format_html('<code>{}</code>', obj.referral_signup_url)
+    referral_signup_url_display.short_description = 'Referral Signup URL'
 
 
 @admin.register(HoneypotAttempt)

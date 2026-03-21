@@ -10,12 +10,12 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils import timezone
-from django.db.models import Q
+from django.db import transaction
 from honeypot.decorators import check_honeypot
 from .security_utils import check_honeypot_with_logging
 from .forms import SimpleUserCreationForm, UserProfileForm, ExtendedUserProfileForm
 from .models import UserProfile
-from .activecampaign import sync_contact
+from .activecampaign import sync_contact, notify_referrer_of_signup, build_referred_user_identifier
 import datetime
 import logging
 
@@ -30,27 +30,50 @@ def _normalize_ref_token(value):
 
 
 def _find_referrer_profile(referral_code):
-    direct_match = UserProfile.objects.select_related('user').filter(
-        Q(referral_code__iexact=referral_code) | Q(user__username__iexact=referral_code)
-    ).first()
-    if direct_match:
-        return direct_match
-
     normalized_ref = _normalize_ref_token(referral_code)
     if not normalized_ref:
         return None
 
-    for profile in UserProfile.objects.select_related('user').all():
-        full_name = f"{profile.user.first_name or ''}{profile.user.last_name or ''}"
-        email_local_part = (profile.user.email or '').split('@')[0]
-        if (
-            _normalize_ref_token(profile.referral_code) == normalized_ref
-            or _normalize_ref_token(profile.user.username) == normalized_ref
-            or _normalize_ref_token(full_name) == normalized_ref
-            or _normalize_ref_token(email_local_part) == normalized_ref
-        ):
-            return profile
-    return None
+    # Attribute referrals only by the explicit referral code to avoid false matches.
+    return UserProfile.objects.select_related('user').filter(
+        referral_code__iexact=normalized_ref,
+        can_refer=True,
+    ).first()
+
+
+def _notify_referrer_by_email(referrer_user, referred_user, referral_code=None):
+    """Notify the referrer without exposing referred-user contact details."""
+    if not getattr(referrer_user, 'email', ''):
+        return {'success': False, 'reason': 'missing_referrer_email'}
+
+    referred_identifier = build_referred_user_identifier(referred_user)
+    context = {
+        'referrer_user': referrer_user,
+        'referred_identifier': referred_identifier,
+        'referral_code': referral_code or '',
+        'current_year': datetime.datetime.now().year,
+    }
+
+    try:
+        html_message = render_to_string('users/referrer_notification_email.html', context)
+        plain_message = render_to_string('users/referrer_notification_email.txt', context)
+
+        send_mail(
+            subject='LEXIT referral update: a new member joined via your link',
+            message=plain_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[referrer_user.email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+        return {'success': True, 'referred_identifier': referred_identifier}
+    except Exception as exc:
+        logger.warning(
+            "Referrer notification email failed: referrer=%s reason=%s",
+            referrer_user.email,
+            str(exc),
+        )
+        return {'success': False, 'reason': str(exc)}
 
 @login_required
 def profile_view(request):
@@ -76,18 +99,24 @@ def profile_view(request):
         user_form = UserProfileForm(instance=request.user)
         profile_form = ExtendedUserProfileForm(instance=request.user.profile)
     
-    referral_signup_url = request.build_absolute_uri(
-        f"{reverse('users:register')}?ref={request.user.profile.referral_code}"
-    )
-    referral_landing_url = request.build_absolute_uri(
-        f"{reverse('landing_page')}?ref={request.user.profile.referral_code}"
-    )
+    can_refer = bool(getattr(request.user.profile, 'can_refer', False))
+    referral_signup_url = None
+    referral_landing_url = None
+
+    if can_refer and request.user.profile.referral_code:
+        referral_signup_url = request.build_absolute_uri(
+            f"{reverse('users:register')}?ref={request.user.profile.referral_code}"
+        )
+        referral_landing_url = request.build_absolute_uri(
+            f"{reverse('landing_page')}?ref={request.user.profile.referral_code}"
+        )
 
     return render(request, 'users/profile.html', {
         'user_form': user_form,
         'profile_form': profile_form,
         'referral_signup_url': referral_signup_url,
         'referral_landing_url': referral_landing_url,
+        'can_refer': can_refer,
         'referral_count': request.user.referred_users.count(),
     })
 
@@ -108,10 +137,13 @@ def register_view(request):
     if request.method == 'POST':
         form = SimpleUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()  # This will create both User and basic UserProfile
+            with transaction.atomic():
+                user = form.save()  # This will create both User and basic UserProfile
             referrer_user = None
+            journey_type = 'with_referrer' if referral_code else 'without_referrer'
             logger.info(
-                "Referral signup attempt: new_user=%s query_ref=%s session_ref=%s post_ref=%s",
+                "Signup journey=%s new_user=%s query_ref=%s session_ref=%s post_ref=%s",
+                journey_type,
                 user.email,
                 (request.GET.get('ref') or '').strip(),
                 (request.session.get('referral_code') or '').strip(),
@@ -133,6 +165,38 @@ def register_view(request):
                         referrer_profile.user.email,
                         referral_code,
                     )
+
+                    # Additional referred journey step: notify referrer without sharing contact details.
+                    referrer_email_result = _notify_referrer_by_email(
+                        referrer_user=referrer_user,
+                        referred_user=user,
+                        referral_code=referral_code,
+                    )
+                    if referrer_email_result.get('success'):
+                        logger.info(
+                            "Referrer email notification sent: referrer=%s referred_identifier=%s",
+                            referrer_user.email,
+                            referrer_email_result.get('referred_identifier'),
+                        )
+
+                    ac_referrer_notification_result = notify_referrer_of_signup(
+                        referrer_user=referrer_user,
+                        referred_user=user,
+                        referral_code=referral_code,
+                    )
+                    if ac_referrer_notification_result.get('success'):
+                        logger.info(
+                            "ActiveCampaign referrer notification recorded: referrer=%s contact_id=%s referred_identifier=%s",
+                            referrer_user.email,
+                            ac_referrer_notification_result.get('contact_id'),
+                            ac_referrer_notification_result.get('referred_identifier'),
+                        )
+                    else:
+                        logger.warning(
+                            "ActiveCampaign referrer notification failed: referrer=%s reason=%s",
+                            referrer_user.email,
+                            ac_referrer_notification_result.get('reason'),
+                        )
                 else:
                     profile = user.profile
                     profile.referral_code_used = referral_code

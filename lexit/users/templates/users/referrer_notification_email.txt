@@ -1,0 +1,19 @@
+LEXIT referral update
+
+Hi {{ referrer_user.first_name|default:referrer_user.username }},
+
+A new member has just joined LEXIT using your referral link.
+
+Referred member identifier: {{ referred_identifier }}
+{% if referral_code %}Referral token used: {{ referral_code }}
+{% endif %}
+For privacy reasons, we do not include the new member's contact details.
+
+Thank you for helping grow the LEXIT community.
+
+Best regards,
+The LEXIT Team
+
+---
+This is an automated referral update from LEXIT.
+© {{ current_year }} LEXIT. All rights reserved.

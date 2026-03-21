@@ -19,6 +19,7 @@ env = Env()
 # Read .env file from the same directory as settings.py
 Env.read_env(os.path.join(os.path.dirname(__file__), '.env'))
 ENVIRONMENT = env('ENVIRONMENT', default='production')
+REFERRAL_BASE_URL = env('REFERRAL_BASE_URL', default='https://www.lexit.tech')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -284,6 +285,15 @@ ACTIVECAMPAIGN_DEFAULT_LIST_ID = env('ACTIVECAMPAIGN_DEFAULT_LIST_ID', default='
 ACTIVECAMPAIGN_SIGNUP_TAG_ID = env('ACTIVECAMPAIGN_SIGNUP_TAG_ID', default='')
 ACTIVECAMPAIGN_REFERRAL_TAG_ID = env('ACTIVECAMPAIGN_REFERRAL_TAG_ID', default='')
 ACTIVECAMPAIGN_REFERRAL_CODE_TAG_PREFIX = env('ACTIVECAMPAIGN_REFERRAL_CODE_TAG_PREFIX', default='ref=')
+ACTIVECAMPAIGN_REFERRER_NOTIFICATION_TAG_ID = env('ACTIVECAMPAIGN_REFERRER_NOTIFICATION_TAG_ID', default='')
+ACTIVECAMPAIGN_REFERRER_USER_ID_FIELD_NAME = env(
+    'ACTIVECAMPAIGN_REFERRER_USER_ID_FIELD_NAME',
+    default='Latest Referred User ID',
+)
+ACTIVECAMPAIGN_REFERRER_CODE_FIELD_NAME = env(
+    'ACTIVECAMPAIGN_REFERRER_CODE_FIELD_NAME',
+    default='Latest Referral Code Used',
+)
 
 # Logging Configuration
 if ENVIRONMENT == 'production':

@@ -35,6 +35,20 @@ class SimpleUserCreationForm(UserCreationForm):
         })
     )
 
+    agree_terms = forms.BooleanField(
+        required=True,
+        error_messages={
+            'required': 'You must agree to the Terms of Service and Privacy Policy to continue.'
+        },
+    )
+
+    agree_gdpr = forms.BooleanField(
+        required=True,
+        error_messages={
+            'required': 'You must provide GDPR consent to continue.'
+        },
+    )
+
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
@@ -68,6 +82,18 @@ class SimpleUserCreationForm(UserCreationForm):
             )
         
         return self.cleaned_data['username']
+
+    def clean_email(self):
+        email = (self.cleaned_data.get('email') or '').strip().lower()
+        if not email:
+            return email
+
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError(
+                'An account with this email already exists. Please sign in or use a different email.'
+            )
+
+        return email
 
     def save(self, commit=True):
         user = super().save(commit=False)
