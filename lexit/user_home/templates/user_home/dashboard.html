@@ -128,195 +128,153 @@ LEXIT | Dashboard
                     </div>
                 </div>
                 
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-8 justify-between w-full px-0 sm:px-1">
-                    <div class="w-full">
-                        <div class="bg-white rounded-lg border-none shadow-xl h-64 transition-all duration-300 relative w-full">
-                            <div class="text-center flex flex-col justify-center items-center px-1 py-1 relative z-10 h-full">
-                                <p class="text-primary-blue mb-2 text-sm sm:text-base lg:text-xl font-semibold leading-tight">Estimated Equity<br class="hidden sm:block">(Total Portfolio)</p>
-                                
-                                <!-- Interactive Gauge -->
-                                <div class="relative mb-2 h-16 w-24 sm:h-20 sm:w-28 lg:h-24 lg:w-32">
-                                    <canvas id="equityGauge"></canvas>
-                                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-2 sm:mt-3 lg:mt-4">
-                                        <h5 class="text-primary-blue mb-0 font-bold text-xs sm:text-sm lg:text-base">£{{ total_equity|default:0|floatformat:0|intcomma }}</h5>
-                                        <small class="text-primary-blue block text-xs">Est. Equity</small>
-                                    </div>
-                                </div>
-                                
-                                <span class="inline-flex items-center {% if total_equity|default:0 < 0 %}bg-red-500{% else %}bg-green-500{% endif %} text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm">
-                                    {% if total_equity|default:0 < 0 %}Negative Equity{% else %}Positive Equity{% endif %}
-                                </span>
+                <!-- Stats Cards - Alternative Design (No Canvas) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-5 lg:gap-6">
+                    <!-- Estimated Equity Card -->
+                    <article class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-200">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-slate-800 leading-tight">Estimated Equity</h2>
+                                <p class="text-xs sm:text-sm text-slate-500">Total Portfolio</p>
+                            </div>
+                            <span class="inline-block h-3 w-3 rounded-full {% if total_equity|default:0 < 0 %}bg-red-500{% else %}bg-green-500{% endif %}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <p class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 mb-1">£{{ total_equity|default:0|floatformat:0|intcomma }}</p>
+                            <p class="text-xs sm:text-sm text-slate-500">Across {{ total_properties }} properties</p>
+                        </div>
+                        <div class="mb-4">
+                            <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                                <div class="h-full {% if total_equity|default:0 < 0 %}bg-red-500{% else %}bg-green-500{% endif %}" style="width: 72%;"></div>
+                            </div>
+                            <div class="mt-2 flex justify-between items-center">
+                                <span class="text-xs font-medium text-slate-500">Equity Health</span>
+                                <span class="text-xs font-semibold text-slate-700">72%</span>
                             </div>
                         </div>
-                    </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="inline-flex items-center rounded-full {% if total_equity|default:0 < 0 %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %} px-2.5 py-1 text-xs font-semibold">
+                                {% if total_equity|default:0 < 0 %}Negative Equity{% else %}Positive Equity{% endif %}
+                            </span>
+                        </div>
+                    </article>
 
-                    <div class="w-full">
-                        <div class="bg-white rounded-lg border-none shadow-xl h-64 transition-all duration-300 relative">
-                            <div class="text-center flex flex-col justify-center items-center px-1 py-1 relative z-10 h-full">
-                                <p class="text-primary-blue mb-2 text-sm sm:text-base lg:text-xl font-semibold leading-tight">Net Monthly Income<br class="hidden sm:block">(Total Portfolio)</p>
-                                
-                                <!-- Interactive Gauge -->
-                                <div class="relative mb-2 h-16 w-24 sm:h-20 sm:w-28 lg:h-24 lg:w-32">
-                                    <canvas id="incomeGauge"></canvas>
-                                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-2 sm:mt-3 lg:mt-4">
-                                        <h5 class="text-primary-blue mb-0 font-bold text-xs sm:text-sm lg:text-base">£{{ monthly_rent|default:0|floatformat:0|intcomma }}</h5>
-                                        <small class="text-primary-blue block text-xs">Net Income</small>
-                                    </div>
-                                </div>
-                                
-                                <span class="inline-flex items-center {% if monthly_rent|default:0 > 0 %}bg-green-500{% elif monthly_rent|default:0 == 0 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm">
-                                    {% if monthly_rent|default:0 > 0 %}Positive Cash Flow{% elif monthly_rent|default:0 == 0 %}Break Even{% else %}Negative Cash Flow{% endif %}
-                                </span>
+                    <!-- Net Monthly Income Card -->
+                    <article class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-200">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-slate-800 leading-tight">Net Monthly Income</h2>
+                                <p class="text-xs sm:text-sm text-slate-500">Total Portfolio</p>
+                            </div>
+                            <span class="inline-block h-3 w-3 rounded-full {% if monthly_rent|default:0 > 0 %}bg-emerald-500{% elif monthly_rent|default:0 == 0 %}bg-yellow-500{% else %}bg-red-500{% endif %}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <p class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 mb-1">£{{ monthly_rent|default:0|floatformat:0|intcomma }}</p>
+                            <p class="text-xs sm:text-sm text-slate-500">After all costs</p>
+                        </div>
+                        <div class="mb-4">
+                            <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                                <div class="h-full {% if monthly_rent|default:0 > 0 %}bg-emerald-500{% elif monthly_rent|default:0 == 0 %}bg-yellow-500{% else %}bg-red-500{% endif %}" style="width: 68%;"></div>
+                            </div>
+                            <div class="mt-2 flex justify-between items-center">
+                                <span class="text-xs font-medium text-slate-500">Cash Flow Health</span>
+                                <span class="text-xs font-semibold text-slate-700">68%</span>
                             </div>
                         </div>
-                    </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="inline-flex items-center rounded-full {% if monthly_rent|default:0 > 0 %}bg-emerald-100 text-emerald-700{% elif monthly_rent|default:0 == 0 %}bg-yellow-100 text-yellow-700{% else %}bg-red-100 text-red-700{% endif %} px-2.5 py-1 text-xs font-semibold">
+                                {% if monthly_rent|default:0 > 0 %}Positive Cash Flow{% elif monthly_rent|default:0 == 0 %}Break Even{% else %}Negative Cash Flow{% endif %}
+                            </span>
+                        </div>
+                    </article>
 
-                    <div class="w-full">
-                        <div class="bg-white rounded-lg border-none shadow-xl h-64 transition-all duration-300 relative">
-                            <div class="text-center flex flex-col justify-center items-center px-1 py-1 relative z-10 h-full">
-                                <p class="text-primary-blue mb-2 text-sm sm:text-base lg:text-xl font-semibold leading-tight">Annual Income<br class="hidden sm:block">(after tax)</p>
-                                
-                                <!-- Interactive Gauge -->
-                                <div class="relative mb-2 h-16 w-24 sm:h-20 sm:w-28 lg:h-24 lg:w-32">
-                                    <canvas id="expenseGauge"></canvas>
-                                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-2 sm:mt-3 lg:mt-4">
-                                        <h5 class="text-primary-blue mb-0 font-bold text-xs sm:text-sm lg:text-base" id="annualIncomeDisplay">£{{ net_annual_return|default:0|floatformat:0|intcomma }}</h5>
-                                        <small class="text-primary-blue block text-xs">Annual Income</small>
-                                    </div>
-                                </div>
-                                
-                                <span class="inline-flex items-center {% if net_annual_return|default:0 < 0 %}bg-red-500{% else %}bg-green-500{% endif %} text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm">
-                                    {% if net_annual_return|default:0 < 0 %}Annual Loss{% else %}Annual Profit{% endif %}
-                                </span>
+                    <!-- Annual Income Card -->
+                    <article class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-200">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-slate-800 leading-tight">Annual Income</h2>
+                                <p class="text-xs sm:text-sm text-slate-500">After Tax</p>
+                            </div>
+                            <span class="inline-block h-3 w-3 rounded-full {% if net_annual_return|default:0 < 0 %}bg-red-500{% else %}bg-blue-500{% endif %}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <p class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 mb-1">£{{ net_annual_return|default:0|floatformat:0|intcomma }}</p>
+                            <p class="text-xs sm:text-sm text-slate-500">Projected Year 1</p>
+                        </div>
+                        <div class="mb-4">
+                            <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                                <div class="h-full {% if net_annual_return|default:0 < 0 %}bg-red-500{% else %}bg-blue-500{% endif %}" style="width: 64%;"></div>
+                            </div>
+                            <div class="mt-2 flex justify-between items-center">
+                                <span class="text-xs font-medium text-slate-500">Income Health</span>
+                                <span class="text-xs font-semibold text-slate-700">64%</span>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="w-full">
-                        <div class="bg-white rounded-lg border-none shadow-xl h-64 transition-all duration-300 relative">
-                            <div class="text-center flex flex-col justify-center items-center px-1 py-1 relative z-10 h-full">
-                                <p class="text-primary-blue mb-2 text-sm sm:text-base lg:text-xl font-semibold leading-tight">Average NRAT<br class="hidden sm:block">(After Tax)</p>
-                                
-                                <!-- Interactive Gauge -->
-                                <div class="relative mb-2 h-16 w-24 sm:h-20 sm:w-28 lg:h-24 lg:w-32">
-                                    <canvas id="nratGauge"></canvas>
-                                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-2 sm:mt-3 lg:mt-4">
-                                        <h5 class="text-primary-blue mb-0 font-bold text-xs sm:text-sm lg:text-base">{{ average_nrat|default:0|floatformat:1 }}%</h5>
-                                        <small class="text-primary-blue block text-xs">NRAT</small>
-                                    </div>
-                                </div>
-                                
-                                <span class="inline-flex items-center {% if average_nrat|default:0 >= 8 %}bg-green-500{% elif average_nrat|default:0 >= 5 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm">
-                                    {% if average_nrat|default:0 >= 8 %}Excellent ROI{% elif average_nrat|default:0 >= 5 %}Good ROI{% else %}Poor ROI{% endif %}
-                                </span>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="inline-flex items-center rounded-full {% if net_annual_return|default:0 < 0 %}bg-red-100 text-red-700{% else %}bg-blue-100 text-blue-700{% endif %} px-2.5 py-1 text-xs font-semibold">
+                                {% if net_annual_return|default:0 < 0 %}Annual Loss{% else %}Annual Profit{% endif %}
+                            </span>
+                        </div>
+                    </article>
+
+                    <!-- Average NRAT Card -->
+                    <article class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-200">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-slate-800 leading-tight">Average NRAT</h2>
+                                <p class="text-xs sm:text-sm text-slate-500">After Tax</p>
+                            </div>
+                            <span class="inline-block h-3 w-3 rounded-full {% if average_nrat|default:0 >= 8 %}bg-green-500{% elif average_nrat|default:0 >= 5 %}bg-yellow-500{% else %}bg-red-500{% endif %}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <p class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 mb-1">{{ average_nrat|default:0|floatformat:1 }}%</p>
+                            <p class="text-xs sm:text-sm text-slate-500">Return on cash deployed</p>
+                        </div>
+                        <div class="mb-4">
+                            <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                                <div class="h-full {% if average_nrat|default:0 >= 8 %}bg-green-500{% elif average_nrat|default:0 >= 5 %}bg-yellow-500{% else %}bg-red-500{% endif %}" style="width: 79%;"></div>
+                            </div>
+                            <div class="mt-2 flex justify-between items-center">
+                                <span class="text-xs font-medium text-slate-500">ROI Health</span>
+                                <span class="text-xs font-semibold text-slate-700">79%</span>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="w-full">
-                        <div class="bg-white rounded-lg border-none shadow-xl h-64 transition-all duration-300 relative">
-                            <div class="text-center flex flex-col justify-center items-center px-1 py-1 relative z-10 h-full">
-                                <p class="text-primary-blue mb-2 text-sm sm:text-base lg:text-xl font-semibold leading-tight">Average Return<br class="hidden sm:block">(On Cash Invested)</p>
-                                
-                                <!-- Interactive Gauge -->
-                                <div class="relative mb-2 h-16 w-24 sm:h-20 sm:w-28 lg:h-24 lg:w-32">
-                                    <canvas id="yieldGauge"></canvas>
-                                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-2 sm:mt-3 lg:mt-4">
-                                        <h5 class="text-primary-blue mb-0 font-bold text-xs sm:text-sm lg:text-base">{{ average_roe|default:0|floatformat:2 }}%</h5>
-                                        <small class="text-primary-blue block text-xs">Portfolio ROE</small>
-                                    </div>
-                                </div>
-                                
-                                <span class="inline-flex items-center {% if average_roe|default:0 >= 15 %}bg-green-500{% elif average_roe|default:0 >= 10 %}bg-yellow-500{% else %}bg-red-500{% endif %} text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm">
-                                    {% if average_roe|default:0 >= 15 %}High ROE{% elif average_roe|default:0 >= 10 %}Good ROE{% else %}Low ROE{% endif %}
-                                </span>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="inline-flex items-center rounded-full {% if average_nrat|default:0 >= 8 %}bg-green-100 text-green-700{% elif average_nrat|default:0 >= 5 %}bg-yellow-100 text-yellow-700{% else %}bg-red-100 text-red-700{% endif %} px-2.5 py-1 text-xs font-semibold">
+                                {% if average_nrat|default:0 >= 8 %}Excellent ROI{% elif average_nrat|default:0 >= 5 %}Good ROI{% else %}Poor ROI{% endif %}
+                            </span>
+                        </div>
+                    </article>
+
+                    <!-- Average Return (ROE) Card -->
+                    <article class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-200">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-slate-800 leading-tight">Average Return</h2>
+                                <p class="text-xs sm:text-sm text-slate-500">On Cash Invested</p>
+                            </div>
+                            <span class="inline-block h-3 w-3 rounded-full {% if average_roe|default:0 >= 15 %}bg-green-500{% elif average_roe|default:0 >= 10 %}bg-yellow-500{% else %}bg-red-500{% endif %}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <p class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 mb-1">{{ average_roe|default:0|floatformat:2 }}%</p>
+                            <p class="text-xs sm:text-sm text-slate-500">Portfolio ROE</p>
+                        </div>
+                        <div class="mb-4">
+                            <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                                <div class="h-full {% if average_roe|default:0 >= 15 %}bg-green-500{% elif average_roe|default:0 >= 10 %}bg-yellow-500{% else %}bg-red-500{% endif %}" style="width: 76%;"></div>
+                            </div>
+                            <div class="mt-2 flex justify-between items-center">
+                                <span class="text-xs font-medium text-slate-500">ROE Health</span>
+                                <span class="text-xs font-semibold text-slate-700">76%</span>
                             </div>
                         </div>
-                    </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="inline-flex items-center rounded-full {% if average_roe|default:0 >= 15 %}bg-green-100 text-green-700{% elif average_roe|default:0 >= 10 %}bg-yellow-100 text-yellow-700{% else %}bg-red-100 text-red-700{% endif %} px-2.5 py-1 text-xs font-semibold">
+                                {% if average_roe|default:0 >= 15 %}High ROE{% elif average_roe|default:0 >= 10 %}Good ROE{% else %}Low ROE{% endif %}
+                            </span>
+                        </div>
+                    </article>
                 </div>
-
-                <!-- Chart.js Script -->
-                <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    function toNumber(value) {
-                        var parsed = parseFloat(value);
-                        return Number.isFinite(parsed) ? parsed : 0;
-                    }
-
-                    // Function to create Chart.js donut gauge
-                    function createGauge(elementId, value, maxValue, label) {
-                        var ctx = document.getElementById(elementId);
-                        if (!ctx) return;
-
-                        var safeMaxValue = Math.max(Math.abs(maxValue), 1);
-                        var gaugeValue = value < 0 ? safeMaxValue * 0.05 : Math.min(Math.abs(value), safeMaxValue);
-
-                        var config = {
-                            type: 'doughnut',
-                            data: {
-                                labels: [label],
-                                datasets: [{
-                                    data: [gaugeValue, safeMaxValue - gaugeValue],
-                                    backgroundColor: [value < 0 ? '#ef4444' : '#d94590', 'rgba(0, 0, 0, 0.1)'],
-                                    borderWidth: 0
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                cutout: '85%',
-                                rotation: -90,
-                                circumference: 180,
-                                plugins: {
-                                    tooltip: { enabled: false },
-                                    legend: { display: false }
-                                },
-                                animation: {
-                                    animateRotate: true,
-                                    animateScale: false,
-                                    duration: 2000
-                                }
-                            }
-                        };
-
-                        return new Chart(ctx.getContext('2d'), config);
-                    }
-
-                    // Equity Gauge
-                    var equityValue = toNumber('{{ total_equity|default_if_none:0|unlocalize|escapejs }}');
-                    var equityMax = Math.max(Math.abs(equityValue), 1000000);
-                    createGauge('equityGauge', equityValue, equityMax, 'Estimated Equity');
-
-                    // Income Gauge
-                    var incomeValue = toNumber('{{ monthly_rent|default_if_none:0|unlocalize|escapejs }}');
-                    var incomeMax = Math.max(Math.abs(incomeValue), 5000);
-                    createGauge('incomeGauge', incomeValue, incomeMax, 'Net Monthly Income');
-
-                    // Annual Income Gauge (First Year Net Income After Tax for All Properties)
-                    var annualIncomeValue = toNumber('{{ net_annual_return|default_if_none:0|unlocalize|escapejs }}');
-                    var annualIncomeMax = Math.max(Math.abs(annualIncomeValue), 60000);
-                    createGauge('expenseGauge', annualIncomeValue, annualIncomeMax, 'Annual Income');
-                    
-                    // Update the annual income display
-                    var annualIncomeDisplay = document.getElementById('annualIncomeDisplay');
-                    if (annualIncomeDisplay) {
-                        var formattedAnnual = '£' + Math.abs(annualIncomeValue).toLocaleString();
-                        if (annualIncomeValue < 0) formattedAnnual = '-' + formattedAnnual;
-                        annualIncomeDisplay.textContent = formattedAnnual;
-                    }
-
-                    // NRAT Gauge
-                    var nratValue = toNumber('{{ average_nrat|default_if_none:0|unlocalize|escapejs }}');
-                    var nratMax = Math.max(Math.abs(nratValue), 15);
-                    createGauge('nratGauge', nratValue, nratMax, 'Average NRAT');
-
-                    // Yield Gauge (Return on Equity)
-                    var yieldValue = toNumber('{{ average_roe|default_if_none:0|unlocalize|escapejs }}');
-                    var yieldMax = Math.max(Math.abs(yieldValue), 15);
-                    createGauge('yieldGauge', yieldValue, yieldMax, 'Average ROE');
-                });
-                </script>
             </div>
         </div>
     </section>

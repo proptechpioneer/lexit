@@ -6,6 +6,7 @@ app_name = 'user_home'
 urlpatterns = [
     # Dashboard
     path('', views.user_home, name='user_home'),
+    path('stats-mockup/', views.dashboard_stats_mockup, name='dashboard_stats_mockup'),
     
     # Property management
     path('properties/', views.property_list, name='property_list'),

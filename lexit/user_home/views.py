@@ -401,6 +401,76 @@ def user_home(request):
         # New users with no properties - show welcome experience
         return render(request, 'user_home/dashboard_welcome.html', context)
 
+
+def dashboard_stats_mockup(request):
+    """Standalone mockup page for alternative dashboard stats card design."""
+    mock_cards = [
+        {
+            'title': 'Estimated Equity',
+            'subtitle': 'Total Portfolio',
+            'value': '£382,450',
+            'meta': 'Across 5 properties',
+            'status': 'Positive Equity',
+            'status_class': 'bg-green-100 text-green-700',
+            'progress': 72,
+            'progress_class': 'bg-green-500',
+            'delta': '+8.2% vs last quarter'
+        },
+        {
+            'title': 'Net Monthly Income',
+            'subtitle': 'Total Portfolio',
+            'value': '£2,940',
+            'meta': 'After all costs',
+            'status': 'Positive Cash Flow',
+            'status_class': 'bg-green-100 text-green-700',
+            'progress': 68,
+            'progress_class': 'bg-emerald-500',
+            'delta': '+4.1% vs last month'
+        },
+        {
+            'title': 'Annual Income',
+            'subtitle': 'After Tax',
+            'value': '£35,280',
+            'meta': 'Projected year 1',
+            'status': 'Annual Profit',
+            'status_class': 'bg-blue-100 text-blue-700',
+            'progress': 64,
+            'progress_class': 'bg-blue-500',
+            'delta': '+6.7% year-on-year'
+        },
+        {
+            'title': 'Average NRAT',
+            'subtitle': 'After Tax',
+            'value': '7.9%',
+            'meta': 'Return on cash deployed',
+            'status': 'Good ROI',
+            'status_class': 'bg-yellow-100 text-yellow-700',
+            'progress': 79,
+            'progress_class': 'bg-yellow-500',
+            'delta': '+0.8 pts this year'
+        },
+        {
+            'title': 'Average Return',
+            'subtitle': 'On Cash Invested',
+            'value': '11.4%',
+            'meta': 'Portfolio ROE',
+            'status': 'Good ROE',
+            'status_class': 'bg-indigo-100 text-indigo-700',
+            'progress': 76,
+            'progress_class': 'bg-indigo-500',
+            'delta': '+1.2 pts this year'
+        },
+    ]
+
+    return render(
+        request,
+        'user_home/dashboard_stats_mockup.html',
+        {
+            'page_title': 'Dashboard Stats Mockup',
+            'mock_cards': mock_cards,
+        }
+    )
+
 @login_required
 @login_required
 def upload_property(request):
