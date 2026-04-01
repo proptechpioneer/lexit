@@ -55,150 +55,127 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 h-full min-h-[400px] max-h-[600px]">
                 
                 <!-- Top Left Square -->
-                <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full border border-gray-200">
-                    <div class="flex items-center justify-center">
-                        <h4 class="text-primary-blue mb-0 font-bold text-lg">Estimated Value</h4>
-                        <button type="button" onclick="console.log('Button clicked'); showEstimatedValueModal();" class="ml-2 text-dark-pink hover:text-pink focus:outline-none">
+                <article class="bg-white rounded-lg shadow-lg p-4 sm:p-5 border border-gray-200 h-full">
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h4 class="text-primary-blue mb-0 font-bold text-lg">Estimated Value</h4>
+                            <p class="text-xs text-gray-500 mb-0">Current Market Value</p>
+                        </div>
+                        <button type="button" onclick="showEstimatedValueModal();" class="ml-2 text-dark-pink hover:text-pink focus:outline-none">
                             <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
-                    
-                    <!-- Interactive Gauge -->
-                    <div class="flex-1 flex flex-col justify-center items-center min-h-0">
-                        <div class="relative w-28 h-14 sm:w-32 sm:h-16 md:w-36 md:h-18 lg:w-40 lg:h-20 mx-auto max-w-full gauge-container">
-                            <canvas id="propertyValueGauge" class="w-full h-full"></canvas>
-                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
-                                <h5 class="text-primary-blue mb-0 font-bold text-sm">£{{ property.estimated_market_value|floatformat:0|default:"0"|intcomma }}</h5>
-                                <small class="text-primary-blue block text-xs">Est. Value</small>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Status Display -->
-                    <div class="mt-4 shrink-0 badge-container">
-                        {% if property.estimated_market_value and property.purchase_price %}
-                        <div class="mb-1">
-                            <span class="{% if capital_appreciation >= 0 %}text-green-600{% else %}text-red-600{% endif %} font-bold text-sm">
-                            {% if capital_appreciation >= 0 %}
-                                +£{{ capital_appreciation|floatformat:0|intcomma }}
-                            {% else %}
-                                {% with neg_value=capital_appreciation|add:"0" %}
-                                -£{{ neg_value|floatformat:0|intcomma|slice:"1:" }}
-                                {% endwith %}
-                            {% endif %}
-                            </span>
-                        </div>
+
+                    <p class="text-2xl sm:text-3xl font-extrabold text-primary-blue mb-1">£{{ property.estimated_market_value|floatformat:0|default:"0"|intcomma }}</p>
+                    {% if property.estimated_market_value and property.purchase_price %}
+                    <p class="text-sm mb-3 {% if capital_appreciation >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                        {% if capital_appreciation >= 0 %}
+                            +£{{ capital_appreciation|floatformat:0|intcomma }}
+                        {% else %}
+                            {% with neg_value=capital_appreciation|add:"0" %}
+                            -£{{ neg_value|floatformat:0|intcomma|slice:"1:" }}
+                            {% endwith %}
                         {% endif %}
-                        <span class="{% if property.estimated_market_value and property.purchase_price %}{% if capital_appreciation >= 0 %}bg-green-600 text-white{% else %}bg-red-600 text-white{% endif %}{% else %}bg-gray-600 text-white{% endif %} px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: {% if property.estimated_market_value and property.purchase_price %}{% if capital_appreciation >= 0 %}#16a34a{% else %}#dc2626{% endif %}{% else %}#6b7280{% endif %} !important;">
+                    </p>
+                    {% else %}
+                    <p class="text-sm text-gray-500 mb-3">Analysis pending</p>
+                    {% endif %}
+
+                    <div class="h-2 w-full rounded-full bg-gray-100 overflow-hidden mb-3">
+                        <div class="h-full {% if property.estimated_market_value and property.purchase_price %}{% if capital_appreciation >= 0 %}bg-green-500{% else %}bg-red-500{% endif %}{% else %}bg-gray-400{% endif %}" style="width: 74%;"></div>
+                    </div>
+
+                    <span class="{% if property.estimated_market_value and property.purchase_price %}{% if capital_appreciation >= 0 %}bg-green-600 text-white{% else %}bg-red-600 text-white{% endif %}{% else %}bg-gray-600 text-white{% endif %} px-2 py-1 rounded-full text-sm inline-block">
                         {% if property.estimated_market_value and property.purchase_price %}
                             {% if capital_appreciation >= 0 %}Capital Gained{% else %}Capital Lost{% endif %}
                         {% else %}
                             Analysis Pending
                         {% endif %}
-                        </span>
-                    </div>
-                </div>
+                    </span>
+                </article>
                 <!-- End Left Square -->
 
                 <!-- Top Right Square -->
-                <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
-                    <div class="flex items-center justify-center">
-                        <h4 class="text-primary-blue mb-0 font-bold text-lg">Monthly Income</h4>
-                        <button type="button" onclick="console.log('Monthly Income button clicked'); showMonthlyIncomeModal();" class="ml-2 text-dark-pink hover:text-pink focus:outline-none">
+                <article class="bg-white rounded-lg shadow-lg p-4 sm:p-5 border border-gray-200 h-full">
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h4 class="text-primary-blue mb-0 font-bold text-lg">Monthly Income</h4>
+                            <p class="text-xs text-gray-500 mb-0">After Operating Costs</p>
+                        </div>
+                        <button type="button" onclick="showMonthlyIncomeModal();" class="ml-2 text-dark-pink hover:text-pink focus:outline-none">
                             <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
-                    
-                    <!-- Interactive Gauge -->
-                    <div class="flex-1 flex flex-col justify-center items-center min-h-0">
-                        <div class="relative w-28 h-14 sm:w-32 sm:h-16 md:w-36 md:h-18 lg:w-40 lg:h-20 mx-auto max-w-full gauge-container">
-                            <canvas id="monthlyIncomeGaugeSmall" class="w-full h-full"></canvas>
-                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
-                                <h5 class="text-primary-blue mb-0 font-bold text-sm">£{{ net_monthly_income|floatformat:0|default:"0"|intcomma }}</h5>
-                                <small class="text-primary-blue block text-xs">Net Income</small>
-                            </div>
-                        </div>
+
+                    <p class="text-2xl sm:text-3xl font-extrabold text-primary-blue mb-1">£{{ net_monthly_income|floatformat:0|default:"0"|intcomma }}</p>
+                    <p class="text-sm mb-3 {% if net_monthly_income > 0 %}text-green-600{% elif net_monthly_income == 0 %}text-yellow-600{% else %}text-red-600{% endif %}">
+                        {% if net_monthly_income > 0 %}
+                            +£{{ net_monthly_income|floatformat:0|intcomma }}
+                        {% elif net_monthly_income == 0 %}
+                            Breaking even
+                        {% else %}
+                            {% with neg_value=net_monthly_income|add:"0" %}
+                            -£{{ neg_value|floatformat:0|intcomma|slice:"1:" }}
+                            {% endwith %}
+                        {% endif %}
+                    </p>
+
+                    <div class="h-2 w-full rounded-full bg-gray-100 overflow-hidden mb-3">
+                        <div class="h-full {% if net_monthly_income > 0 %}bg-green-500{% elif net_monthly_income == 0 %}bg-yellow-500{% else %}bg-red-500{% endif %}" style="width: 68%;"></div>
                     </div>
-                    
-                    <!-- Monthly Income Status Display -->
-                    <div class="mt-4 shrink-0 badge-container">
-                        <div class="mb-1">
-                            <span class="{% if net_monthly_income > 0 %}text-green-600{% elif net_monthly_income == 0 %}text-yellow-600{% else %}text-red-600{% endif %} font-bold text-sm">
-                            {% if net_monthly_income > 0 %}
-                                +£{{ net_monthly_income|floatformat:0|intcomma }}
-                            {% elif net_monthly_income == 0 %}
-                                Breaking even
-                            {% else %}
-                                {% with neg_value=net_monthly_income|add:"0" %}
-                                -£{{ neg_value|floatformat:0|intcomma|slice:"1:" }}
-                                {% endwith %}
-                            {% endif %}
-                            </span>
-                        </div>
-                        
-                        <span class="{% if net_monthly_income > 0 %}bg-green-600 text-white{% elif net_monthly_income == 0 %}bg-yellow text-primary-blue{% else %}bg-red-600 text-white{% endif %} px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: {% if net_monthly_income > 0 %}#16a34a{% elif net_monthly_income == 0 %}#FFD700{% else %}#dc2626{% endif %} !important;">
+
+                    <span class="{% if net_monthly_income > 0 %}bg-green-600 text-white{% elif net_monthly_income == 0 %}bg-yellow text-primary-blue{% else %}bg-red-600 text-white{% endif %} px-2 py-1 rounded-full text-sm inline-block">
                         {% if net_monthly_income > 0 %}Positive{% elif net_monthly_income == 0 %}Break Even{% else %}Negative{% endif %}
-                        </span>
-                    </div>
-                </div>
+                    </span>
+                </article>
                 <!-- End Right Square -->
 
                 <!-- Bottom Left Square -->
-                <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
-                    <div class="flex items-center justify-center">
-                        <h4 class="text-primary-blue mb-0 font-bold text-lg">Gross Yield</h4>
-                        <button type="button" onclick="console.log('Gross Yield button clicked'); showGrossYieldModal();" class="ml-2 text-dark-pink hover:text-pink focus:outline-none">
+                <article class="bg-white rounded-lg shadow-lg p-4 sm:p-5 border border-gray-200 h-full">
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h4 class="text-primary-blue mb-0 font-bold text-lg">Gross Yield</h4>
+                            <p class="text-xs text-gray-500 mb-0">Annual Return Before Costs</p>
+                        </div>
+                        <button type="button" onclick="showGrossYieldModal();" class="ml-2 text-dark-pink hover:text-pink focus:outline-none">
                             <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
-                    
-                    <!-- Interactive Gauge -->
-                    <div class="flex-1 flex flex-col justify-center items-center min-h-0">
-                        <div class="relative w-28 h-14 sm:w-32 sm:h-16 md:w-36 md:h-18 lg:w-40 lg:h-20 mx-auto max-w-full gauge-container">
-                            <canvas id="weeklyRentGauge" class="w-full h-full"></canvas>
-                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
-                                <h5 class="text-primary-blue mb-0 font-bold text-sm">{{ gross_annual_yield|floatformat:1|default:"0" }}%</h5>
-                                <small class="text-primary-blue block text-xs">Annual return</small>
-                            </div>
-                        </div>
+
+                    <p class="text-2xl sm:text-3xl font-extrabold text-primary-blue mb-3">{{ gross_annual_yield|floatformat:1|default:"0" }}%</p>
+
+                    <div class="h-2 w-full rounded-full bg-gray-100 overflow-hidden mb-3">
+                        <div class="h-full {% if gross_annual_yield > 5 %}bg-green-500{% elif gross_annual_yield > 3 %}bg-yellow-500{% else %}bg-red-500{% endif %}" style="width: 78%;"></div>
                     </div>
-                    
-                    <!-- Yield Status Display -->
-                    <div class="mt-4 shrink-0 badge-container">
-                        <span class="{% if gross_annual_yield > 5 %}bg-green-600 text-white{% elif gross_annual_yield > 3 %}bg-yellow text-primary-blue{% else %}bg-red-600 text-white{% endif %} px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: {% if gross_annual_yield > 5 %}#16a34a{% elif gross_annual_yield > 3 %}#FFD700{% else %}#dc2626{% endif %} !important;">
-                            {% if gross_annual_yield > 5 %}High{% elif gross_annual_yield > 3 %}Moderate{% else %}Low{% endif %}
-                        </span>
-                    </div>
-                </div>
+
+                    <span class="{% if gross_annual_yield > 5 %}bg-green-600 text-white{% elif gross_annual_yield > 3 %}bg-yellow text-primary-blue{% else %}bg-red-600 text-white{% endif %} px-2 py-1 rounded-full text-sm inline-block">
+                        {% if gross_annual_yield > 5 %}High{% elif gross_annual_yield > 3 %}Moderate{% else %}Low{% endif %}
+                    </span>
+                </article>
                 <!-- End Bottom Left Square -->
 
                 <!-- Bottom Right Square -->
-                <div class="bg-white rounded-lg shadow-lg flex flex-col p-2 sm:p-4 md:p-6 text-center h-full">
-                    <div class="flex items-center justify-center">
-                        <h4 class="text-primary-blue mb-0 font-bold text-lg">Net Yield</h4>
-                        <button type="button" onclick="console.log('Net Yield button clicked'); showNetYieldModal();" class="ml-2 text-dark-pink hover:text-pink focus:outline-none">
+                <article class="bg-white rounded-lg shadow-lg p-4 sm:p-5 border border-gray-200 h-full">
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h4 class="text-primary-blue mb-0 font-bold text-lg">Net Yield</h4>
+                            <p class="text-xs text-gray-500 mb-0">Annual Return After Costs</p>
+                        </div>
+                        <button type="button" onclick="showNetYieldModal();" class="ml-2 text-dark-pink hover:text-pink focus:outline-none">
                             <i class="fas fa-info-circle text-lg"></i>
                         </button>
                     </div>
-                    
-                    <!-- Interactive Gauge -->
-                    <div class="flex-1 flex flex-col justify-center items-center min-h-0">
-                        <div class="relative w-28 h-14 sm:w-32 sm:h-16 md:w-36 md:h-18 lg:w-40 lg:h-20 mx-auto max-w-full gauge-container">
-                            <canvas id="grossYieldGaugeSmall" class="w-full h-full"></canvas>
-                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 2px;">
-                                <h5 class="text-primary-blue mb-0 font-bold text-sm">{{ net_annual_yield|floatformat:1|default:"0" }}%</h5>
-                                <small class="text-primary-blue block text-xs">Net return</small>
-                            </div>
-                        </div>
+
+                    <p class="text-2xl sm:text-3xl font-extrabold text-primary-blue mb-3">{{ net_annual_yield|floatformat:1|default:"0" }}%</p>
+
+                    <div class="h-2 w-full rounded-full bg-gray-100 overflow-hidden mb-3">
+                        <div class="h-full {% if net_annual_yield > 4 %}bg-green-500{% elif net_annual_yield > 2 %}bg-yellow-500{% else %}bg-red-500{% endif %}" style="width: 64%;"></div>
                     </div>
-                    
-                    <!-- Net Yield Status Display -->
-                    <div class="mt-4 shrink-0 badge-container">
-                        <span class="{% if net_annual_yield > 4 %}bg-green-600 text-white{% elif net_annual_yield > 2 %}bg-yellow text-primary-blue{% else %}bg-red-600 text-white{% endif %} px-2 py-1 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: {% if net_annual_yield > 4 %}#16a34a{% elif net_annual_yield > 2 %}#FFD700{% else %}#dc2626{% endif %} !important;">
-                            {% if net_annual_yield > 4 %}High{% elif net_annual_yield > 2 %}Moderate{% else %}Low{% endif %}
-                        </span>
-                    </div>
-                </div>
+
+                    <span class="{% if net_annual_yield > 4 %}bg-green-600 text-white{% elif net_annual_yield > 2 %}bg-yellow text-primary-blue{% else %}bg-red-600 text-white{% endif %} px-2 py-1 rounded-full text-sm inline-block">
+                        {% if net_annual_yield > 4 %}High{% elif net_annual_yield > 2 %}Moderate{% else %}Low{% endif %}
+                    </span>
+                </article>
                 <!-- End Bottom Right Square -->
             </div>      
         </div>
