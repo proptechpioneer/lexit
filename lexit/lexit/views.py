@@ -1,7 +1,11 @@
+import logging
+
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from user_home.models import Testimonial
 from news.models import NewsArticle
+
+logger = logging.getLogger(__name__)
 
 
 def referral_entry(request, ref_code):
@@ -51,3 +55,16 @@ def terms_of_service(request):
 
 def privacy_policy(request):
     return render(request, "privacy_policy.html")
+
+
+def csrf_failure(request, reason=''):
+    logger.warning(
+        'CSRF failure: path=%s host=%s origin=%s referer=%s secure=%s reason=%s',
+        request.path,
+        request.get_host(),
+        request.headers.get('Origin', ''),
+        request.headers.get('Referer', ''),
+        request.is_secure(),
+        reason,
+    )
+    return render(request, 'csrf_error.html', {'reason': reason}, status=403)

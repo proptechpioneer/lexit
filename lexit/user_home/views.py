@@ -10,11 +10,15 @@ from decimal import Decimal
 from news.models import NewsArticle
 from datetime import date
 import json
+import logging
 
 from .utils.corp_tax_calculator import corp_tax_calculator
 from .utils.offshore_tax_calculator import offshore_tax_calculator
 from .utils.tax_calculator import income_tax_calculator as tax_calculator
 from .utils.sdlt_calculator import sdlt_calculator
+
+
+logger = logging.getLogger(__name__)
 
 # Simple CGT calculation function (inline)
 def calculate_simple_cgt(current_value, purchase_price, growth_rate, years=10, ownership_type='individual'):
@@ -142,9 +146,12 @@ from .forms import PropertyForm
 def user_home(request):
     """Dashboard home page for logged-in users"""
     user = request.user
-    
-    # Get user profile information
+
+    # Ensure every authenticated user has a profile before rendering template fields.
     profile = getattr(user, 'profile', None)
+    if profile is None:
+        from users.models import UserProfile
+        profile, _ = UserProfile.objects.get_or_create(user=user)
     
     # Get user's properties
     properties = Property.objects.filter(owner=user)
@@ -155,7 +162,7 @@ def user_home(request):
     maintenance_rate = Decimal('0.035')  # 3.5%
     
     # Calculate dashboard stats
-    total_weekly_rent = sum(prop.weekly_rent for prop in properties)
+    total_weekly_rent = sum((prop.weekly_rent or Decimal('0')) for prop in properties)
     total_annual_rent = total_weekly_rent * 52
     total_portfolio_value = sum(prop.estimated_market_value or 0 for prop in properties)
     
@@ -175,66 +182,71 @@ def user_home(request):
     properties_with_roe = 0
     
     for prop in properties:
-        # Calculate basic property metrics for NRAT and ROE
-        annual_rent = prop.weekly_rent * 52
-        annual_vacancy_loss = annual_rent * vacancy_rate
-        annual_gross_rent = annual_rent - annual_vacancy_loss
-        
-        # Calculate annual expenses
-        annual_property_management_fees = annual_gross_rent * (prop.property_management_fees / 100)
-        annual_service_charge = prop.service_charge
-        annual_ground_rent = prop.ground_rent
-        annual_other_annual_costs = prop.other_annual_costs
-        annual_maintenance = annual_gross_rent * maintenance_rate
-        total_annual_expenses = (annual_property_management_fees + annual_service_charge +
-                               annual_ground_rent + annual_other_annual_costs + annual_maintenance)
-        
-        # Calculate net operating income
-        net_operating_income = annual_gross_rent - total_annual_expenses
-        
-        # Calculate annual mortgage payment
-        annual_mortgage_payment = Decimal('0')
-        if prop.has_mortgage and prop.outstanding_mortgage_balance and prop.mortgage_interest_rate:
-            monthly_interest_rate = prop.mortgage_interest_rate / Decimal('100') / Decimal('12')
-            if prop.mortgage_type == 'interest_only':
-                annual_mortgage_payment = prop.outstanding_mortgage_balance * monthly_interest_rate * 12
-            elif prop.mortgage_type == 'principal_and_interest' and prop.mortgage_years_remaining:
-                num_payments = prop.mortgage_years_remaining * 12
-                if monthly_interest_rate > 0:
-                    monthly_payment = prop.outstanding_mortgage_balance * (
-                        monthly_interest_rate * (1 + monthly_interest_rate) ** num_payments
-                    ) / ((1 + monthly_interest_rate) ** num_payments - 1)
-                    annual_mortgage_payment = monthly_payment * 12
-                else:
-                    annual_mortgage_payment = prop.outstanding_mortgage_balance / num_payments * 12
-        
-        # Calculate net cash flow before tax
-        net_cash_flow_before_tax = net_operating_income - annual_mortgage_payment
-        
-        # Simple tax calculation (20% for dashboard purposes)
-        estimated_tax = max(0, net_operating_income * Decimal('0.20'))
-        net_cash_flow_after_tax = net_cash_flow_before_tax - estimated_tax
-        
-        # Calculate NRAT if we have the required data
-        if prop.deposit_paid and prop.purchase_price and prop.date_of_purchase:
-            try:
-                nrat_result = calculate_nrat(prop, net_cash_flow_after_tax)
-                if nrat_result and 'nrat' in nrat_result:
-                    total_nrat += nrat_result['nrat']
-                    properties_with_nrat += 1
-            except Exception as e:
-                print(f"Error calculating NRAT for {prop.property_name}: {e}")
-        
-        # Calculate ROE if we have equity
-        if prop.estimated_market_value:
-            property_equity = prop.estimated_market_value
-            if prop.has_mortgage and prop.outstanding_mortgage_balance:
-                property_equity -= prop.outstanding_mortgage_balance
-            
-            if property_equity > 0:
-                roe = (net_cash_flow_after_tax / property_equity) * 100
-                total_roe += roe
-                properties_with_roe += 1
+        try:
+            # Calculate basic property metrics for NRAT and ROE
+            weekly_rent = prop.weekly_rent or Decimal('0')
+            annual_rent = weekly_rent * 52
+            annual_vacancy_loss = annual_rent * vacancy_rate
+            annual_gross_rent = annual_rent - annual_vacancy_loss
+
+            # Calculate annual expenses
+            property_management_fees = prop.property_management_fees or Decimal('0')
+            annual_property_management_fees = annual_gross_rent * (property_management_fees / 100)
+            annual_service_charge = prop.service_charge or Decimal('0')
+            annual_ground_rent = prop.ground_rent or Decimal('0')
+            annual_other_annual_costs = prop.other_annual_costs or Decimal('0')
+            annual_maintenance = annual_gross_rent * maintenance_rate
+            total_annual_expenses = (annual_property_management_fees + annual_service_charge +
+                                   annual_ground_rent + annual_other_annual_costs + annual_maintenance)
+
+            # Calculate net operating income
+            net_operating_income = annual_gross_rent - total_annual_expenses
+
+            # Calculate annual mortgage payment
+            annual_mortgage_payment = Decimal('0')
+            if prop.has_mortgage and prop.outstanding_mortgage_balance and prop.mortgage_interest_rate:
+                monthly_interest_rate = prop.mortgage_interest_rate / Decimal('100') / Decimal('12')
+                if prop.mortgage_type == 'interest_only':
+                    annual_mortgage_payment = prop.outstanding_mortgage_balance * monthly_interest_rate * 12
+                elif prop.mortgage_type == 'principal_and_interest' and prop.mortgage_years_remaining:
+                    num_payments = prop.mortgage_years_remaining * 12
+                    if monthly_interest_rate > 0:
+                        monthly_payment = prop.outstanding_mortgage_balance * (
+                            monthly_interest_rate * (1 + monthly_interest_rate) ** num_payments
+                        ) / ((1 + monthly_interest_rate) ** num_payments - 1)
+                        annual_mortgage_payment = monthly_payment * 12
+                    else:
+                        annual_mortgage_payment = prop.outstanding_mortgage_balance / num_payments * 12
+
+            # Calculate net cash flow before tax
+            net_cash_flow_before_tax = net_operating_income - annual_mortgage_payment
+
+            # Simple tax calculation (20% for dashboard purposes)
+            estimated_tax = max(Decimal('0'), net_operating_income * Decimal('0.20'))
+            net_cash_flow_after_tax = net_cash_flow_before_tax - estimated_tax
+
+            # Calculate NRAT if we have the required data
+            if prop.deposit_paid and prop.purchase_price and prop.date_of_purchase:
+                try:
+                    nrat_result = calculate_nrat(prop, net_cash_flow_after_tax)
+                    if nrat_result and 'nrat' in nrat_result:
+                        total_nrat += nrat_result['nrat']
+                        properties_with_nrat += 1
+                except Exception as e:
+                    logger.warning("Error calculating NRAT for property %s: %s", prop.id, e)
+
+            # Calculate ROE if we have equity
+            if prop.estimated_market_value:
+                property_equity = prop.estimated_market_value
+                if prop.has_mortgage and prop.outstanding_mortgage_balance:
+                    property_equity -= prop.outstanding_mortgage_balance
+
+                if property_equity > 0:
+                    roe = (net_cash_flow_after_tax / property_equity) * 100
+                    total_roe += roe
+                    properties_with_roe += 1
+        except Exception as e:
+            logger.warning("Skipping property %s in dashboard summary due to calculation error: %s", prop.id, e)
     
     # Calculate averages
     average_nrat = total_nrat / properties_with_nrat if properties_with_nrat > 0 else Decimal('0')
@@ -246,117 +258,129 @@ def user_home(request):
     maintenance_rate = Decimal('0.035')  # 3.5%
     
     for prop in properties:
-        # Calculate annual rent and gross income for this property
-        annual_rent = prop.weekly_rent * 52
-        annual_vacancy_loss = annual_rent * vacancy_rate
-        annual_gross_rent = annual_rent - annual_vacancy_loss
-        monthly_gross_income = annual_gross_rent / 12
-        
-        # Calculate monthly expenses for this property
-        monthly_property_management_fees = (annual_gross_rent * prop.property_management_fees / 100) / 12
-        monthly_service_charge = prop.service_charge / 12
-        monthly_ground_rent = prop.ground_rent / 12
-        monthly_other_annual_costs = prop.other_annual_costs / 12
-        monthly_maintenance = (annual_gross_rent * maintenance_rate) / 12
-        total_monthly_expenses = (monthly_property_management_fees + monthly_service_charge + 
-                                  monthly_ground_rent + monthly_other_annual_costs + 
-                                  monthly_maintenance)
-        
-        # Calculate monthly mortgage payment (full payment including principal + interest)
-        monthly_mortgage_payment = Decimal('0')
-        if prop.has_mortgage and prop.outstanding_mortgage_balance and prop.mortgage_interest_rate and prop.mortgage_years_remaining:
-            # Calculate full monthly mortgage payment using same logic as property detail
-            monthly_interest_rate = prop.mortgage_interest_rate / Decimal('100') / Decimal('12')
-            num_payments = prop.mortgage_years_remaining * 12
-            
-            if prop.mortgage_type == 'interest_only':
-                monthly_mortgage_payment = prop.outstanding_mortgage_balance * monthly_interest_rate
-            else:  # principal_and_interest
-                if monthly_interest_rate > 0:
-                    monthly_mortgage_payment = prop.outstanding_mortgage_balance * (
-                        monthly_interest_rate * (1 + monthly_interest_rate) ** num_payments
-                    ) / ((1 + monthly_interest_rate) ** num_payments - 1)
-                else:
-                    monthly_mortgage_payment = prop.outstanding_mortgage_balance / num_payments
+        try:
+            # Calculate annual rent and gross income for this property
+            weekly_rent = prop.weekly_rent or Decimal('0')
+            annual_rent = weekly_rent * 52
+            annual_vacancy_loss = annual_rent * vacancy_rate
+            annual_gross_rent = annual_rent - annual_vacancy_loss
+            monthly_gross_income = annual_gross_rent / 12
 
-        # Calculate net monthly income for this property (full cash flow after all expenses)
-        property_net_monthly_income = monthly_gross_income - total_monthly_expenses - monthly_mortgage_payment
-        total_net_monthly_income += property_net_monthly_income    # Calculate total net income after tax (Year 1) across all properties using detailed cashflow calculation
+            # Calculate monthly expenses for this property
+            property_management_fees = prop.property_management_fees or Decimal('0')
+            monthly_property_management_fees = (annual_gross_rent * property_management_fees / 100) / 12
+            monthly_service_charge = (prop.service_charge or Decimal('0')) / 12
+            monthly_ground_rent = (prop.ground_rent or Decimal('0')) / 12
+            monthly_other_annual_costs = (prop.other_annual_costs or Decimal('0')) / 12
+            monthly_maintenance = (annual_gross_rent * maintenance_rate) / 12
+            total_monthly_expenses = (monthly_property_management_fees + monthly_service_charge +
+                                      monthly_ground_rent + monthly_other_annual_costs +
+                                      monthly_maintenance)
+
+            # Calculate monthly mortgage payment (full payment including principal + interest)
+            monthly_mortgage_payment = Decimal('0')
+            if prop.has_mortgage and prop.outstanding_mortgage_balance and prop.mortgage_interest_rate and prop.mortgage_years_remaining:
+                # Calculate full monthly mortgage payment using same logic as property detail
+                monthly_interest_rate = prop.mortgage_interest_rate / Decimal('100') / Decimal('12')
+                num_payments = prop.mortgage_years_remaining * 12
+
+                if prop.mortgage_type == 'interest_only':
+                    monthly_mortgage_payment = prop.outstanding_mortgage_balance * monthly_interest_rate
+                else:  # principal_and_interest
+                    if monthly_interest_rate > 0:
+                        monthly_mortgage_payment = prop.outstanding_mortgage_balance * (
+                            monthly_interest_rate * (1 + monthly_interest_rate) ** num_payments
+                        ) / ((1 + monthly_interest_rate) ** num_payments - 1)
+                    else:
+                        monthly_mortgage_payment = prop.outstanding_mortgage_balance / num_payments
+
+            # Calculate net monthly income for this property (full cash flow after all expenses)
+            property_net_monthly_income = monthly_gross_income - total_monthly_expenses - monthly_mortgage_payment
+            total_net_monthly_income += property_net_monthly_income
+        except Exception as e:
+            logger.warning("Skipping property %s in monthly dashboard totals due to calculation error: %s", prop.id, e)
+
+    # Calculate total net income after tax (Year 1) across all properties using detailed cashflow calculation
     total_net_income_after_tax_year1 = Decimal('0')
     rental_growth_rate = Decimal('0.0371')  # 3.71%
     
     for prop in properties:
-        # Year 1 cashflow calculation (detailed calculation matching property detail view)
-        
-        # Calculate Year 1 projected rent (same as property detail view logic)
-        annual_rent = prop.weekly_rent * 52
-        projected_gross_rent = annual_rent * (Decimal('1') - vacancy_rate)
-        
-        # Calculate Year 1 expenses with inflation (same rates as property detail view)
-        projected_property_management_fees = projected_gross_rent * (prop.property_management_fees / 100)
-        projected_service_charge = prop.service_charge
-        projected_ground_rent = prop.ground_rent
-        projected_other_annual_costs = prop.other_annual_costs
-        projected_maintenance = projected_gross_rent * maintenance_rate
-        projected_total_expenses = (projected_property_management_fees + projected_service_charge +
-                                   projected_ground_rent + projected_other_annual_costs + projected_maintenance)
-        
-        # Calculate net operating income
-        net_operating_income = projected_gross_rent - projected_total_expenses
-        
-        # Calculate mortgage payments for Year 1
-        annual_interest_payment = Decimal('0')
-        annual_principal_payment = Decimal('0')
-        
-        if prop.has_mortgage and prop.outstanding_mortgage_balance and prop.mortgage_interest_rate:
-            mortgage_balance = prop.outstanding_mortgage_balance
-            monthly_interest_rate = prop.mortgage_interest_rate / Decimal('100') / Decimal('12')
-            annual_interest_payment = mortgage_balance * monthly_interest_rate * 12
-            
-            if prop.mortgage_type == 'principal_and_interest' and prop.mortgage_years_remaining:
-                # Calculate principal payment for P&I mortgages
-                remaining_months = prop.mortgage_years_remaining * 12
-                if monthly_interest_rate > 0:
-                    monthly_payment = mortgage_balance * (
-                        monthly_interest_rate * (1 + monthly_interest_rate) ** remaining_months
-                    ) / ((1 + monthly_interest_rate) ** remaining_months - 1)
-                    annual_total_payment = monthly_payment * 12
-                    annual_principal_payment = annual_total_payment - annual_interest_payment
+        try:
+            # Year 1 cashflow calculation (detailed calculation matching property detail view)
+
+            # Calculate Year 1 projected rent (same as property detail view logic)
+            weekly_rent = prop.weekly_rent or Decimal('0')
+            annual_rent = weekly_rent * 52
+            projected_gross_rent = annual_rent * (Decimal('1') - vacancy_rate)
+
+            # Calculate Year 1 expenses with inflation (same rates as property detail view)
+            property_management_fees = prop.property_management_fees or Decimal('0')
+            projected_property_management_fees = projected_gross_rent * (property_management_fees / 100)
+            projected_service_charge = prop.service_charge or Decimal('0')
+            projected_ground_rent = prop.ground_rent or Decimal('0')
+            projected_other_annual_costs = prop.other_annual_costs or Decimal('0')
+            projected_maintenance = projected_gross_rent * maintenance_rate
+            projected_total_expenses = (projected_property_management_fees + projected_service_charge +
+                                       projected_ground_rent + projected_other_annual_costs + projected_maintenance)
+
+            # Calculate net operating income
+            net_operating_income = projected_gross_rent - projected_total_expenses
+
+            # Calculate mortgage payments for Year 1
+            annual_interest_payment = Decimal('0')
+            annual_principal_payment = Decimal('0')
+
+            if prop.has_mortgage and prop.outstanding_mortgage_balance and prop.mortgage_interest_rate:
+                mortgage_balance = prop.outstanding_mortgage_balance
+                monthly_interest_rate = prop.mortgage_interest_rate / Decimal('100') / Decimal('12')
+                annual_interest_payment = mortgage_balance * monthly_interest_rate * 12
+
+                if prop.mortgage_type == 'principal_and_interest' and prop.mortgage_years_remaining:
+                    # Calculate principal payment for P&I mortgages
+                    remaining_months = prop.mortgage_years_remaining * 12
+                    if monthly_interest_rate > 0:
+                        monthly_payment = mortgage_balance * (
+                            monthly_interest_rate * (1 + monthly_interest_rate) ** remaining_months
+                        ) / ((1 + monthly_interest_rate) ** remaining_months - 1)
+                        annual_total_payment = monthly_payment * 12
+                        annual_principal_payment = annual_total_payment - annual_interest_payment
+                    else:
+                        annual_principal_payment = mortgage_balance / remaining_months * 12
+
+            # Calculate net cash flow before tax
+            net_cash_flow_before_tax = net_operating_income - annual_interest_payment - annual_principal_payment
+
+            # Detailed tax calculation (matching property detail view logic)
+            net_income_for_tax = net_operating_income - annual_interest_payment
+
+            # Tax calculation based on ownership status
+            if prop.ownership_status == 'company':
+                # Corporate tax rates
+                if net_income_for_tax > 250000:
+                    corporate_tax = net_income_for_tax * Decimal('0.25')  # 25% main rate
                 else:
-                    annual_principal_payment = mortgage_balance / remaining_months * 12
-        
-        # Calculate net cash flow before tax
-        net_cash_flow_before_tax = net_operating_income - annual_interest_payment - annual_principal_payment
-        
-        # Detailed tax calculation (matching property detail view logic)
-        net_income_for_tax = net_operating_income - annual_interest_payment
-        
-        # Tax calculation based on ownership status
-        if prop.ownership_status == 'company':
-            # Corporate tax rates
-            if net_income_for_tax > 250000:
-                corporate_tax = net_income_for_tax * Decimal('0.25')  # 25% main rate
+                    corporate_tax = net_income_for_tax * Decimal('0.19')  # 19% small profits rate
+                applicable_tax = max(corporate_tax, Decimal('0'))
             else:
-                corporate_tax = net_income_for_tax * Decimal('0.19')  # 19% small profits rate
-            applicable_tax = max(corporate_tax, Decimal('0'))
-        else:
-            # Individual tax calculation with proper bands
-            if net_income_for_tax <= Decimal('12570'):
-                # Below personal allowance
-                applicable_tax = Decimal('0')
-            elif net_income_for_tax <= Decimal('50270'):
-                # Basic rate (20%) above personal allowance
-                taxable_income = net_income_for_tax - Decimal('12570')
-                applicable_tax = taxable_income * Decimal('0.20')
-            else:
-                # Higher rate (40%) for income above £50,270
-                basic_rate_portion = Decimal('50270') - Decimal('12570')  # £37,700
-                higher_rate_portion = net_income_for_tax - Decimal('50270')
-                applicable_tax = (basic_rate_portion * Decimal('0.20')) + (higher_rate_portion * Decimal('0.40'))
-        
-        # Calculate net cash flow after tax for this property (Year 1 from cashflow forecast)
-        property_net_cash_flow_after_tax = net_cash_flow_before_tax - applicable_tax
-        total_net_income_after_tax_year1 += property_net_cash_flow_after_tax
+                # Individual tax calculation with proper bands
+                if net_income_for_tax <= Decimal('12570'):
+                    # Below personal allowance
+                    applicable_tax = Decimal('0')
+                elif net_income_for_tax <= Decimal('50270'):
+                    # Basic rate (20%) above personal allowance
+                    taxable_income = net_income_for_tax - Decimal('12570')
+                    applicable_tax = taxable_income * Decimal('0.20')
+                else:
+                    # Higher rate (40%) for income above £50,270
+                    basic_rate_portion = Decimal('50270') - Decimal('12570')  # £37,700
+                    higher_rate_portion = net_income_for_tax - Decimal('50270')
+                    applicable_tax = (basic_rate_portion * Decimal('0.20')) + (higher_rate_portion * Decimal('0.40'))
+
+            # Calculate net cash flow after tax for this property (Year 1 from cashflow forecast)
+            property_net_cash_flow_after_tax = net_cash_flow_before_tax - applicable_tax
+            total_net_income_after_tax_year1 += property_net_cash_flow_after_tax
+        except Exception as e:
+            logger.warning("Skipping property %s in annual dashboard totals due to calculation error: %s", prop.id, e)
     
     # Calculate average yield
     average_yield = 0
@@ -468,6 +492,116 @@ def dashboard_stats_mockup(request):
         {
             'page_title': 'Dashboard Stats Mockup',
             'mock_cards': mock_cards,
+        }
+    )
+
+
+def property_cards_mockup(request):
+    """Standalone mockup page for property-level cards without gauge charts."""
+    mock_cards = [
+        {
+            'title': 'Estimated Value',
+            'subtitle': 'Current Market Value',
+            'value': '£245,000',
+            'meta': 'Semi-detached, 3 bed',
+            'status': 'Strong Position',
+            'status_class': 'bg-blue-100 text-blue-700',
+            'progress': 74,
+            'progress_class': 'bg-blue-500',
+        },
+        {
+            'title': 'Monthly Income',
+            'subtitle': 'After Costs',
+            'value': '£712',
+            'meta': 'Projected month 1',
+            'status': 'Positive Cash Flow',
+            'status_class': 'bg-emerald-100 text-emerald-700',
+            'progress': 69,
+            'progress_class': 'bg-emerald-500',
+        },
+        {
+            'title': 'Gross Yield',
+            'subtitle': 'Before Operating Costs',
+            'value': '7.4%',
+            'meta': 'Annualized rental return',
+            'status': 'Healthy Yield',
+            'status_class': 'bg-green-100 text-green-700',
+            'progress': 78,
+            'progress_class': 'bg-green-500',
+        },
+        {
+            'title': 'Net Yield',
+            'subtitle': 'After Operating Costs',
+            'value': '5.9%',
+            'meta': 'Includes maintenance and vacancies',
+            'status': 'Stable Return',
+            'status_class': 'bg-indigo-100 text-indigo-700',
+            'progress': 64,
+            'progress_class': 'bg-indigo-500',
+        },
+    ]
+
+    return render(
+        request,
+        'user_home/property_cards_mockup.html',
+        {
+            'page_title': 'Property Cards Mockup',
+            'mock_cards': mock_cards,
+        }
+    )
+
+
+def property_page_mockup(request):
+    """Standalone full-page mockup for property output redesign without gauges."""
+    summary_cards = [
+        {
+            'title': 'Estimated Value',
+            'subtitle': 'Current Market Value',
+            'value': '£245,000',
+            'meta': 'Updated this month',
+            'status': 'Capital Gained',
+            'status_class': 'bg-blue-100 text-blue-700',
+            'progress': 74,
+            'progress_class': 'bg-blue-500',
+        },
+        {
+            'title': 'Monthly Income',
+            'subtitle': 'After Costs',
+            'value': '£712',
+            'meta': 'Cash flow after finance',
+            'status': 'Positive',
+            'status_class': 'bg-emerald-100 text-emerald-700',
+            'progress': 69,
+            'progress_class': 'bg-emerald-500',
+        },
+        {
+            'title': 'Gross Yield',
+            'subtitle': 'Before Operating Costs',
+            'value': '7.4%',
+            'meta': 'Annualized return',
+            'status': 'High',
+            'status_class': 'bg-green-100 text-green-700',
+            'progress': 78,
+            'progress_class': 'bg-green-500',
+        },
+        {
+            'title': 'Net Yield',
+            'subtitle': 'After Operating Costs',
+            'value': '5.9%',
+            'meta': 'Risk-adjusted return',
+            'status': 'Moderate',
+            'status_class': 'bg-indigo-100 text-indigo-700',
+            'progress': 64,
+            'progress_class': 'bg-indigo-500',
+        },
+    ]
+
+    return render(
+        request,
+        'user_home/property_page_mockup.html',
+        {
+            'page_title': 'Property Page Mockup',
+            'summary_cards': summary_cards,
         }
     )
 
@@ -1165,8 +1299,8 @@ def property_detail(request, slug):
     rental_growth_rate = Decimal('0.0371')  # 3.71%
 
     # Estimated Market Value
-    estimated_market_value = property_obj.estimated_market_value if property_obj.estimated_market_value else 0
-    capital_appreciation = estimated_market_value - property_obj.purchase_price if property_obj.purchase_price else 0
+    estimated_market_value = property_obj.estimated_market_value or Decimal('0')
+    capital_appreciation = estimated_market_value - property_obj.purchase_price if property_obj.purchase_price else Decimal('0')
 
     # Calculate basic net income for other properties 
     annual_rent = property_obj.weekly_rent * 52
@@ -1249,12 +1383,17 @@ def property_detail(request, slug):
     # Calculate net monthly cash flow (including all mortgage payments)
     net_monthly_cash_flow = monthly_gross_income - total_monthly_expenses - monthly_mortgage_payment   
 
-    # Calculate Gross Annual Yield
-    gross_annual_yield = (annual_gross_rent / property_obj.estimated_market_value * 100) if property_obj.purchase_price else 0
+    # Calculate Gross and Net Annual Yield
+    if estimated_market_value > 0:
+        gross_annual_yield = (annual_gross_rent / estimated_market_value) * 100
+    else:
+        gross_annual_yield = Decimal('0')
 
-    # Calculate Net Annual Yield
     monthly_operating_income = monthly_gross_income - total_monthly_expenses
-    net_annual_yield = ((monthly_operating_income * 12) / property_obj.estimated_market_value * 100) if property_obj.purchase_price else 0
+    if estimated_market_value > 0:
+        net_annual_yield = ((monthly_operating_income * 12) / estimated_market_value) * 100
+    else:
+        net_annual_yield = Decimal('0')
 
 
     ## KPIS ##
@@ -1647,6 +1786,7 @@ def property_detail(request, slug):
     else:
         no_growth_return_rate = 0
         no_growth_annual_capital_return_rate = 0
+        no_growth_total_return = 0
         no_growth_annual_return_rate = 0
         print(f"    - Cannot calculate returns: Notional equity is zero")
 
@@ -1731,6 +1871,7 @@ def property_detail(request, slug):
     else:
         moderate_growth_return_rate = 0
         moderate_growth_annual_capital_return_rate = 0
+        moderate_growth_total_return = 0
         moderate_growth_annual_return_rate = 0
         print(f"    - Cannot calculate returns: Notional equity is zero")
 
@@ -1815,6 +1956,7 @@ def property_detail(request, slug):
     else:
         average_growth_return_rate = 0
         average_growth_annual_capital_return_rate = 0
+        average_growth_total_return = 0
         average_growth_annual_return_rate = 0
         print(f"    - Cannot calculate returns: Notional equity is zero")
 

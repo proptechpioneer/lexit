@@ -1,0 +1,346 @@
+{% extends "layout.html" %}
+
+{% block title %}
+LEXIT | Full Property Page Mockup
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="mb-6 rounded-2xl border border-slate-200 bg-linear-to-r from-slate-50 via-white to-cyan-50 p-6 shadow-sm">
+        <p class="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-2">Preview Only</p>
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-2">Full Property Output Mockup (No Gauges)</h1>
+        <p class="text-slate-600 mb-0">A complete page concept replacing gauge visuals with clearer card and table components.</p>
+    </div>
+
+    <section class="mb-8">
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+            <div>
+                <h2 class="text-3xl font-bold text-primary-blue">Castle View Terrace</h2>
+                <p class="text-slate-600 mb-0">12 Market Road, Birmingham, B15 2AB</p>
+            </div>
+            <div class="flex gap-2">
+                <button class="bg-dark-pink text-white px-4 py-2 rounded-lg">Edit Property</button>
+                <button class="border border-primary-blue text-primary-blue px-4 py-2 rounded-lg">Back to Dashboard</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-1 rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm">
+                <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?q=80&w=1200&auto=format&fit=crop" alt="Property preview" class="w-full h-full object-cover min-h-[280px]">
+            </div>
+
+            <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {% for card in summary_cards %}
+                <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="text-base sm:text-lg font-bold text-slate-800 leading-tight">{{ card.title }}</h3>
+                            <p class="text-xs sm:text-sm text-slate-500">{{ card.subtitle }}</p>
+                        </div>
+                        <span class="inline-block h-3 w-3 rounded-full {{ card.progress_class }}"></span>
+                    </div>
+
+                    <p class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1">{{ card.value }}</p>
+                    <p class="text-xs sm:text-sm text-slate-500 mb-4">{{ card.meta }}</p>
+
+                    <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden mb-2">
+                        <div class="h-full {{ card.progress_class }}" style="width: {{ card.progress }}%;"></div>
+                    </div>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-xs font-medium text-slate-500">Performance</span>
+                        <span class="text-xs font-semibold text-slate-700">{{ card.progress }}%</span>
+                    </div>
+
+                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold {{ card.status_class }}">{{ card.status }}</span>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="text-2xl font-bold text-primary-blue mb-2">Performance Dashboard</h2>
+        <p class="text-slate-600 mb-5">Advanced analytics benchmarked against industry standards, including gauge views for DSCR, OPEX Expense Load, and NRAT.</p>
+
+        <div class="rounded-xl border-2 border-blue-400 bg-blue-50 p-4 mb-6">
+            <p class="text-sm text-slate-600 mb-1">Overall Performance Ranking</p>
+            <p class="text-2xl font-extrabold text-primary-blue">Good</p>
+            <p class="text-sm text-slate-600 mb-0">Strong returns with room for operating expense optimisation.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6">
+
+            <!-- Debt Service Coverage Ratio -->
+            <div class="bg-white rounded-lg shadow-lg flex flex-col justify-center items-center p-6 text-center h-full">
+                <div class="flex items-center mb-3">
+                    <h4 class="text-primary-blue mb-0 font-bold text-lg">Debt Service Coverage Ratio (DSCR)</h4>
+                    <button type="button" onclick="showDscrModal();" class="ml-2 text-dark-pink hover:text-pink transition-colors" title="What is DSCR?">
+                        <i class="fas fa-info-circle text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Interactive Gauge -->
+                <div class="relative mb-3 w-40 h-20 sm:w-44 sm:h-22 md:w-48 md:h-24 lg:w-52 lg:h-26 mx-auto">
+                    <canvas id="dscrGauge" class="w-full h-full"></canvas>
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 15px;">
+                        <h5 class="text-primary-blue mb-0 font-bold text-sm">1.38</h5>
+                        <small class="text-primary-blue block text-xs">DSCR</small>
+                    </div>
+                </div>
+
+                <!-- DSCR Status Display -->
+                <div class="badge-container">
+                    <span class="bg-green-600 text-white px-3 py-2 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: #16a34a !important;">
+                        Healthy Coverage
+                    </span>
+                </div>
+            </div>
+            <!-- End Debt Service Coverage Ratio -->
+
+            <!-- Operating Expense Load -->
+            <div class="bg-white rounded-lg shadow-lg flex flex-col justify-center items-center p-6 text-center h-full">
+                <div class="flex items-center mb-3">
+                    <h4 class="text-primary-blue mb-0 font-bold text-lg">OPEX Load<br>(% of Rental Income)</h4>
+                    <button type="button" onclick="showOpexModal();" class="ml-2 text-dark-pink hover:text-pink transition-colors" title="What is OPEX Load?">
+                        <i class="fas fa-info-circle text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Interactive Gauge -->
+                <div class="relative mb-3 w-40 h-20 sm:w-44 sm:h-22 md:w-48 md:h-24 lg:w-52 lg:h-26 mx-auto">
+                    <canvas id="opexGauge" class="w-full h-full"></canvas>
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 15px;">
+                        <h5 class="text-primary-blue mb-0 font-bold text-sm">22.0%</h5>
+                        <small class="text-primary-blue block text-xs">Expense ratio</small>
+                    </div>
+                </div>
+
+                <!-- OPEX Status Display -->
+                <div class="badge-container">
+                    <span class="bg-yellow text-primary-blue px-3 py-2 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: #FFD700 !important;">
+                        Efficient
+                    </span>
+                </div>
+            </div>
+            <!-- End Operating Expense Load -->
+
+            <!-- Net Return After Tax -->
+            <div class="bg-white rounded-lg shadow-lg flex flex-col justify-center items-center p-6 text-center h-full">
+                <div class="flex items-center mb-3">
+                    <h4 class="text-primary-blue mb-0 font-bold text-lg">Net Return (after tax)<br>(% of Capital Employed)</h4>
+                    <button type="button" onclick="showNratModal();" class="ml-2 text-dark-pink hover:text-pink transition-colors" title="What is NRAT?">
+                        <i class="fas fa-info-circle text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Interactive Gauge -->
+                <div class="relative mb-3 w-40 h-20 sm:w-44 sm:h-22 md:w-48 md:h-24 lg:w-52 lg:h-26 mx-auto">
+                    <canvas id="nratGauge" class="w-full h-full"></canvas>
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="margin-top: 15px;">
+                        <h5 class="text-primary-blue mb-0 font-bold text-sm">7.2%</h5>
+                        <small class="text-primary-blue block text-xs">Annual return</small>
+                    </div>
+                </div>
+
+                <!-- NRAT Status Display -->
+                <div class="badge-container">
+                    <span class="bg-yellow text-primary-blue px-3 py-2 rounded-full text-sm inline-block gauge-badge" style="display: inline-block !important; visibility: visible !important; background-color: #FFD700 !important;">
+                        Good ROI
+                    </span>
+                </div>
+            </div>
+            <!-- End Net Return After Tax -->
+        </div>
+    </section>
+
+    <section class="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="text-2xl font-bold text-primary-blue mb-2">Cash Flow Forecast</h2>
+        <p class="text-slate-600 mb-5">10-year projection summary with tax-aware cash flow.</p>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead class="bg-slate-50 text-slate-600">
+                    <tr>
+                        <th class="text-left px-4 py-3">Year</th>
+                        <th class="text-left px-4 py-3">Gross Rent</th>
+                        <th class="text-left px-4 py-3">Expenses</th>
+                        <th class="text-left px-4 py-3">Tax</th>
+                        <th class="text-left px-4 py-3">Net Cash Flow</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-t border-slate-100">
+                        <td class="px-4 py-3">1</td><td class="px-4 py-3">£18,720</td><td class="px-4 py-3">£6,340</td><td class="px-4 py-3">£1,450</td><td class="px-4 py-3 font-semibold text-emerald-700">£5,980</td>
+                    </tr>
+                    <tr class="border-t border-slate-100">
+                        <td class="px-4 py-3">5</td><td class="px-4 py-3">£21,140</td><td class="px-4 py-3">£7,120</td><td class="px-4 py-3">£1,730</td><td class="px-4 py-3 font-semibold text-emerald-700">£6,820</td>
+                    </tr>
+                    <tr class="border-t border-slate-100">
+                        <td class="px-4 py-3">10</td><td class="px-4 py-3">£25,330</td><td class="px-4 py-3">£8,490</td><td class="px-4 py-3">£2,140</td><td class="px-4 py-3 font-semibold text-emerald-700">£8,230</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="text-2xl font-bold text-primary-blue mb-2">Capital Growth Scenarios</h2>
+        <p class="text-slate-600 mb-5">Compare downside, base case, and upside outcomes over 10 years.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <article class="rounded-xl border border-slate-200 p-4 bg-slate-50">
+                <p class="text-xs uppercase tracking-wide text-slate-500 mb-1">Conservative</p>
+                <p class="text-xl font-bold text-slate-900 mb-1">0.0% growth</p>
+                <p class="text-sm text-slate-600 mb-0">Net capital after costs: <strong>£-4,900</strong></p>
+            </article>
+            <article class="rounded-xl border border-blue-300 p-4 bg-blue-50">
+                <p class="text-xs uppercase tracking-wide text-blue-700 mb-1">Moderate</p>
+                <p class="text-xl font-bold text-slate-900 mb-1">1.7% growth</p>
+                <p class="text-sm text-slate-600 mb-0">Net capital after costs: <strong>£22,100</strong></p>
+            </article>
+            <article class="rounded-xl border border-green-300 p-4 bg-green-50">
+                <p class="text-xs uppercase tracking-wide text-green-700 mb-1">Optimistic</p>
+                <p class="text-xl font-bold text-slate-900 mb-1">3.4% growth</p>
+                <p class="text-sm text-slate-600 mb-0">Net capital after costs: <strong>£54,300</strong></p>
+            </article>
+        </div>
+    </section>
+</div>
+
+<script>
+function showDscrModal() {}
+function showOpexModal() {}
+function showNratModal() {}
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof Chart === 'undefined') return;
+
+    // DSCR Gauge
+    var dscrData = {
+        value: 1.38,
+        max: 2,
+        label: 'DSCR'
+    };
+
+    var dscrValue = dscrData.value;
+    var dscrGaugeValue = dscrValue < 0 ? dscrData.max * 0.05 : dscrValue;
+    var dscrBackgroundColor = dscrValue < 0 ? '#ef4444' : 'rgba(255, 19, 146, 0.8)';
+
+    var dscrConfig = {
+        type: 'doughnut',
+        data: {
+            labels: [dscrData.label],
+            datasets: [{
+                data: [dscrGaugeValue, dscrData.max - dscrGaugeValue],
+                backgroundColor: [dscrBackgroundColor, 'rgba(0, 0, 0, 0.1)'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '85%',
+            rotation: -90,
+            circumference: 180,
+            plugins: {
+                tooltip: { enabled: false },
+                legend: { display: false }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: false,
+                duration: 2000
+            }
+        }
+    };
+
+    var dscrCtx = document.getElementById('dscrGauge');
+    if (dscrCtx) {
+        new Chart(dscrCtx.getContext('2d'), dscrConfig);
+    }
+
+    // OPEX Load Gauge
+    var opexData = {
+        value: 22,
+        max: 50,
+        label: 'OPEX Load'
+    };
+
+    var opexConfig = {
+        type: 'doughnut',
+        data: {
+            labels: [opexData.label],
+            datasets: [{
+                data: [opexData.value, opexData.max - opexData.value],
+                backgroundColor: ['rgba(255, 19, 146, 0.8)', 'rgba(0, 0, 0, 0.1)'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '85%',
+            rotation: -90,
+            circumference: 180,
+            plugins: {
+                tooltip: { enabled: false },
+                legend: { display: false }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: false,
+                duration: 2000
+            }
+        }
+    };
+
+    var opexCtx = document.getElementById('opexGauge');
+    if (opexCtx) {
+        new Chart(opexCtx.getContext('2d'), opexConfig);
+    }
+
+    // NRAT Gauge
+    var nratData = {
+        value: 7.2,
+        max: 20,
+        label: 'NRAT'
+    };
+
+    var nratValue = nratData.value;
+    var nratGaugeValue = nratValue < 0 ? nratData.max * 0.05 : nratValue;
+    var nratBackgroundColor = nratValue < 0 ? '#ef4444' : 'rgba(255, 19, 146, 0.8)';
+
+    var nratConfig = {
+        type: 'doughnut',
+        data: {
+            labels: [nratData.label],
+            datasets: [{
+                data: [nratGaugeValue, nratData.max - nratGaugeValue],
+                backgroundColor: [nratBackgroundColor, 'rgba(0, 0, 0, 0.1)'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '85%',
+            rotation: -90,
+            circumference: 180,
+            plugins: {
+                tooltip: { enabled: false },
+                legend: { display: false }
+            },
+            animation: {
+                animateRotate: true,
+                duration: 2000
+            }
+        }
+    };
+
+    var nratCtx = document.getElementById('nratGauge');
+    if (nratCtx) {
+        new Chart(nratCtx.getContext('2d'), nratConfig);
+    }
+});
+</script>
+{% endblock %}

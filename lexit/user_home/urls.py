@@ -7,6 +7,8 @@ urlpatterns = [
     # Dashboard
     path('', views.user_home, name='user_home'),
     path('stats-mockup/', views.dashboard_stats_mockup, name='dashboard_stats_mockup'),
+    path('property-cards-mockup/', views.property_cards_mockup, name='property_cards_mockup'),
+    path('property-page-mockup/', views.property_page_mockup, name='property_page_mockup'),
     
     # Property management
     path('properties/', views.property_list, name='property_list'),

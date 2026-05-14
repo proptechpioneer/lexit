@@ -6,6 +6,8 @@ from django.db import IntegrityError
 from django.test import TestCase
 from django.test import SimpleTestCase, override_settings
 
+from lexit.settings import _build_csrf_trusted_origins
+
 from . import activecampaign
 from .forms import SimpleUserCreationForm
 from .models import Referrer
@@ -346,3 +348,17 @@ class ReferrerAdminModelTests(TestCase):
 
 		self.assertFalse(referrer.user.profile.can_refer)
 		self.assertIsNone(_find_referrer_profile(referrer.referral_code))
+
+
+class CsrfTrustedOriginsTests(SimpleTestCase):
+	def test_builds_safe_defaults_for_custom_domain_and_local_hosts(self):
+		origins = _build_csrf_trusted_origins([
+			'https://www.lexit.tech',
+			'https://lexit-production.up.railway.app',
+		])
+
+		self.assertIn('https://www.lexit.tech', origins)
+		self.assertIn('https://lexit.tech', origins)
+		self.assertIn('https://lexit-production.up.railway.app', origins)
+		self.assertIn('http://localhost', origins)
+		self.assertIn('http://127.0.0.1', origins)

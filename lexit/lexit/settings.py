@@ -12,9 +12,94 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+from urllib.parse import urlsplit
 import dj_database_url
 
 from environ import Env
+
+
+def _unique_list(values):
+    seen = set()
+    ordered_values = []
+    for value in values:
+        if value and value not in seen:
+            seen.add(value)
+            ordered_values.append(value)
+    return ordered_values
+
+
+def _normalize_origin_seed(value):
+    value = (value or '').strip().rstrip('/')
+    if not value:
+        return None, None
+
+    if '://' in value:
+        parsed = urlsplit(value)
+        scheme = (parsed.scheme or 'https').lower()
+        host = (parsed.netloc or parsed.path).strip().lower()
+    else:
+        scheme = 'https'
+        host = value.lower()
+
+    return scheme, host.strip('/')
+
+
+def _origin_host_variants(host):
+    if not host:
+        return set()
+
+    normalized = host.lstrip('.')
+    is_wildcard = normalized.startswith('*.')
+    base_host = normalized[2:] if is_wildcard else normalized
+
+    variants = {host}
+    if is_wildcard and base_host:
+        variants.add(base_host)
+
+    if base_host.startswith('www.'):
+        variants.add(base_host[4:])
+    elif (
+        '.' in base_host
+        and base_host.count('.') == 1
+        and not base_host.endswith('.local')
+        and 'railway.app' not in base_host
+    ):
+        variants.add(f'www.{base_host}')
+
+    return {variant for variant in variants if variant}
+
+
+def _build_csrf_trusted_origins(explicit_origins=None):
+    default_seeds = [
+        'https://*.up.railway.app',
+        'https://*.railway.app',
+        'https://lexit.tech',
+        'https://www.lexit.tech',
+        'http://localhost',
+        'http://127.0.0.1',
+        'http://[::1]',
+        'https://localhost',
+        'https://127.0.0.1',
+        'https://[::1]',
+    ]
+
+    seeds = [*(explicit_origins or []), *default_seeds]
+    trusted = []
+
+    for seed in seeds:
+        scheme, host = _normalize_origin_seed(seed)
+        if not scheme or not host:
+            continue
+
+        for host_variant in _origin_host_variants(host):
+            if host_variant in {'localhost', '127.0.0.1', '[::1]'}:
+                trusted.extend([f'http://{host_variant}', f'https://{host_variant}'])
+            else:
+                trusted.append(f'{scheme}://{host_variant}')
+
+    return sorted(_unique_list(trusted))
+
+
 env = Env()
 # Read .env file from the same directory as settings.py
 Env.read_env(os.path.join(os.path.dirname(__file__), '.env'))
@@ -49,27 +134,36 @@ else:
     ]
 
 # CSRF Configuration for Railway / custom domains
-_csrf_origins_default = [
-    'https://*.up.railway.app',
-    'https://*.railway.app',
-    'https://lexit.tech',
-    'https://www.lexit.tech',
-    'https://lexit-production.up.railway.app',
-]
-CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in env('CSRF_TRUSTED_ORIGINS', default=','.join(_csrf_origins_default)).split(',')
-    if origin.strip()
-]
+_csrf_origin_seeds = _unique_list([
+    REFERRAL_BASE_URL,
+    os.environ.get('RAILWAY_PUBLIC_DOMAIN', ''),
+    os.environ.get('RAILWAY_STATIC_URL', ''),
+    *[
+        origin.strip()
+        for origin in env('CSRF_TRUSTED_ORIGINS', default='').split(',')
+        if origin.strip()
+    ],
+])
+CSRF_TRUSTED_ORIGINS = _build_csrf_trusted_origins(_csrf_origin_seeds)
+CSRF_FAILURE_VIEW = 'lexit.views.csrf_failure'
 
 # Railway/Proxy HTTPS handling (prevents false CSRF failures behind reverse proxy)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
 
-if ENVIRONMENT != 'development':
+if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_SAMESITE = env('CSRF_COOKIE_SAMESITE', default='Lax')
+    SESSION_COOKIE_SAMESITE = env('SESSION_COOKIE_SAMESITE', default='Lax')
+
+_csrf_cookie_domain = env('CSRF_COOKIE_DOMAIN', default='').strip()
+if _csrf_cookie_domain:
+    CSRF_COOKIE_DOMAIN = _csrf_cookie_domain
+
+_session_cookie_domain = env('SESSION_COOKIE_DOMAIN', default='').strip()
+if _session_cookie_domain:
+    SESSION_COOKIE_DOMAIN = _session_cookie_domain
 
 # Application definition
 
